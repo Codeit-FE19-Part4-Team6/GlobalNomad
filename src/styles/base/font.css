@@ -1,0 +1,39 @@
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/font/Pretendard-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Pretendard Medium */
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/font/Pretendard-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+/* Pretendard Semibold */
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/font/Pretendard-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+/* Pretendard Bold */
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/font/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: 'Pretendard', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+}

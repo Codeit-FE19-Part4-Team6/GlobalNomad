@@ -1,0 +1,150 @@
+@theme {
+  --text-*: initial;
+  --leading-*: initial;
+
+  /* Font Sizes */
+  --text-10: 0.625rem; /* 10px */
+  --text-12: 0.75rem; /* 12px */
+  --text-13: 0.8125rem; /* 13px */
+  --text-14: 0.875rem; /* 14px */
+  --text-16: 1rem; /* 16px */
+  --text-18: 1.125rem; /* 18px */
+  --text-20: 1.25rem; /* 20px */
+  --text-24: 1.5rem; /* 24px */
+  --text-32: 2rem; /* 32px */
+
+  /* Line Heights */
+  --leading-auto: normal;
+  --leading-180: 1.8;
+  --leading-140: 1.4;
+  --leading-160: 1.6;
+}
+
+/* 10px */
+@utility font-10-medium {
+  font-size: var(--text-10);
+  line-height: var(--leading-auto);
+  font-weight: 500;
+}
+
+@utility font-10-bold {
+  font-size: var(--text-10);
+  line-height: var(--leading-auto);
+  font-weight: 700;
+}
+
+/* 12px */
+@utility font-12-medium {
+  font-size: var(--text-12);
+  line-height: var(--leading-auto);
+  font-weight: 500;
+}
+
+@utility font-12-bold {
+  font-size: var(--text-12);
+  line-height: var(--leading-auto);
+  font-weight: 700;
+}
+
+/* 13px */
+@utility font-13-medium {
+  font-size: var(--text-13);
+  line-height: var(--leading-auto);
+  font-weight: 500;
+}
+
+@utility font-13-bold {
+  font-size: var(--text-13);
+  line-height: var(--leading-auto);
+  font-weight: 700;
+}
+
+/* 14px */
+@utility font-14-medium {
+  font-size: var(--text-14);
+  line-height: var(--leading-auto);
+  font-weight: 500;
+}
+
+@utility font-14-bold {
+  font-size: var(--text-14);
+  line-height: var(--leading-auto);
+  font-weight: 700;
+}
+
+@utility font-14-medium-180 {
+  font-size: var(--text-14);
+  line-height: var(--leading-180);
+  font-weight: 500;
+}
+
+/* 16px */
+@utility font-16-medium {
+  font-size: var(--text-16);
+  line-height: var(--leading-auto);
+  font-weight: 500;
+}
+
+@utility font-16-bold {
+  font-size: var(--text-16);
+  line-height: var(--leading-auto);
+  font-weight: 700;
+}
+
+@utility font-16-medium-180 {
+  font-size: var(--text-16);
+  line-height: var(--leading-180);
+  font-weight: 500;
+}
+
+/* 18px */
+@utility font-18-medium {
+  font-size: var(--text-18);
+  line-height: var(--leading-auto);
+  font-weight: 500;
+}
+
+@utility font-18-bold {
+  font-size: var(--text-18);
+  line-height: var(--leading-140);
+  font-weight: 700;
+}
+
+/* 20px */
+@utility font-20-medium {
+  font-size: var(--text-20);
+  line-height: var(--leading-auto);
+  font-weight: 500;
+}
+
+@utility font-20-bold {
+  font-size: var(--text-20);
+  line-height: var(--leading-160);
+  font-weight: 700;
+}
+
+/* 24px */
+@utility font-24-medium {
+  font-size: var(--text-24);
+  line-height: var(--leading-auto);
+  font-weight: 500;
+}
+
+@utility font-24-bold {
+  font-size: var(--text-24);
+  line-height: var(--leading-auto);
+  font-weight: 700;
+}
+
+/* 32px */
+@utility font-32-medium {
+  font-size: var(--text-32);
+  line-height: var(--leading-auto);
+  font-weight: 500;
+}
+
+@utility font-32-bold {
+  font-size: var(--text-32);
+  line-height: var(--leading-auto);
+  font-weight: 700;
+}
