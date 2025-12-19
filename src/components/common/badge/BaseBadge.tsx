@@ -1,10 +1,17 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-
-export const badgeVariants = cva('inline-flex items-center font-medium whitespace-nowrap', {
+/**
+ * BaseBadge
+ *
+ * color, size props를 전달하면 해당 variant 스타일이 적용됩니다.
+ * color, size를 전달하지 않으면
+ * badgeVariants에 defaultVariants가 없으므로 기본 스타일(색상/사이즈)은 적용되지 않습니다.
+ *
+ */
+export const badgeVariants = cva('inline-flex items-center whitespace-nowrap', {
   variants: {
     color: {
-      blue: 'bg-primary-100, text-primary-500',
-      darkblue: 'bg-blue-50 text-sky-600',
+      blue: 'bg-primary-100 text-primary-500',
+      darkblue: 'bg-blue-50 text-blue-600',
       skyblue: 'bg-sky-100 text-sky-700',
       gray: 'bg-gray-50 text-gray-500',
       darkgray: 'bg-gray-100 text-gray-600',
@@ -14,13 +21,12 @@ export const badgeVariants = cva('inline-flex items-center font-medium whitespac
       cyan: 'bg-cyan-50 text-cyan-600',
     },
     size: {
-      sm: 'px-2 py-0.5 text-xs',
-      md: 'px-3 py-1 text-sm',
+      // 상태 뱃지용
+      status: 'w-[63px] h-[24px] flex items-center justify-center font-sm-bold rounded-full',
+      // 이벤트 뱃지용
+      event:
+        'w-full h-[16px] md:h-[21px] px-2 py-0.5 font-md-medium md:font-2xs-medium flex items-center rounded justify-center',
     },
-  },
-  defaultVariants: {
-    size: 'md',
-    color: 'gray',
   },
 });
 
