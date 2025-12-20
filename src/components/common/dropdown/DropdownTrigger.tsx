@@ -1,5 +1,6 @@
 import { useDropdown } from '@/hooks/useDropdown';
 import clsx from 'clsx';
+import { useCallback } from 'react';
 
 type DropdownTriggerProps = {
   children: React.ReactNode;
@@ -14,13 +15,15 @@ type DropdownTriggerProps = {
 export default function DropdownTrigger({ children, className, onClick }: DropdownTriggerProps) {
   const { toggle, isOpen } = useDropdown();
 
+  const handleClick = useCallback(() => {
+    toggle();
+    onClick?.();
+  }, [toggle, onClick]);
+
   return (
     <button
       type='button'
-      onClick={() => {
-        toggle(); // 내부 toggle
-        onClick?.(); // 외부 이벤트 호출 (있으면)
-      }}
+      onClick={handleClick}
       aria-haspopup='menu'
       aria-expanded={isOpen}
       className={clsx(className)}>
