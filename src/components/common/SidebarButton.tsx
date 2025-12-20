@@ -24,7 +24,6 @@ const ButtonStyle = cva(
 
 interface SidebarButtonProps<T extends React.ElementType> extends VariantProps<typeof ButtonStyle> {
   as?: T;
-  children?: React.ReactNode;
   type?: React.ComponentProps<'button'>['type'];
   className?: string;
   onClick?: () => void;
@@ -48,14 +47,14 @@ const themeConfig = {
   },
   BookingStatus: {
     label: '예약 현황',
-    icon: <Icons.Calenber className='group-hover:text-primary-500 text-gray-600' />,
+    icon: <Icons.Calendar className='group-hover:text-primary-500 text-gray-600' />,
   },
 } as const;
 
 /**
  * 사이드바 전용 버튼 컴포넌트
  * - theme에 따라 아이콘과 레이블 자동 적용
- * - 아이콘 색상은 THEME_CONFIG에서 Tailwind로 직접 지정
+ * - 아이콘 색상은 themeConfig에서 Tailwind로 직접 지정
  * - button, a 등 다른 엘리먼트로도 변경 가능
  * - className, onClick 등 props 확장 가능
  *
