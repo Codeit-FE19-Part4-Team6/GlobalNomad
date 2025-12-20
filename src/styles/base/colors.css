@@ -16,9 +16,18 @@
 
   --color-white: #ffffff;
   --color-black: #000000;
+  --color-red-50: #fcecea;
+  --color-red-400: #f96767;
   --color-red-500: #ff2727;
   --color-primary-100: #e5f3ff;
   --color-primary-500: #3d9ef2;
-
+  --color-orange-400: #ffb051;
+  --color-orange-50: #fff8dd;
+  --color-green-50: #e9fbe4;
+  --color-green-600: #2ba90d;
+  --color-blue-50: #daf0ff;
+  --color-blue-600: #0d6cd1;
+  --color-cyan-50: #ddf9f9;
+  --color-cyan-600: #1790a0;
   --color-error: var(--color-red-500);
 }
