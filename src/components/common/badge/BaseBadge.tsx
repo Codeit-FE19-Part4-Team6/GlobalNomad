@@ -1,3 +1,4 @@
+import { cn } from '@/utils/cn';
 import { cva, type VariantProps } from 'class-variance-authority';
 /**
  * BaseBadge
@@ -7,7 +8,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
  * badgeVariants에 defaultVariants가 없으므로 기본 스타일(색상/사이즈)은 적용되지 않습니다.
  *
  */
-export const badgeVariants = cva('inline-flex items-center whitespace-nowrap', {
+export const badgeVariants = cva('inline-flex items-center whitespace-nowrap justify-center', {
   variants: {
     color: {
       blue: 'bg-primary-100 text-primary-500',
@@ -22,16 +23,16 @@ export const badgeVariants = cva('inline-flex items-center whitespace-nowrap', {
     },
     size: {
       // 상태 뱃지용
-      status: 'w-[63px] h-[24px] flex items-center justify-center font-sm-bold rounded-full',
+      status: 'w-[63px] h-[24px] font-sm-bold rounded-full',
       // 이벤트 뱃지용
       event:
-        'w-full h-[16px] md:h-[21px] px-2 py-0.5 font-md-medium md:font-2xs-medium flex items-center rounded justify-center',
+        'w-full h-[16px] md:h-[21px] px-2 py-0.5 font-2xs-medium md:font-md-medium flex rounded',
     },
   },
 });
 
-type BaseBadgeProps = React.HTMLAttributes<HTMLElement> & VariantProps<typeof badgeVariants>;
+type BaseBadgeProps = React.HTMLAttributes<HTMLSpanElement> & VariantProps<typeof badgeVariants>;
 
 export function BaseBadge({ className, color, size, ...props }: BaseBadgeProps) {
-  return <span className={badgeVariants({ color, size, className })} {...props} />;
+  return <span className={cn(badgeVariants({ color, size }), className)} {...props} />;
 }

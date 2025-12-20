@@ -1,11 +1,15 @@
 import { badgeVariants } from './BaseBadge';
 
-type EventType = '예약' | '승인' | '완료';
-
+export const eventType = {
+  reservation: '예약',
+  approval: '승인',
+  completed: '완료',
+} as const;
+type EventType = (typeof eventType)[keyof typeof eventType];
 const eventColor: Record<EventType, 'blue' | 'orange' | 'gray'> = {
-  예약: 'blue',
-  승인: 'orange',
-  완료: 'gray',
+  [eventType.reservation]: 'blue',
+  [eventType.approval]: 'orange',
+  [eventType.completed]: 'gray',
 };
 
 type EventBadgeProps = {
@@ -14,11 +18,18 @@ type EventBadgeProps = {
   onClick?: () => void;
 };
 /**
- * 캘린더 날짜 칸 내부에서 예약 현황(건수)을 요약해서 보여주는 버튼형 배지입니다.
+ * 캘린더 날짜 칸 내부에서 예약 상태별 건수를 요약해서 보여주는 버튼형 배지 컴포넌트입니다.
  *
- * count가 0 이하이면 화면에 나타나지 않습니다.
+ * 예약, 승인, 완료 등 이벤트 유형과 해당 건수를 함께 표시합니다.
  *
- * <EventBadge type="예약" count={2} onClick={() => console.log('모달 열기')} />
+ * count가 0 이하인 경우 화면에 렌더링되지 않습니다.
+ *
+ * @example
+ * <EventBadge
+ *   type={eventType.reservation}
+ *   count={2}
+ *   onClick={() => console.log('모달 열기')}
+ * />
  */
 export function EventBadge({ type, count = 0, onClick }: EventBadgeProps) {
   if (count <= 0) {
