@@ -15,7 +15,7 @@ type DropdownProps = {
  *
  * 사용 방법:
  * ```tsx
- * <Dropdown className="w-64">
+ * <Dropdown>
  *   <DropdownTrigger>선택</DropdownTrigger>
  *   <DropdownList>
  *     <DropdownItem onClick={...}>아이템1</DropdownItem>
