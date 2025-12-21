@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import StarOff from '@/assets/icons/page/star-off.svg';
-import StarOn from '@/assets/icons/page/star.svg';
 import { cn } from '@/utils/cn';
+import Icons from '@/assets/icons';
 
 interface RatingStarProps {
   value: number;
@@ -10,16 +9,12 @@ interface RatingStarProps {
   className?: string;
 }
 
-{
-  /* <RatingStar
+/**
+ * <RatingStar
   value={comment.rating}
   아래와 같이 최상위 div와 div안에 button들에 className을 줄 수 있습니다.
-  className="
-    flex gap-1
-    [&_button]:h-4 [&_svg]:w-4
-  "
-/> */
-}
+  className="flex gap-1 [&_button]:h-4 [&_svg]:w-4"
+ */
 
 export default function RatingStar({ value, onChange, className }: RatingStarProps) {
   const [hover, setHover] = useState<number | null>(null);
@@ -41,7 +36,7 @@ export default function RatingStar({ value, onChange, className }: RatingStarPro
             onMouseLeave={() => onChange && setHover(null)}
             onClick={() => onChange?.(star)}
             className={onChange ? 'cursor-pointer' : ''}>
-            {filled ? <StarOn className='h-7 w-7' /> : <StarOff className='h-7 w-7' />}
+            {filled ? <Icons.Star className='h-7 w-7' /> : <Icons.StarOff className='h-7 w-7' />}
           </button>
         );
       })}
