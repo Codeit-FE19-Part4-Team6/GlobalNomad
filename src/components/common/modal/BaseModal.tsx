@@ -31,6 +31,15 @@ const ModalContainer = tv({
   },
 });
 
+/**
+ * 공통(Base) 모달 컴포넌트입니다.
+ *
+ * - `isOpen`이 `true`일 때만 렌더링됩니다.
+ * - 오버레이 클릭/ESC 닫기 옵션을 제공합니다.
+ * - `overlayClassName`, `containerClassName`으로 스타일 확장이 가능합니다.
+ * - 접근성을 위해 `role="dialog"` + `aria-*`를 지원합니다.
+ */
+
 export default function BaseModal({
   isOpen,
   onClose,
@@ -56,7 +65,6 @@ export default function BaseModal({
       return;
     }
 
-    // 오버레이 자체를 클릭했을 때만 닫기
     if (e.target === e.currentTarget) {
       e.stopPropagation();
       onClose();
