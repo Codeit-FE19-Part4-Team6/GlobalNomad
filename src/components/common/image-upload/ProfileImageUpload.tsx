@@ -7,6 +7,7 @@ type ProfileImageUploadProps = {
   file?: File | null;
   onFileChange?: (file: File | null) => void;
   edit?: boolean;
+  className?: string;
   defaultImageUrl?: string | null;
 };
 
