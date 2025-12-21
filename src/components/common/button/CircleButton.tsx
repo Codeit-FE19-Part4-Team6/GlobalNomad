@@ -54,9 +54,6 @@
  *   icon={<CloseIcon />}
  *   onClick={() => alert('Close light clicked')}
  * />
- *
- * // 기본 아이콘 사용 (icon prop 없이)
- * <Button.Circle variant='plus' />
  * ```
  */
 

@@ -66,10 +66,9 @@ export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
   ...props
 }) => {
   const fontClass = size === 'sm' ? 'font-md-medium' : 'font-lg-medium';
-  const stateClass = disabled ? 'disabled' : active ? 'active' : 'normal';
 
-  const classes = `button button-secondary button-secondary--${size} ${fontClass} button-secondary--${stateClass} ${className}`;
-
+  const stateClass = active ? 'active' : '';
+  const classes = `button button-secondary button-secondary--${size} ${fontClass} ${stateClass ? `button-secondary--${stateClass}` : ''} ${className}`;
   return (
     <button className={classes} disabled={disabled} {...props}>
       {icon && (

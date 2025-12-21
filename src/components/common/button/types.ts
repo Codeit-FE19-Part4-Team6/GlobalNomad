@@ -7,10 +7,3 @@ export interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
   children: React.ReactNode;
   disabled?: boolean;
 }
-
-export interface ButtonContextValue {
-  size?: ButtonSize;
-  variant?: ButtonVariant;
-  disabled?: boolean;
-  active?: boolean;
-}

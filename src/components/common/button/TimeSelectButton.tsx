@@ -32,8 +32,7 @@ export const TimeSelectButton: React.FC<TimeSelectButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const classes = `button button-time-select font-md-medium ${selected ? 'button-time-select--selected' : 'button-time-select--normal'} ${className}`;
-
+  const classes = `button button-time-select font-md-medium ${selected ? 'button-time-select--selected' : ''} ${className}`;
   return (
     <button className={classes} {...props}>
       {children}

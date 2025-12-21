@@ -69,9 +69,11 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
       ? `font-md-${fontWeight} gap-[4px] py-[10px] px-[14px]`
       : `font-lg-${fontWeight} gap-[6px] py-[10px] px-[16px]`;
 
-  const classes = `button button-filter ${sizeClass} button-filter--${stateClass} ${icon ? 'button-filter--with-icon' : ''} ${className}`;
+  const classes = `button button-filter ${sizeClass} button-filter--${stateClass} ${className}`;
   const iconClass =
-    size === 'sm' ? 'button-filter__icon icon-size--sm' : 'button-filter__icon icon-size--md';
+    size === 'sm'
+      ? 'button-filter__icon button-filter__icon--sm'
+      : 'button-filter__icon button-filter__icon--md';
 
   return (
     <button className={classes} {...props}>
