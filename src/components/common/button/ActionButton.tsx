@@ -52,7 +52,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const classes = `button button-action button-action--${variant} ${className}`;
+  const classes = `button button-action font-md-medium button-action--${variant} ${className}`;
 
   return (
     <button className={classes} type='button' {...props}>

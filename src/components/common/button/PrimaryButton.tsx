@@ -53,8 +53,7 @@ export const PrimaryButton = ({
   // size에 따른 폰트 클래스 결정
   const fontClass = size === 'sm' ? 'font-md-bold' : 'font-lg-bold';
 
-  const classes = `button button-primary button-primary--${size} ${fontClass} ${disabled ? 'button-primary--disabled' : ''} ${className}`;
-
+  const classes = `button button-primary button-primary--${size} ${fontClass} ${className}`;
   return (
     <button className={classes} disabled={disabled} type='button' {...props}>
       {children}
