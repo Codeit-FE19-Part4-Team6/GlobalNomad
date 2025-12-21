@@ -10,6 +10,22 @@ type ProfileImageUploadProps = {
   defaultImageUrl?: string | null;
 };
 
+/**
+ * 프로필 이미지 업로드 컴포넌트
+ *
+ * - 프로필 이미지 미리보기 지원
+ * - 기본 이미지 URL(defaultImageUrl) 표시 가능
+ * - Medium / Large 사이즈
+ *
+ * @example
+ * <ProfileImageUpload
+ *   size="Large"
+ *   file={file}
+ *   defaultImageUrl={user.profileImage}
+ *   edit
+ *   onFileChange={setFile}
+ * />
+ */
 export default function ProfileImageUpload({
   size = 'Medium',
   file,
