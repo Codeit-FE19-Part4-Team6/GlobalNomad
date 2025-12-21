@@ -4,7 +4,7 @@ interface UseBodyScrollLockProps {
   isLocked: boolean;
 }
 
-export default function UseBodyScrollLock({ isLocked }: UseBodyScrollLockProps) {
+export default function useBodyScrollLock({ isLocked }: UseBodyScrollLockProps) {
   useEffect(() => {
     if (!isLocked) {
       return;

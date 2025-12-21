@@ -1,6 +1,6 @@
 import ModalPortal from '@/components/common/modal/ModalPortal';
 import useEscapeClose from '@/hooks/useEscapeClose';
-import UseBodyScrollLock from '@/hooks/useBodyScrollLock';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { tv } from 'tailwind-variants';
 import { cn } from '@/utils/cn';
 
@@ -49,7 +49,7 @@ export default function BaseModal({
     onClose,
   });
 
-  UseBodyScrollLock({ isLocked: isOpen });
+  useBodyScrollLock({ isLocked: isOpen });
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!closeOnOverlayClick) {

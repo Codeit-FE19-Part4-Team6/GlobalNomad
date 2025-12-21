@@ -11,7 +11,7 @@ interface CancelReservationModalProps {
 }
 
 const BaseModalStyles = tv({
-  base: 'flex flex-col items-center justify-between  py-[30px] px-[30px] bg-white h-[185px] md:h-[242px] py-[30px]',
+  base: 'flex flex-col items-center justify-between  py-[30px] px-[30px] bg-white h-[185px] md:h-[242px]',
 });
 
 export default function CancelReservationModal({
@@ -24,12 +24,8 @@ export default function CancelReservationModal({
     if (isLoading) {
       return;
     }
-    try {
-      await onConfirm();
-      onClose();
-    } catch {
-      throw new Error('예약취소에 실패했습니다.');
-    }
+    await onConfirm();
+    onClose();
   };
 
   return (
@@ -62,7 +58,7 @@ export default function CancelReservationModal({
           type='button'
           onClick={onClose}
           className='font-md-bold md:font-lg-bold h-[41px] w-[113px] rounded-[14px] border border-gray-200 md:h-[47px] md:w-[135px]'>
-          <span>아니오 </span>
+          <span>아니오</span>
         </button>
 
         <button
