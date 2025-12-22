@@ -15,9 +15,9 @@ import ArrowUp from '@/assets/icons/page/arrow_up.svg';
 import Art from '@/assets/icons/page/art.svg';
 import Back from '@/assets/icons/page/back.svg';
 import Bus from '@/assets/icons/page/bus.svg';
-import CalenberArrowLeft from '@/assets/icons/page/calendar_arrow_left.svg';
-import CalenberArrowRight from '@/assets/icons/page/calendar_arrow_right.svg';
-import Calenber from '@/assets/icons/page/calendar.svg';
+import CalendarArrowLeft from '@/assets/icons/page/calendar_arrow_left.svg';
+import CalendarArrowRight from '@/assets/icons/page/calendar_arrow_right.svg';
+import Calendar from '@/assets/icons/page/calendar.svg';
 import Delete from '@/assets/icons/page/delete.svg';
 import Down from '@/assets/icons/page/down.svg';
 import Earth from '@/assets/icons/page/earth.svg';
@@ -60,9 +60,9 @@ export default {
   Art,
   Back,
   Bus,
-  CalenberArrowLeft,
-  CalenberArrowRight,
-  Calenber,
+  CalendarArrowLeft,
+  CalendarArrowRight,
+  Calendar,
   Delete,
   Down,
   Earth,

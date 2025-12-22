@@ -1,0 +1,33 @@
+name: Discord Notify (PR to main & develop)
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    types: [opened, reopened, closed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          ACTION="${{ github.event.action }}"
+          TITLE="${{ github.event.pull_request.title }}"
+          URL="${{ github.event.pull_request.html_url }}"
+          AUTHOR="${{ github.actor }}"
+          BASE="${{ github.event.pull_request.base.ref }}"
+          REPO="${{ github.repository }}"
+
+          if [ "$ACTION" = "closed" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            MSG="✅ **PR 머지됨 → $BASE**\n레포: $REPO\n작성자: $AUTHOR\n제목: $TITLE\n링크: $URL"
+          else
+            MSG="🔔 **PR $ACTION → $BASE**\n레포: $REPO\n작성자: $AUTHOR\n제목: $TITLE\n링크: $URL"
+          fi
+
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\":\"$MSG\"}" \
+               "$DISCORD_WEBHOOK_URL"
