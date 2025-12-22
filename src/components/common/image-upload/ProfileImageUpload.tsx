@@ -33,6 +33,7 @@ export default function ProfileImageUpload({
   onFileChange,
   edit = false,
   defaultImageUrl,
+  className,
 }: ProfileImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -61,12 +62,14 @@ export default function ProfileImageUpload({
   };
 
   return (
-    <div className='relative inline-block h-fit w-fit'>
+    <div className={cn('relative inline-block h-fit w-fit', className)}>
       <div
         className={cn(
           'flex aspect-square items-center justify-center overflow-hidden rounded-full bg-gray-200',
-          size === 'Medium' && 'h-17.5 w-17.5',
-          size === 'Large' && 'h-30 w-30'
+          {
+            'h-17.5 w-17.5': size === 'Medium',
+            'h-30 w-30': size === 'Large',
+          }
         )}
         style={{
           backgroundImage: preview ? `url(${preview})` : undefined,
@@ -82,7 +85,10 @@ export default function ProfileImageUpload({
           onClick={handleEditClick}
           className={cn(
             'absolute right-0 bottom-0 flex items-center justify-center rounded-full bg-gray-300',
-            size === 'Medium' ? 'h-6 w-6 p-[5.6px]' : 'h-7.5 w-7.5 p-1.75'
+            {
+              'h-6 w-6 p-[5.6px]': size === 'Medium',
+              'h-7.5 w-7.5 p-1.75': size === 'Large',
+            }
           )}>
           <Icons.Edit className='text-white' />
         </button>
