@@ -4,17 +4,15 @@ import Icons from '@/assets/icons';
 
 interface RatingStarProps {
   value: number;
-  //onChange는 리뷰모달 전용입니다. 댓글에서는 사용하지 않습니다.
   onChange?: (value: number) => void;
   className?: string;
 }
 
 /**
- * <RatingStar
-  value={comment.rating}
+ * 댓글과 리뷰모달에서 사용하는 별점 컴포넌트입니다.
+ * onChange를 사용하지 않으면 댓글에서 보여지는 읽기전용으로 사용가능합니다.
   아래와 같이 최상위 div와 div안에 button들에 className을 줄 수 있습니다.
   className="flex gap-1 [&_button]:h-4 [&_svg]:w-4"
-  
  */
 
 export default function RatingStar({ value, onChange, className }: RatingStarProps) {
