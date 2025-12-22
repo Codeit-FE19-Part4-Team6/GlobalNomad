@@ -16,16 +16,14 @@
  * @example
  * ```tsx
  * // Neutral 버튼 (기본 액션)
- * <ActionButton variant='neutral'>승인하기</ActionButton>
- * <ActionButton variant='neutral'>수정하기</ActionButton>
+ * <ActionButton action='neutral'>승인하기</ActionButton>
  *
  * // Muted 버튼 (보조 액션)
- * <ActionButton variant='muted'>거절하기</ActionButton>
- * <ActionButton variant='muted'>삭제하기</ActionButton>
+ * <ActionButton action='muted'>거절하기</ActionButton>
  *
  * // onClick 핸들러와 함께
  * <ActionButton
- *   variant='neutral'
+ *   action='neutral'
  *   onClick={() => console.log('승인!')}
  * >
  *   승인하기
@@ -33,18 +31,16 @@
  * ```
  */
 
-interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-}
+import type { BaseButtonProps } from './types';
 
 type ActionButtonType = 'neutral' | 'muted';
 
 interface ActionButtonProps extends BaseButtonProps {
-  variant: ActionButtonType;
+  action?: ActionButtonType;
 }
 
 export const ActionButton = ({
-  variant,
+  action = 'neutral',
   children,
   className = '',
   ...props
@@ -53,18 +49,18 @@ export const ActionButton = ({
   const baseClasses =
     'inline-flex items-center justify-center ' +
     'rounded-lg px-2.5 py-1.5 ' +
-    'text-sm font-medium leading-none ' +
+    'font-md-medium leading-none ' +
     'cursor-pointer transition-all duration-200 ease-in-out ' +
     'disabled:cursor-not-allowed disabled:opacity-50 ' +
     'hover:opacity-90';
 
   // Variant별 스타일
-  const variantClasses = {
+  const actionClasses = {
     neutral: 'bg-white text-gray-600 border border-gray-50',
     muted: 'bg-gray-50 text-gray-600 border border-gray-50',
   };
 
-  const classes = `${baseClasses} ${variantClasses[variant]} ${className}`;
+  const classes = `${baseClasses} ${actionClasses[action]} ${className}`;
 
   return (
     <button className={classes} type='button' {...props}>

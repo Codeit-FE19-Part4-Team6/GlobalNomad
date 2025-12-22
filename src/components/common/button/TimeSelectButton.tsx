@@ -15,20 +15,14 @@
  * ```
  */
 
-interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-}
-
-interface TimeSelectButtonProps extends BaseButtonProps {
-  selected?: boolean;
-}
+import type { BaseButtonProps } from '@/components/common/button/types';
 
 export const TimeSelectButton = ({
   children,
   selected = false,
   className = '',
   ...props
-}: TimeSelectButtonProps) => {
+}: BaseButtonProps) => {
   // 공통 스타일
   const baseClasses =
     'inline-flex items-center justify-center ' +

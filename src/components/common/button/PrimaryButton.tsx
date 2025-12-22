@@ -14,34 +14,30 @@
  * @example
  * ```tsx
  * // 기본 사용
- * <Button.Primary size='md'>클릭하세요</Button.Primary>
+ * <PrimaryButton size='md'>클릭하세요</PrimaryButton>
  *
  * // 크기별 사용
- * <Button.Primary size='lg'>Large Button</Button.Primary>
- * <Button.Primary size='md'>Medium Button</Button.Primary>
- * <Button.Primary size='sm'>Small Button</Button.Primary>
+ * <PrimaryButton size='lg'>Large Button</PrimaryButton>
+ * <PrimaryButton size='md'>Medium Button</PrimaryButton>
+ * <PrimaryButton size='sm'>Small Button</PrimaryButton>
  *
  * // Disabled 상태
- * <Button.Primary size='lg' disabled>
+ * <PrimaryButton size='lg' disabled>
  *   Disabled
- * </Button.Primary>
+ * </PrimaryButton>
  *
  * // 커스텀 클래스와 onClick 핸들러
- * <Button.Primary
+ * <PrimaryButton
  *   size='md'
  *   className='custom-class'
  *   onClick={() => console.log('clicked')}
  * >
  *   Submit
- * </Button.Primary>
+ * </PrimaryButton>
  * ```
  */
 
-import { type BaseButtonProps, type ButtonSize } from './types';
-
-interface PrimaryButtonProps extends BaseButtonProps {
-  size?: ButtonSize;
-}
+import { type BaseButtonProps } from './types';
 
 export const PrimaryButton = ({
   children,
@@ -49,7 +45,7 @@ export const PrimaryButton = ({
   disabled = false,
   className = '',
   ...props
-}: PrimaryButtonProps) => {
+}: BaseButtonProps) => {
   // size에 따른 스타일 클래스
   const sizeClasses = {
     lg: 'h-[54px] px-6 py-3.5 rounded-2xl text-base font-bold',

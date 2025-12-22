@@ -26,19 +26,7 @@
  * ```
  */
 
-import React from 'react';
-
-type ButtonSize = 'sm' | 'md' | 'lg';
-
-interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-}
-
-interface SecondaryButtonProps extends BaseButtonProps {
-  icon?: React.ReactNode;
-  active?: boolean;
-  size?: ButtonSize;
-}
+import type { BaseButtonProps } from './types';
 
 export const SecondaryButton = ({
   children,
@@ -48,7 +36,7 @@ export const SecondaryButton = ({
   disabled = false,
   className = '',
   ...props
-}: SecondaryButtonProps) => {
+}: BaseButtonProps) => {
   // 공통 스타일
   const baseClasses =
     'inline-flex items-center justify-center gap-1 ' +

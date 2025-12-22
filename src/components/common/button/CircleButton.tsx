@@ -23,28 +23,28 @@
  * import Icons from '@/assets/icons';
  *
  * // Plus 버튼
- * <Button.Circle
+ * <CircleButton
  *   variant='plus'
  *   icon={<Icons.Plus />}
  *   onClick={() => alert('Plus clicked')}
  * />
  *
  * // Minus 버튼
- * <Button.Circle
+ * <CircleButton
  *   variant='minus'
  *   icon={<Icons.Minus />}
  *   onClick={() => alert('Minus clicked')}
  * />
  *
  * // Close Dark 버튼
- * <Button.Circle
+ * <CircleButton
  *   variant='close-dark'
  *   icon={<Icons.Close />}
  *   onClick={() => alert('Close dark clicked')}
  * />
  *
- * // Close Light 버튼
- * <Button.Circle
+ * // Close Light 버튼 (동그란 배경 없이 x 아이콘만 표시)
+ * <CircleButton
  *   variant='close-light'
  *   icon={<Icons.Close />}
  *   onClick={() => alert('Close light clicked')}
@@ -52,12 +52,11 @@
  * ```
  */
 
-import { type ReactNode } from 'react';
-import { type BaseButtonProps, type CircleButtonType } from './types';
+import { type BaseButtonProps } from './types';
 
+type CircleButtonType = 'plus' | 'minus' | 'close-dark' | 'close-light';
 interface CircleButtonProps extends Omit<BaseButtonProps, 'children'> {
   variant: CircleButtonType;
-  icon?: ReactNode;
 }
 
 export const CircleButton = ({ variant, icon, className = '', ...props }: CircleButtonProps) => {
