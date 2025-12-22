@@ -1,9 +1,7 @@
+import { type ReactNode } from 'react';
+
 export type ButtonSize = 'lg' | 'md' | 'sm';
 export interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-  disabled?: boolean;
+  children: ReactNode;
   size?: ButtonSize;
-  icon?: React.ReactNode;
-  active?: boolean;
-  selected?: boolean;
 }

@@ -26,7 +26,13 @@
  * ```
  */
 
+import type { ReactNode } from 'react';
 import type { BaseButtonProps } from './types';
+
+interface SecondaryButtonProps extends BaseButtonProps {
+  icon?: ReactNode;
+  active?: boolean;
+}
 
 export const SecondaryButton = ({
   children,
@@ -36,7 +42,7 @@ export const SecondaryButton = ({
   disabled = false,
   className = '',
   ...props
-}: BaseButtonProps) => {
+}: SecondaryButtonProps) => {
   // 공통 스타일
   const baseClasses =
     'inline-flex items-center justify-center gap-1 ' +

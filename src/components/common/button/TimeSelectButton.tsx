@@ -15,14 +15,18 @@
  * ```
  */
 
-import type { BaseButtonProps } from '@/components/common/button/types';
+import type { BaseButtonProps } from './types';
+
+interface TimeSelectButtonProps extends BaseButtonProps {
+  selected?: boolean;
+}
 
 export const TimeSelectButton = ({
   children,
   selected = false,
   className = '',
   ...props
-}: BaseButtonProps) => {
+}: TimeSelectButtonProps) => {
   // 공통 스타일
   const baseClasses =
     'inline-flex items-center justify-center ' +

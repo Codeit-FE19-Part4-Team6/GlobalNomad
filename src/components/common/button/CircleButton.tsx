@@ -52,11 +52,13 @@
  * ```
  */
 
-import { type BaseButtonProps } from './types';
-
 type CircleButtonType = 'plus' | 'minus' | 'close-dark' | 'close-light';
-interface CircleButtonProps extends Omit<BaseButtonProps, 'children'> {
+interface CircleButtonProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'children'
+> {
   variant: CircleButtonType;
+  icon?: React.ReactNode;
 }
 
 export const CircleButton = ({ variant, icon, className = '', ...props }: CircleButtonProps) => {
