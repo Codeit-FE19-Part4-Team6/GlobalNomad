@@ -50,17 +50,17 @@ export default function CancelReservationModal({
       closeOnEsc={!isLoading}
       containerClassName={cn(BaseModalStyles(), className)}>
       <div className='flex flex-col items-center'>
-        <Icons.WarningSm className='block h-[49px] w-[49px] md:hidden' />
-        <Icons.WarningLg className='hidden h-[88px] w-[88px] md:block' />
+        <Icons.WarningSm className='block h-12.25 w-12.25 md:hidden' />
+        <Icons.WarningLg className='hidden h-22 w-22 md:block' />
         <p className='font-lg-bold md:font-xl-bold text-black'>{children}</p>
       </div>
 
       {/* 버튼 영역 */}
-      <div className='flex w-full justify-center gap-[8px]'>
+      <div className='flex w-full justify-center gap-2'>
         <button
           type='button'
           onClick={onClose}
-          className='font-md-bold md:font-lg-bold h-[41px] w-[113px] rounded-[14px] border border-gray-200 md:h-[47px] md:w-[135px]'>
+          className='font-md-bold md:font-lg-bold h-10.25 w-28.25 rounded-[14px] border border-gray-200 md:h-11.75 md:w-33.75'>
           {cancelText}
         </button>
 
@@ -68,7 +68,7 @@ export default function CancelReservationModal({
           type='button'
           disabled={isLoading}
           onClick={handleConfirm}
-          className='bg-primary-500 font-md-bold md:font-lg-bold h-[41px] w-[113px] rounded-[14px] text-white disabled:opacity-60 md:h-[47px] md:w-[135px]'>
+          className='bg-primary-500 font-md-bold md:font-lg-bold h-10.25 w-28.25 rounded-[14px] text-white disabled:opacity-60 md:h-11.75 md:w-33.75'>
           {isLoading ? '처리중...' : confirmText}
         </button>
       </div>
