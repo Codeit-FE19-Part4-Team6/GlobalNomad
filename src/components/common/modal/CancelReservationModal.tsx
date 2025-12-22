@@ -1,7 +1,6 @@
 import BaseModal from '@/components/common/modal/BaseModal';
 import { tv } from 'tailwind-variants';
-import warningLg from '@/assets/icons/page/warning-lg.svg?url';
-import warningSm from '@/assets/icons/page/warning-sm.svg?url';
+import Icons from '@/assets/icons';
 import { cn } from '@/utils/cn';
 
 interface CancelReservationModalProps {
@@ -10,8 +9,8 @@ interface CancelReservationModalProps {
   onConfirm: () => void | Promise<void>;
   isLoading?: boolean;
   children?: React.ReactNode;
-  cancelText?: string;
-  confirmText?: string;
+  cancelText: string;
+  confirmText: string;
   className?: string;
 }
 
@@ -51,18 +50,9 @@ export default function CancelReservationModal({
       closeOnEsc={!isLoading}
       containerClassName={cn(BaseModalStyles(), className)}>
       <div className='flex flex-col items-center'>
-        <img
-          src={warningSm}
-          alt='예약취소 모달 이미지'
-          className='block h-[49px] w-[49px] md:hidden'
-        />
-
-        <img
-          src={warningLg}
-          alt='예약취소 모달 이미지'
-          className='hidden h-[88px] w-[88px] md:block'
-        />
-        <p className=''>{children}</p>
+        <Icons.WarningSm className='block h-[49px] w-[49px] md:hidden' />
+        <Icons.WarningLg className='hidden h-[88px] w-[88px] md:block' />
+        <p className='font-lg-bold md:font-xl-bold text-black'>{children}</p>
       </div>
 
       {/* 버튼 영역 */}
