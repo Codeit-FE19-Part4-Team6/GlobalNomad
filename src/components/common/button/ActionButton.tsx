@@ -33,8 +33,6 @@
  * ```
  */
 
-import React from 'react';
-
 interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
