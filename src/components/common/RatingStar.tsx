@@ -14,6 +14,7 @@ interface RatingStarProps {
   value={comment.rating}
   아래와 같이 최상위 div와 div안에 button들에 className을 줄 수 있습니다.
   className="flex gap-1 [&_button]:h-4 [&_svg]:w-4"
+  
  */
 
 export default function RatingStar({ value, onChange, className }: RatingStarProps) {
