@@ -10,7 +10,7 @@ type CardsideBarProps = {
 /**
  * CardsideBar 컴포넌트
  *
- * 마이페이지 / 카드 페이지에서 사용되는 사이드바 UI 컴포넌트입니다.
+ * 사이드바 UI 컴포넌트입니다.
  * - 프로필 이미지 업로드 영역
  * - 마이페이지 관련 네비게이션 버튼들을 포함합니다.
  * - variant 값에 따라 desktop / tablet / mobile 레이아웃을 다르게 렌더링합니다.
