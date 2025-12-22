@@ -29,11 +29,11 @@ type LogoProps = {
  */
 export function Logo({ className }: LogoProps) {
   return (
-    <h1 className={cn('inline-flex items-center', className)}>
+    <div className={cn('inline-flex items-center', className)}>
       <Link to='/' aria-label='메인 페이지로 이동' className='flex items-center gap-2'>
         <Logos.LogoSm />
         <Logos.LogoTitleSm className='hidden md:block' />
       </Link>
-    </h1>
+    </div>
   );
 }
