@@ -26,18 +26,12 @@
  * ```
  */
 
-import React from 'react';
-
-type ButtonSize = 'sm' | 'md' | 'lg';
-
-interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-}
+import type { ReactNode } from 'react';
+import type { BaseButtonProps } from './types';
 
 interface SecondaryButtonProps extends BaseButtonProps {
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   active?: boolean;
-  size?: ButtonSize;
 }
 
 export const SecondaryButton = ({

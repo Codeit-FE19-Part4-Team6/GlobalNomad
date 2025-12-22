@@ -16,32 +16,35 @@
  * import Icons from '@/assets/icons';
  *
  * // 기본 사용
- * <Button.Filter>카테고리</Button.Filter>
+ * <FilterButton>카테고리</FilterButton>
  *
  * // 아이콘과 함께
- * <Button.Filter icon={<Icons.Art />}>With Icon</Button.Filter>
+ * <FilterButton icon={<Icons.Art />}>With Icon</FilterButton>
  *
  * // 선택 상태
- * <Button.Filter size='md' icon={<Icons.Food />} selected>
+ * <FilterButton size='md' icon={<Icons.Food />} selected>
  *   Selected
- * </Button.Filter>
+ * </FilterButton>
  *
  * // 작은 크기
- * <Button.Filter size='sm' icon={<Icons.Wellbeing />}>
+ * <FilterButton size='sm' icon={<Icons.Wellbeing />}>
  *   Small Size
- * </Button.Filter>
+ * </FilterButton>
  *
  * // 아이콘 없이 선택 상태
- * <Button.Filter selected>No Icon Selected</Button.Filter>
+ * <FilterButton selected>No Icon Selected</FilterButton>
  * ```
  */
 
-import { type BaseButtonProps, type ButtonSize } from './types';
+import type { ReactNode } from 'react';
+import { type BaseButtonProps } from './types';
 
-interface FilterButtonProps extends BaseButtonProps {
-  icon?: React.ReactNode;
+type FilterButtonSize = 'sm' | 'md'; // lg 제외
+
+interface FilterButtonProps extends Omit<BaseButtonProps, 'size'> {
+  size?: FilterButtonSize; // BaseButtonProps의 size 대신 사용
+  icon?: ReactNode;
   selected?: boolean;
-  size?: ButtonSize;
 }
 
 export const FilterButton = ({
@@ -52,30 +55,44 @@ export const FilterButton = ({
   className = '',
   ...props
 }: FilterButtonProps) => {
+  // 공통 스타일
+  const baseClasses =
+    'inline-flex items-center justify-center rounded-full ' +
+    'cursor-pointer transition-all duration-200 ease-in-out ' +
+    'leading-none disabled:cursor-not-allowed';
+
   // 선택 상태에 따른 스타일
   const stateClasses = selected
     ? 'bg-gray-900 text-white border-none'
     : 'bg-white text-gray-950 border border-gray-50';
 
-  // 선택 상태에 따른 폰트 weight
-  const fontWeight = selected ? 'font-bold' : 'font-medium';
+  // 폰트 클래스: size에 따라 lg/md, selected에 따라 bold/medium
+  const getFontClass = () => {
+    const fontSize = size === 'sm' ? 'md' : 'lg';
+    const fontWeight = selected ? 'bold' : 'medium';
+    return `font-${fontSize}-${fontWeight}`;
+  };
 
-  // 크기에 따른 스타일
-  const sizeClasses =
-    size === 'sm'
-      ? `text-sm ${fontWeight} gap-1 py-2.5 px-3.5` // gap-[4px], py-[10px], px-[14px]
-      : `text-base ${fontWeight} gap-1.5 py-2.5 px-4`; // gap-[6px], py-[10px], px-[16px]
+  // 크기에 따른 간격 및 패딩
+  const sizeClasses = {
+    sm: 'gap-1 py-2.5 px-3.5', // gap-[4px], py-[10px], px-[14px]
+    md: 'gap-1.5 py-2.5 px-4', // gap-[6px], py-[10px], px-[16px]
+  };
 
   // 아이콘 크기
-  const iconSize = size === 'sm' ? 'w-4 h-4' : 'w-6 h-6';
+  const iconSizeClasses = {
+    sm: 'w-4 h-4', // 16px
+    md: 'w-6 h-6', // 24px
+  };
 
-  const baseClasses =
-    'inline-flex items-center justify-center rounded-full cursor-pointer transition-all duration-200 ease-in-out leading-none disabled:cursor-not-allowed';
+  const classes = `${baseClasses} ${stateClasses} ${sizeClasses[size]} ${getFontClass()} ${className}`;
 
   return (
-    <button className={`${baseClasses} ${stateClasses} ${sizeClasses} ${className}`} {...props}>
+    <button className={classes} type='button' {...props}>
       {icon && (
-        <span className={`inline-flex items-center justify-center ${iconSize}`}>{icon}</span>
+        <span className={`inline-flex items-center justify-center ${iconSizeClasses[size]}`}>
+          {icon}
+        </span>
       )}
       <span>{children}</span>
     </button>

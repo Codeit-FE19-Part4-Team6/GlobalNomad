@@ -15,9 +15,7 @@
  * ```
  */
 
-interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-}
+import type { BaseButtonProps } from './types';
 
 interface TimeSelectButtonProps extends BaseButtonProps {
   selected?: boolean;
