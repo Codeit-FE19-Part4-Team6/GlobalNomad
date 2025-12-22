@@ -67,6 +67,12 @@
   font-weight: 500;
 }
 
+@utility font-md-semibold {
+  font-size: var(--text-md);
+  line-height: var(--leading-auto);
+  font-weight: 600;
+}
+
 @utility font-md-bold {
   font-size: var(--text-md);
   line-height: var(--leading-auto);

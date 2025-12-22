@@ -50,12 +50,22 @@ export const PrimaryButton = ({
   className = '',
   ...props
 }: PrimaryButtonProps) => {
-  // size에 따른 폰트 클래스 결정
-  const fontClass = size === 'sm' ? 'font-md-bold' : 'font-lg-bold';
+  // size에 따른 스타일 클래스
+  const sizeClasses = {
+    lg: 'h-[54px] px-6 py-3.5 rounded-2xl text-base font-bold',
+    md: 'h-12 px-5 py-3.5 rounded-[14px] text-base font-bold',
+    sm: 'h-[34px] px-4 py-3 rounded-xl text-sm font-bold',
+  };
 
-  const classes = `button button-primary button-primary--${size} ${fontClass} ${className}`;
+  const baseClasses =
+    'inline-flex items-center justify-center bg-primary-500 text-white border-none cursor-pointer transition-all duration-200 ease-in-out hover:opacity-90 disabled:bg-gray-200 disabled:text-gray-50 disabled:opacity-60 disabled:cursor-not-allowed leading-none';
+
   return (
-    <button className={classes} disabled={disabled} type='button' {...props}>
+    <button
+      className={`${baseClasses} ${sizeClasses[size]} ${className}`}
+      disabled={disabled}
+      type='button'
+      {...props}>
       {children}
     </button>
   );

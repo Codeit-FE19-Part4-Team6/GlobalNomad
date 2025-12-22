@@ -16,43 +16,57 @@
  * @example
  * ```tsx
  * // Neutral 버튼 (기본 액션)
- * <Button.Action variant='neutral'>승인하기</Button.Action>
- * <Button.Action variant='neutral'>수정하기</Button.Action>
+ * <ActionButton variant='neutral'>승인하기</ActionButton>
+ * <ActionButton variant='neutral'>수정하기</ActionButton>
  *
  * // Muted 버튼 (보조 액션)
- * <Button.Action variant='muted'>거절하기</Button.Action>
- * <Button.Action variant='muted'>삭제하기</Button.Action>
+ * <ActionButton variant='muted'>거절하기</ActionButton>
+ * <ActionButton variant='muted'>삭제하기</ActionButton>
  *
  * // onClick 핸들러와 함께
- * <Button.Action
+ * <ActionButton
  *   variant='neutral'
- *   onClick={() => handleApprove()}
+ *   onClick={() => console.log('승인!')}
  * >
  *   승인하기
- * </Button.Action>
- *
- * // 버튼 그룹 예제
- * <div style={{ display: 'flex', gap: '8px' }}>
- *   <Button.Action variant='neutral'>승인</Button.Action>
- *   <Button.Action variant='muted'>거절</Button.Action>
- * </div>
+ * </ActionButton>
  * ```
  */
 
 import React from 'react';
-import { type BaseButtonProps, type ActionButtonType } from './types';
+
+interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+}
+
+type ActionButtonType = 'neutral' | 'muted';
 
 interface ActionButtonProps extends BaseButtonProps {
   variant: ActionButtonType;
 }
 
-export const ActionButton: React.FC<ActionButtonProps> = ({
+export const ActionButton = ({
   variant,
   children,
   className = '',
   ...props
-}) => {
-  const classes = `button button-action font-md-medium button-action--${variant} ${className}`;
+}: ActionButtonProps) => {
+  // 공통 스타일
+  const baseClasses =
+    'inline-flex items-center justify-center ' +
+    'rounded-lg px-2.5 py-1.5 ' +
+    'text-sm font-medium leading-none ' +
+    'cursor-pointer transition-all duration-200 ease-in-out ' +
+    'disabled:cursor-not-allowed disabled:opacity-50 ' +
+    'hover:opacity-90';
+
+  // Variant별 스타일
+  const variantClasses = {
+    neutral: 'bg-white text-gray-600 border border-gray-50',
+    muted: 'bg-gray-50 text-gray-600 border border-gray-50',
+  };
+
+  const classes = `${baseClasses} ${variantClasses[variant]} ${className}`;
 
   return (
     <button className={classes} type='button' {...props}>

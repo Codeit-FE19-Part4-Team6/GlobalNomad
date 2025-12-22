@@ -17,47 +17,42 @@
  * - `close-light`: 투명 배경에 어두운 아이콘 (닫기)
  *
  * @example
- * 
+ *
  * ```tsx
- * 
- * // 아이콘을 임포트해서 사용해야 합니다.
- * import {
-      PlusIcon,
-      MinusIcon,
-      CloseIcon,
-    } from '@/components/common/button/icons';
- * 
+ *
+ * import Icons from '@/assets/icons';
+ *
  * // Plus 버튼
  * <Button.Circle
  *   variant='plus'
- *   icon={<PlusIcon />}
+ *   icon={<Icons.Plus />}
  *   onClick={() => alert('Plus clicked')}
  * />
  *
  * // Minus 버튼
  * <Button.Circle
  *   variant='minus'
- *   icon={<MinusIcon />}
+ *   icon={<Icons.Minus />}
  *   onClick={() => alert('Minus clicked')}
  * />
  *
  * // Close Dark 버튼
  * <Button.Circle
  *   variant='close-dark'
- *   icon={<CloseIcon />}
+ *   icon={<Icons.Close />}
  *   onClick={() => alert('Close dark clicked')}
  * />
  *
  * // Close Light 버튼
  * <Button.Circle
  *   variant='close-light'
- *   icon={<CloseIcon />}
+ *   icon={<Icons.Close />}
  *   onClick={() => alert('Close light clicked')}
  * />
  * ```
  */
 
-import React, { type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { type BaseButtonProps, type CircleButtonType } from './types';
 
 interface CircleButtonProps extends Omit<BaseButtonProps, 'children'> {
@@ -65,13 +60,17 @@ interface CircleButtonProps extends Omit<BaseButtonProps, 'children'> {
   icon?: ReactNode;
 }
 
-export const CircleButton: React.FC<CircleButtonProps> = ({
-  variant,
-  icon,
-  className = '',
-  ...props
-}) => {
-  const classes = `button button-circle button-circle--${variant} ${className}`;
+export const CircleButton = ({ variant, icon, className = '', ...props }: CircleButtonProps) => {
+  // variant별 스타일 클래스
+  const variantClasses = {
+    plus: 'w-[42px] h-[42px] bg-primary-500 text-white',
+    minus: 'w-[42px] h-[42px] bg-gray-50 text-black',
+    'close-dark': 'w-[26px] h-[26px] bg-gray-950 text-white',
+    'close-light': 'w-[26px] h-[26px] bg-transparent text-gray-950',
+  };
+
+  const baseClasses =
+    'inline-flex items-center justify-center rounded-full border-none p-0 cursor-pointer transition-all duration-200 ease-in-out hover:opacity-90 leading-none disabled:cursor-not-allowed';
 
   // 기본 아이콘 (icon prop이 없을 때만 사용)
   const defaultIconMap: Record<CircleButtonType, string> = {
@@ -82,7 +81,10 @@ export const CircleButton: React.FC<CircleButtonProps> = ({
   };
 
   return (
-    <button className={classes} type='button' {...props}>
+    <button
+      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+      type='button'
+      {...props}>
       {icon || defaultIconMap[variant]}
     </button>
   );

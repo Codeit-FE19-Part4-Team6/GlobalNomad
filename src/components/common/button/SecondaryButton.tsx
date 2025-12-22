@@ -14,41 +14,25 @@
  * @example
  * ```tsx
  * // 기본 사용
- * <Button.Secondary size='md'>Button</Button.Secondary>
+ * <SecondaryButton size='md'>Button</SecondaryButton>
  *
  * // 아이콘과 함께
- * <Button.Secondary size='lg' icon={<GoogleIcon />}>
+ * <SecondaryButton size='lg' icon={<Icon />}>
  *   Large with Icon
- * </Button.Secondary>
+ * </SecondaryButton>
  *
- * <Button.Secondary size='md' icon={<GoogleIcon />}>
- *   Medium with Icon
- * </Button.Secondary>
- *
- * <Button.Secondary size='sm' icon={<GoogleIcon />}>
- *   Small with Icon
- * </Button.Secondary>
- *
- * // Active 상태 (선택됨)
- * <Button.Secondary size='lg' icon={<GoogleIcon />} active>
- *   Active State
- * </Button.Secondary>
- *
- * // Disabled 상태
- * <Button.Secondary size='lg' icon={<GoogleIcon />} disabled>
- *   Disabled
- * </Button.Secondary>
- *
- * // 버튼 그룹 예제
- * <div style={{ display: 'flex', gap: '8px' }}>
- *   <Button.Secondary active>로그인</Button.Secondary>
- *   <Button.Secondary>회원가입</Button.Secondary>
- * </div>
+ * // Active 상태
+ * <SecondaryButton active>Active State</SecondaryButton>
  * ```
  */
 
 import React from 'react';
-import { type BaseButtonProps, type ButtonSize } from './types';
+
+type ButtonSize = 'sm' | 'md' | 'lg';
+
+interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+}
 
 interface SecondaryButtonProps extends BaseButtonProps {
   icon?: React.ReactNode;
@@ -56,7 +40,7 @@ interface SecondaryButtonProps extends BaseButtonProps {
   size?: ButtonSize;
 }
 
-export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
+export const SecondaryButton = ({
   children,
   icon,
   size = 'md',
@@ -64,15 +48,51 @@ export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
   disabled = false,
   className = '',
   ...props
-}) => {
-  const fontClass = size === 'sm' ? 'font-md-medium' : 'font-lg-medium';
+}: SecondaryButtonProps) => {
+  // 공통 스타일
+  const baseClasses =
+    'inline-flex items-center justify-center gap-1 ' +
+    'cursor-pointer transition-all duration-200 ease-in-out ' +
+    'leading-none ' +
+    'disabled:bg-white disabled:text-gray-200 disabled:border-gray-200 disabled:cursor-not-allowed';
 
-  const stateClass = active ? 'active' : '';
-  const classes = `button button-secondary button-secondary--${size} ${fontClass} ${stateClass ? `button-secondary--${stateClass}` : ''} ${className}`;
+  // Active 상태가 아닐 때만 호버 효과
+  const hoverClasses = active ? '' : 'hover:bg-gray-50';
+
+  // Active 상태 스타일
+  const activeClasses = active
+    ? 'bg-primary-500 text-white'
+    : 'bg-white text-gray-600 border-gray-200';
+
+  // 폰트 클래스: sm일 때 font-md, 나머지는 font-lg / active일 때 bold, 아니면 medium
+  const getFontClass = () => {
+    const fontSize = size === 'sm' ? 'md' : 'lg';
+    const fontWeight = active ? 'bold' : 'medium';
+    return `font-${fontSize}-${fontWeight}`;
+  };
+
+  // 크기별 스타일 (폰트 제외)
+  const sizeClasses = {
+    lg: 'rounded-2xl px-5 py-3 h-[54px]', // 16px radius, 12px 20px padding, 54px height
+    md: 'rounded-xl px-[18px] py-3.5 h-12', // 14px radius, 14px 18px padding, 48px height
+    sm: 'rounded-xl px-3 py-1 h-[34px]', // 12px radius, 4px 12px padding, 34px height
+  };
+
+  // 아이콘 크기
+  const iconSizeClasses = {
+    lg: 'w-6 h-6', // 24px
+    md: 'w-5 h-5', // 20px
+    sm: 'w-4 h-4', // 16px
+  };
+
+  const classes = `${baseClasses} ${activeClasses} ${hoverClasses} ${sizeClasses[size]} ${getFontClass()} border ${className}`;
+
   return (
-    <button className={classes} disabled={disabled} {...props}>
+    <button className={classes} disabled={disabled} type='button' {...props}>
       {icon && (
-        <span className={`button-secondary__icon button-secondary__icon--${size}`}>{icon}</span>
+        <span className={`inline-flex items-center justify-center ${iconSizeClasses[size]}`}>
+          {icon}
+        </span>
       )}
       <span>{children}</span>
     </button>
