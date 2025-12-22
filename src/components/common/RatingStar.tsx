@@ -1,0 +1,44 @@
+import { useState } from 'react';
+import { cn } from '@/utils/cn';
+import Icons from '@/assets/icons';
+
+interface RatingStarProps {
+  value: number;
+  onChange?: (value: number) => void;
+  className?: string;
+}
+
+/**
+ * 댓글과 리뷰모달에서 사용하는 별점 컴포넌트입니다.
+ * onChange를 사용하지 않으면 댓글에서 보여지는 읽기전용으로 사용가능합니다.
+  아래와 같이 최상위 div와 div안에 button들에 className을 줄 수 있습니다.
+  className="flex gap-1 [&_button]:h-4 [&_svg]:w-4"
+ */
+
+export default function RatingStar({ value, onChange, className }: RatingStarProps) {
+  const [hover, setHover] = useState<number | null>(null);
+
+  const displayValue = onChange ? (hover ?? value) : value;
+  return (
+    <div className={cn('flex', className)}>
+      {Array.from({ length: 5 }, (_, i) => {
+        const star = i + 1;
+        //선택된 별 까지만 filled 처리
+        const filled = star <= displayValue;
+
+        return (
+          <button
+            key={star}
+            type='button'
+            disabled={!onChange}
+            onMouseEnter={() => onChange && setHover(star)}
+            onMouseLeave={() => onChange && setHover(null)}
+            onClick={() => onChange?.(star)}
+            className={onChange ? 'cursor-pointer' : ''}>
+            {filled ? <Icons.Star className='h-7 w-7' /> : <Icons.StarOff className='h-7 w-7' />}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
