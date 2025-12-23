@@ -40,10 +40,7 @@ export function DatePicker() {
       </DropdownTrigger>
 
       <DropdownList className='absolute z-50 mt-2 rounded-xl border border-gray-100 bg-white md:rounded-2xl'>
-        <InnerCalendar
-          selectedDate={selectedDate}
-          onSelect={(date) => setSelectedDate(date ?? undefined)}
-        />
+        <InnerCalendar selectedDate={selectedDate} onSelect={setSelectedDate} />
       </DropdownList>
     </Dropdown>
   );
@@ -54,14 +51,11 @@ function InnerCalendar({
   onSelect,
 }: {
   selectedDate?: Date;
-  onSelect: (date: Date) => void;
+  onSelect: (date: Date | undefined) => void;
 }) {
   const { close } = useDropdown();
 
   const handleSelectDate = (date?: Date) => {
-    if (!date) {
-      return;
-    }
     onSelect(date);
     close();
   };
@@ -71,7 +65,7 @@ function InnerCalendar({
       mode='single'
       selected={selectedDate}
       onSelect={handleSelectDate}
-      className='[&_button]:hover h-80 w-80'
+      className='h-80 w-80'
     />
   );
 }
