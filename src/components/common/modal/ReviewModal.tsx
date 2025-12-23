@@ -22,7 +22,7 @@ const reviewStyle = tv({
   base: 'flex flex-col gap-[20px] md:gap-[30px] px-[24px] md:px-[30px] rounded-[30px] pt-[20px] pb-[23px] md:pt-[24px] md:pb-[44px]',
 });
 
-export default function ReviModal({
+export default function ReviewModal({
   isOpen,
   onClose,
   title,
@@ -47,6 +47,7 @@ export default function ReviModal({
     setContent(limitValue);
   };
 
+  const isSubmitDisabled = rating === 0 || content.trim().length === 0;
   const textCount = content.length;
 
   useEffect(() => {
@@ -100,6 +101,7 @@ export default function ReviModal({
         </div>
       </div>
       <PrimaryButton
+        disabled={isSubmitDisabled}
         className='[@media(max-width:640px)]:h-[41px] [@media(max-width:640px)]:rounded-[12px]'
         size='lg'
         onClick={handleSubmit}>
