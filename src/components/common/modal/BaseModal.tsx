@@ -3,13 +3,13 @@ import useEscapeClose from '@/hooks/useEscapeClose';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { tv } from 'tailwind-variants';
 import { cn } from '@/utils/cn';
+import { useRef } from 'react';
 
 type BaseModalProps = {
   isOpen: boolean;
   onClose: () => void;
   size?: 'confirm' | 'review';
-  children: React.ReactNode;
-  closeOnOverlayClick?: boolean;
+  children?: React.ReactNode;
   closeOnEsc?: boolean;
   overlayClassName?: string;
   containerClassName?: string;
@@ -45,7 +45,7 @@ export default function BaseModal({
   onClose,
   size = 'confirm',
   children,
-  closeOnOverlayClick = true,
+  //closeOnOverlayClick = true,
   closeOnEsc = true,
   overlayClassName,
   containerClassName,
@@ -60,15 +60,18 @@ export default function BaseModal({
 
   useBodyScrollLock({ isLocked: isOpen });
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!closeOnOverlayClick) {
-      return;
-    }
+  const mouseDownTarget = useRef<EventTarget | null>(null);
 
-    if (e.target === e.currentTarget) {
-      e.stopPropagation();
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    mouseDownTarget.current = e.target;
+  };
+
+  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (mouseDownTarget.current === e.target && e.target === e.currentTarget) {
       onClose();
     }
+
+    mouseDownTarget.current = null;
   };
 
   if (!isOpen) {
@@ -77,7 +80,8 @@ export default function BaseModal({
   return (
     <ModalPortal>
       <div
-        onClick={handleOverlayClick}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
         className={cn(ModalLayout(), overlayClassName)}
         role='dialog'
         aria-modal='true'
