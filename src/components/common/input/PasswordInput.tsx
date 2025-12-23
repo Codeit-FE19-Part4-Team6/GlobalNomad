@@ -119,7 +119,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         <button
           type='button'
           onClick={() => setShowPassword(!showPassword)}
-          className={`absolute top-[56px] right-4 -translate-y-1/2 text-gray-500 transition-colors hover:text-gray-700`}
+          className={`absolute ${label ? 'top-[56px]' : 'top-1/2'} right-4 -translate-y-1/2 text-gray-500 transition-colors hover:text-gray-700`}
           aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
           tabIndex={-1}>
           {showPassword ? <Icons.PasswordShow /> : <Icons.PasswordHidden />}
