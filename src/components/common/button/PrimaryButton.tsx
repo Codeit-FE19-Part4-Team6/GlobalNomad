@@ -48,9 +48,9 @@ export const PrimaryButton = ({
 }: BaseButtonProps) => {
   // size에 따른 스타일 클래스
   const sizeClasses = {
-    lg: 'h-[54px] px-6 py-3.5 rounded-2xl text-base font-bold',
-    md: 'h-12 px-5 py-3.5 rounded-[14px] text-base font-bold',
-    sm: 'h-[34px] px-4 py-3 rounded-xl text-sm font-bold',
+    lg: 'h-[54px] px-6 py-3.5 rounded-2xl font-lg-bold',
+    md: 'h-12 px-5 py-3.5 rounded-[14px] font-lg-bold',
+    sm: 'h-[34px] px-4 py-3 rounded-xl font-md-bold',
   };
 
   const baseClasses =
