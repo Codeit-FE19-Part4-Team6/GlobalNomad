@@ -1,3 +1,10 @@
+import type { ReactNode } from 'react';
+import type { BaseButtonProps } from './types';
+
+interface SecondaryButtonProps extends BaseButtonProps {
+  icon?: ReactNode;
+  active?: boolean;
+}
 /**
  * SecondaryButton 컴포넌트
  *
@@ -25,15 +32,6 @@
  * <SecondaryButton active>Active State</SecondaryButton>
  * ```
  */
-
-import type { ReactNode } from 'react';
-import type { BaseButtonProps } from './types';
-
-interface SecondaryButtonProps extends BaseButtonProps {
-  icon?: ReactNode;
-  active?: boolean;
-}
-
 export const SecondaryButton = ({
   children,
   icon,

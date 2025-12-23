@@ -1,3 +1,4 @@
 export { BaseBadge } from './BaseBadge';
-export { StatusBadge, reservationStatus } from './StateBadge';
+export { StateBadge, reservationStatus } from './StateBadge';
+export type { ReservationStatus } from './StateBadge';
 export { EventBadge, eventType } from './EventBadge';

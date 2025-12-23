@@ -1,3 +1,11 @@
+type CircleButtonType = 'plus' | 'minus' | 'close-dark' | 'close-light';
+interface CircleButtonProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'children'
+> {
+  variant: CircleButtonType;
+  icon?: React.ReactNode;
+}
 /**
  * CircleButton 컴포넌트
  *
@@ -51,16 +59,6 @@
  * />
  * ```
  */
-
-type CircleButtonType = 'plus' | 'minus' | 'close-dark' | 'close-light';
-interface CircleButtonProps extends Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  'children'
-> {
-  variant: CircleButtonType;
-  icon?: React.ReactNode;
-}
-
 export const CircleButton = ({ variant, icon, className = '', ...props }: CircleButtonProps) => {
   // variant별 스타일 클래스
   const variantClasses = {
