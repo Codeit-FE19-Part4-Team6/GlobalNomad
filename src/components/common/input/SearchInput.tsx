@@ -4,7 +4,7 @@ import Icons from '@/assets/icons';
 import { PrimaryButton } from '@/components/common/button';
 import { BaseInput } from '@/components/common/input/BaseInput';
 
-export interface SearchInputProps extends Omit<BaseInputProps, 'type'> {
+export interface SearchInputProps extends Omit<BaseInputProps, 'type' | 'label'> {
   onSearch?: (value: string) => void;
   searchButtonText?: string;
   showButton?: boolean;
