@@ -51,6 +51,7 @@
  * />
  * ```
  */
+import { type ReactNode } from 'react';
 
 type CircleButtonType = 'plus' | 'minus' | 'close-dark' | 'close-light';
 interface CircleButtonProps extends Omit<
@@ -58,7 +59,7 @@ interface CircleButtonProps extends Omit<
   'children'
 > {
   variant: CircleButtonType;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 }
 
 export const CircleButton = ({ variant, icon, className = '', ...props }: CircleButtonProps) => {
