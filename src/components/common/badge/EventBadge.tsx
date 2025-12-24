@@ -2,13 +2,13 @@ import { badgeVariants } from './BaseBadge';
 
 export const eventType = {
   reservation: '예약',
-  confirmed: '승인',
+  approved: '승인',
   completed: '완료',
 } as const;
 type EventType = (typeof eventType)[keyof typeof eventType];
 const eventColor: Record<EventType, 'blue' | 'orange' | 'gray'> = {
   [eventType.reservation]: 'blue',
-  [eventType.confirmed]: 'orange',
+  [eventType.approved]: 'orange',
   [eventType.completed]: 'gray',
 };
 

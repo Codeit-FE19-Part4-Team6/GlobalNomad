@@ -1,5 +1,5 @@
 import { StateBadge } from '@/components/common/badge';
-import type { ReservationStatus } from '@/components/common/badge';
+import type { ReservationStatus } from '@/types/reservation';
 import Title from '@/components/common/Title';
 import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 import { cn } from '@/utils/cn';

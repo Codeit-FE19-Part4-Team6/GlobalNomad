@@ -33,6 +33,12 @@ import { type BaseButtonProps } from './types';
  *   className='custom-class'
  *   onClick={() => console.log('clicked')}
  * >
+ *
+ * size 스타일 무시 (커스텀 레이아웃용)
+ * <PrimaryButton
+ *   ignoreSize
+ *   className="h-10 px-6 rounded-lg"
+ * >
  *   Submit
  * </PrimaryButton>
  * ```
