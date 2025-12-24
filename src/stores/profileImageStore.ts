@@ -7,27 +7,29 @@ type ProfileImageState = {
   reset: () => void;
 };
 
-export const useProfileImageStore = create<ProfileImageState>((set, get) => ({
-  file: null,
-  previewUrl: null,
-
-  setFile: (file) => {
+export const useProfileImageStore = create<ProfileImageState>((set, get) => {
+  const revokePrevUrl = () => {
     const prevUrl = get().previewUrl;
     if (prevUrl) {
       URL.revokeObjectURL(prevUrl);
     }
+  };
 
-    set({
-      file,
-      previewUrl: file ? URL.createObjectURL(file) : null,
-    });
-  },
+  return {
+    file: null,
+    previewUrl: null,
 
-  reset: () => {
-    const prevUrl = get().previewUrl;
-    if (prevUrl) {
-      URL.revokeObjectURL(prevUrl);
-    }
-    set({ file: null, previewUrl: null });
-  },
-}));
+    setFile: (file) => {
+      revokePrevUrl();
+      set({
+        file,
+        previewUrl: file ? URL.createObjectURL(file) : null,
+      });
+    },
+
+    reset: () => {
+      revokePrevUrl();
+      set({ file: null, previewUrl: null });
+    },
+  };
+});

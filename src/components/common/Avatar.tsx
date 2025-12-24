@@ -24,11 +24,7 @@ export default function Avatar({ className }: AvatarProps) {
   const { previewUrl } = useProfileImageStore();
 
   return (
-    <div
-      className={cn(
-        'relative inline-block h-fit w-fit items-center justify-center border-gray-200',
-        className
-      )}>
+    <div className={cn('relative inline-block h-fit w-fit border-gray-200', className)}>
       {previewUrl ? (
         <img src={previewUrl} alt='Profile' className='h-7.5 w-7.5 rounded-full object-cover' />
       ) : (
