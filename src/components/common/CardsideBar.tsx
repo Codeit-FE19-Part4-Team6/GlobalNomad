@@ -1,12 +1,12 @@
 import ProfileImageUpload from '@/components/common/image-upload/ProfileImageUpload';
 import SidebarButton from '@/components/common/SidebarButton';
 import { cn } from '@/utils/cn';
+import { useProfileImageStore } from '@/stores/profileImageStore';
 
 type CardsideBarProps = {
   variant: 'desktop' | 'tablet' | 'mobile';
-  file: File | null;
-  onFileChange: (file: File | null) => void;
 };
+
 /**
  * CardsideBar 컴포넌트
  *
@@ -16,10 +16,11 @@ type CardsideBarProps = {
  * - variant 값에 따라 desktop / tablet / mobile 레이아웃을 다르게 렌더링합니다.
  *
  * 사용 예시:
- *  <CardsideBar variant='tablet' file={file} onFileChange={setFile} />
+ *  <CardsideBar variant='tablet' />
  */
+export default function CardsideBar({ variant }: CardsideBarProps) {
+  const { file, setFile } = useProfileImageStore();
 
-export default function CardsideBar({ variant, file, onFileChange }: CardsideBarProps) {
   return (
     <div
       className={cn(
@@ -32,7 +33,7 @@ export default function CardsideBar({ variant, file, onFileChange }: CardsideBar
         size={variant === 'tablet' ? 'Medium' : 'Large'}
         file={file}
         edit
-        onFileChange={onFileChange}
+        onFileChange={setFile}
       />
       <div className='flex w-full flex-col gap-3.5'>
         <SidebarButton theme='MyProfile' />
