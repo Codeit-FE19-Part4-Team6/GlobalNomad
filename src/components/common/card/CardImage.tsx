@@ -10,7 +10,7 @@ import { cn } from '@/utils/cn';
  *
  * <Card.Image src="..." alt="..." />
  */
-export default function CardImage({ src, alt }: { src?: string; alt: string }) {
+export default function CardImage({ src, alt }: { src?: string; alt?: string }) {
   const { variant } = useCardContext();
 
   const imageWrapperStyle = {
