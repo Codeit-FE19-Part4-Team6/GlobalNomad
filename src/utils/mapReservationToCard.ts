@@ -1,12 +1,10 @@
 import type { ReservationResponse } from '@/types/reservation';
-import type { CardListProps } from '@/components/common/card/CardList';
 
-/**
- * API에서 받은 예약 데이터를 CardList 컴포넌트에서 사용하는 props로 변환
- */
-export function mapReservationToCard(reservation: ReservationResponse): CardListProps {
+export function mapReservationToCard(reservation: ReservationResponse) {
   return {
+    id: reservation.id,
     status: reservation.status,
+    reviewSubmitted: reservation.reviewSubmitted,
     title: reservation.activity.title,
     bannerImageUrl: reservation.activity.bannerImageUrl,
     date: reservation.date.replace(/-/g, '. '),
