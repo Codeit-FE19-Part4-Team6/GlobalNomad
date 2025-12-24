@@ -1,3 +1,8 @@
+import type { BaseButtonProps } from './types';
+
+interface TimeSelectButtonProps extends BaseButtonProps {
+  selected?: boolean;
+}
 /**
  * TimeSelectButton 컴포넌트
  *
@@ -14,13 +19,6 @@
  * <TimeSelectButton selected>15:00~16:00</TimeSelectButton>
  * ```
  */
-
-import type { BaseButtonProps } from './types';
-
-interface TimeSelectButtonProps extends BaseButtonProps {
-  selected?: boolean;
-}
-
 export const TimeSelectButton = ({
   children,
   selected = false,

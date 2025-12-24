@@ -1,3 +1,4 @@
+import { type BaseButtonProps } from './types';
 /**
  * PrimaryButton 컴포넌트
  *
@@ -32,20 +33,24 @@
  *   className='custom-class'
  *   onClick={() => console.log('clicked')}
  * >
+ *
+ * size 스타일 무시 (커스텀 레이아웃용)
+ * <PrimaryButton
+ *   ignoreSize
+ *   className="h-10 px-6 rounded-lg"
+ * >
  *   Submit
  * </PrimaryButton>
  * ```
  */
-
-import { type BaseButtonProps } from './types';
-
 export const PrimaryButton = ({
   children,
   size = 'md',
   disabled = false,
+  ignoreSize = false,
   className = '',
   ...props
-}: BaseButtonProps) => {
+}: BaseButtonProps & { ignoreSize?: boolean }) => {
   // size에 따른 스타일 클래스
   const sizeClasses = {
     lg: 'h-[54px] px-6 py-3.5 rounded-2xl text-base font-bold',
@@ -58,7 +63,7 @@ export const PrimaryButton = ({
 
   return (
     <button
-      className={`${baseClasses} ${sizeClasses[size]} ${className}`}
+      className={`${baseClasses} ${ignoreSize ? '' : sizeClasses[size]} ${className}`}
       disabled={disabled}
       type='button'
       {...props}>
