@@ -1,21 +1,34 @@
 import Icons from '@/assets/icons';
-import { Link } from 'react-router-dom';
+
+const snsLinks = [
+  {
+    Icon: Icons.FaceBook,
+    label: '페이스북으로 이동',
+    href: '#',
+  },
+  {
+    Icon: Icons.Instagram,
+    label: '인스타그램으로 이동',
+    href: '#',
+  },
+  { Icon: Icons.Youtube, label: '유튜브로 이동', href: '#' },
+  { Icon: Icons.X, label: 'X로 이동', href: '#' },
+];
 
 const FooterSNS = () => {
   return (
     <div className='flex items-center gap-4 text-gray-400'>
-      <Link to='/' aria-label='페이스북으로 이동' className='hover:text-gray-600'>
-        <Icons.FaceBook />
-      </Link>
-      <Link to='/' aria-label='인스타그램으로 이동' className='hover:text-gray-600'>
-        <Icons.Instagram />
-      </Link>
-      <Link to='/' aria-label='유튜브로 이동' className='hover:text-gray-600'>
-        <Icons.Youtube />
-      </Link>
-      <Link to='/' aria-label='X로 이동' className='hover:text-gray-600'>
-        <Icons.X />
-      </Link>
+      {snsLinks.map(({ Icon, label, href }) => (
+        <a
+          key={label}
+          href={href}
+          target='_blank'
+          rel='noopener noreferrer'
+          aria-label={label}
+          className='hover:text-gray-600'>
+          <Icon />
+        </a>
+      ))}
     </div>
   );
 };
