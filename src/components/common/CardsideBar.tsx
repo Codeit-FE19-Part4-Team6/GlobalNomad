@@ -30,7 +30,7 @@ export default function CardsideBar({ variant }: CardsideBarProps) {
         variant === 'mobile' && 'h-112.5 w-81.75 gap-6 px-3.5 py-6'
       )}>
       <ProfileImageUpload
-        size={variant === 'tablet' ? 'Medium' : 'Large'}
+        size={variant === 'tablet' ? 'medium' : 'large'}
         file={file}
         edit
         onFileChange={setFile}

@@ -45,7 +45,7 @@ interface TitleProps extends VariantProps<typeof titleVariants> {
  * h4~h6: 리스트/카드 제목 -> 14~18
  *
  * @example
- * <Title as="h1" size="4xl" weight="medium" className="text-gray-200">
+ * <Title as='h1' size='4xl' weight='medium' className='text-gray-200'>
  *   타이틀
  * </Title>
  */
