@@ -38,7 +38,6 @@ export function DatePicker() {
       <DropdownTrigger>
         <TempDateInput value={selectedDate} />
       </DropdownTrigger>
-
       <DropdownList className='absolute z-50 mt-2 rounded-xl border border-gray-100 bg-white md:rounded-2xl'>
         <InnerCalendar selectedDate={selectedDate} onSelect={setSelectedDate} />
       </DropdownList>
