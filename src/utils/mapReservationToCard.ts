@@ -1,6 +1,19 @@
-import type { ReservationResponse } from '@/types/reservation';
+import type { ReservationResponse, ReservationStatus } from '@/types/reservation';
 
-export function mapReservationToCard(reservation: ReservationResponse) {
+export interface MappedReservation {
+  id: number;
+  status: ReservationStatus;
+  reviewSubmitted: boolean;
+  title: string;
+  bannerImageUrl: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  totalPrice: number;
+  headCount: number;
+}
+
+export function mapReservationToCard(reservation: ReservationResponse): MappedReservation {
   return {
     id: reservation.id,
     status: reservation.status,
