@@ -3,7 +3,7 @@ import FooterSNS from './FooterSNS';
 
 const Footer = () => {
   return (
-    <footer className='w-full border-t border-gray-200 bg-gray-50'>
+    <footer className='w-full border-t border-gray-200'>
       <div className='mx-auto h-[116px] max-w-[1520px] px-6 md:h-[140px]'>
         {/* 모바일: 정책 / FAQ 윗줄 */}
         <div className='flex justify-center pt-6 pb-4 md:hidden'>
