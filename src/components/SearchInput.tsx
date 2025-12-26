@@ -103,17 +103,13 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             type='search'
             aria-label='검색어 입력'
             aria-invalid={error}
-            aria-describedby={error ? 'search-error' : undefined}
             value={value}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
+            error={error}
             className={`h-[50px] w-full rounded-2xl border pl-14 sm:h-[70px] sm:rounded-3xl ${
               showButton ? 'pr-38' : 'pr-5'
-            } ${
-              error
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/40'
-                : 'focus:border-primary-500 focus:ring-primary-500/40 border-gray-100'
             } caret-primary-500 sm:placeholder:font-xl-medium placeholder:font-md-medium transition-all duration-200 outline-none placeholder:text-gray-400 focus:ring-2 ${className}`}
             {...props}
           />
