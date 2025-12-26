@@ -9,10 +9,16 @@ type ProfileImageUploadProps = {
   className?: string;
   defaultImageUrl?: string | null;
 };
-
 /**
- * 파일 선택 시 URL.createObjectURL(file)로 미리보기
- * 선택 취소 시 reset() -> 디폴트 이미지 표시
+ * ProfileImageUpload 컴포넌트
+ *
+ * - 프로필 이미지 선택 및 미리보기 UI 담당
+ * - edit=true 시 우측 하단 편집 버튼 표시, 클릭하면 파일 선택 가능
+ * - 파일 선택 시 setPreviewUrl 호출하여 store 상태 업데이트
+ * - 서버 업로드는 TODO로 남겨두었으며, API 연동 시 profileImageUrl 상태를 업데이트하면 자동 반영
+ *
+ * 사용 예시:
+ * <ProfileImageUpload size="large" edit />
  */
 export default function ProfileImageUpload({
   size = 'medium',
@@ -21,27 +27,26 @@ export default function ProfileImageUpload({
   defaultImageUrl,
 }: ProfileImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { profileImageUrl, setProfileImageUrl, reset } = useProfileImageStore();
+  const { previewUrl, profileImageUrl, setPreviewUrl, clearPreview } = useProfileImageStore();
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     inputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) {
-      reset();
+      clearPreview();
       return;
     }
-    // 파일 선택 시 임시 URL 생성 -> 스토어 업데이트 -> 화면 미리보기
-    const tempUrl = URL.createObjectURL(file);
-    setProfileImageUrl(tempUrl);
-    // TODO: 서버 업로드는 나중에 로그인/토큰 연동 후 구현 예정
+
+    setPreviewUrl(file);
+
+    // TODO: 서버 업로드 (나중에 API 연동)
   };
 
-  const background = profileImageUrl ?? defaultImageUrl ?? null;
+  const background = previewUrl ?? profileImageUrl ?? defaultImageUrl ?? null;
 
   return (
     <div className={cn('relative inline-block h-fit w-fit', className)}>
