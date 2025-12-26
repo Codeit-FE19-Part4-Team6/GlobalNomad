@@ -24,7 +24,15 @@ export const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
       : 'border-gray-100 focus:border-primary-500 focus:ring-primary-500/40';
     const paddingLeft = leftElement ? 'pl-14' : 'pl-5';
     const paddingRight = rightElement ? 'pr-12' : 'pr-5';
-    const baseClasses = `${paddingLeft} ${paddingRight} w-full rounded-2xl border h-[54px] transition-all duration-200 outline-none focus:ring-2 focus:ring-opacity-50 placeholder:text-gray-400 placeholder:font-lg-medium ${stateClasses} ${className}`;
+    const baseClasses = [
+      paddingLeft,
+      paddingRight,
+      'w-full rounded-2xl border h-[54px] transition-all duration-200 outline-none focus:ring-2 focus:ring-opacity-50 placeholder:text-gray-400 placeholder:font-lg-medium',
+      stateClasses,
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     return (
       <div className='w-full'>

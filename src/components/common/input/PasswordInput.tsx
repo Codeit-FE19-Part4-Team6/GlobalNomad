@@ -59,9 +59,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         type='button'
         onClick={() => setShowPassword((prev) => !prev)}
         className='text-gray-500 transition-colors hover:text-gray-700'
-        aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
-        tabIndex={-1} // 탭 순서에서 제외
-      >
+        aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}>
         {showPassword ? <Icons.PasswordShow /> : <Icons.PasswordHidden />}
       </button>
     ) : undefined;
