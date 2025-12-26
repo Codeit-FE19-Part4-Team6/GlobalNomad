@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Dropdown from '@/components/common/dropdown/Dropdown';
 import DropdownTrigger from '@/components/common/dropdown/DropdownTrigger';
 import DropdownList from '@/components/common/dropdown/DropdownList';
@@ -11,13 +10,15 @@ function formatDate(date?: Date | null) {
   if (!date) {
     return '';
   }
+
   const yy = date.getFullYear().toString().slice(-2);
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
+
   return `${yy}/${mm}/${dd}`;
 }
 
-function DateInput({ value }: { value?: Date | null }) {
+function DateInput({ value }: { value?: Date }) {
   return (
     <div className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-100 bg-white px-3 py-4 md:rounded-2xl md:px-5'>
       <span
@@ -28,23 +29,22 @@ function DateInput({ value }: { value?: Date | null }) {
     </div>
   );
 }
+
 /**
  * DatePicker 컴포넌트
- * - 내부에 Dropdown, DropdownTrigger, DropdownList 사용
- * 날짜 객체를 'yy/mm/dd' 형식 문자열로 변환합니다.
- * 날짜 선택 시 상태를 업데이트하고 드롭다운을 닫습니다.
  *
+ * - 날짜는 항상 하나 선택됩니다.
+ * - 기존 날짜 → 새 날짜로 교체 가능합니다.
+ * - 추가/삭제 버튼 없음 (부모에서 제어)
  */
-export function DatePicker() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-
+export function DatePicker({ value, onChange }: { value?: Date; onChange: (date: Date) => void }) {
   return (
     <Dropdown className='relative w-full lg:max-w-90'>
       <DropdownTrigger className='w-full cursor-pointer'>
-        <DateInput value={selectedDate} />
+        <DateInput value={value} />
       </DropdownTrigger>
       <DropdownList className='absolute right-0 z-50 mt-2'>
-        <InnerCalendar selectedDate={selectedDate} onSelect={setSelectedDate} />
+        <InnerCalendar selectedDate={value} onSelect={onChange} />
       </DropdownList>
     </Dropdown>
   );
@@ -55,11 +55,15 @@ function InnerCalendar({
   onSelect,
 }: {
   selectedDate?: Date;
-  onSelect: (date: Date | undefined) => void;
+  onSelect: (date: Date) => void;
 }) {
   const { close } = useDropdown();
 
   const handleSelectDate = (date?: Date) => {
+    if (!date) {
+      return;
+    }
+
     onSelect(date);
     close();
   };
