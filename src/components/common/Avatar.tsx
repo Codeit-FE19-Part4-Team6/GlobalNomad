@@ -6,27 +6,21 @@ type AvatarProps = {
   className?: string;
 };
 /**
- * Avatar 컴포넌트
  *
- * - 사용자 프로필 이미지를 표시
- * - previewUrl이 존재하면 이미지 표시
- * - previewUrl이 없으면 기본 SVG 아이콘 표시
- *
- * @example
- * // 기본 사용
- * <Avatar />
- *
- * // 클래스 추가
- * <Avatar className="border-2 border-gray-500" />
- *
+ * profileImageUrl을 스토어에서 가져옵니다.
+ * 이 값이 있으면 업로드된 이미지, 없으면 디폴트 아이콘 표시합니다.
+ * ProfileImageUpload와 연동되어 선택된 이미지가 자동으로 반영됩니다.
  */
 export default function Avatar({ className }: AvatarProps) {
-  const { previewUrl } = useProfileImageStore();
-
+  const { profileImageUrl } = useProfileImageStore();
   return (
     <div className={cn('relative inline-block h-fit w-fit border-gray-200', className)}>
-      {previewUrl ? (
-        <img src={previewUrl} alt='Profile' className='h-7.5 w-7.5 rounded-full object-cover' />
+      {profileImageUrl ? (
+        <img
+          src={profileImageUrl}
+          alt='Profile'
+          className='h-7.5 w-7.5 rounded-full object-cover'
+        />
       ) : (
         <Icons.ProfileSm />
       )}

@@ -1,55 +1,27 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef } from 'react';
 import Icons from '@/assets/icons';
 import { cn } from '@/utils/cn';
+import { useProfileImageStore } from '@/stores/profileImageStore';
 
 type ProfileImageUploadProps = {
   size?: 'medium' | 'large';
-  file?: File | null;
-  onFileChange?: (file: File | null) => void;
   edit?: boolean;
   className?: string;
   defaultImageUrl?: string | null;
 };
 
 /**
- * 프로필 이미지 업로드 컴포넌트
- *
- * - 프로필 이미지 미리보기 지원
- * - 기본 이미지 URL(defaultImageUrl) 표시 가능
- * - medium / large 사이즈
- *
- * @example
- * <ProfileImageUpload
- *   size="large"
- *   file={file}
- *   defaultImageUrl={user.profileImage}
- *   edit
- *   onFileChange={setFile}
- * />
+ * 파일 선택 시 URL.createObjectURL(file)로 미리보기
+ * 선택 취소 시 reset() -> 디폴트 이미지 표시
  */
 export default function ProfileImageUpload({
   size = 'medium',
-  file,
-  onFileChange,
   edit = false,
-  defaultImageUrl,
   className,
+  defaultImageUrl,
 }: ProfileImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const preview = useMemo(() => {
-    if (file) {
-      return URL.createObjectURL(file);
-    }
-    return defaultImageUrl ?? null;
-  }, [file, defaultImageUrl]);
-
-  useEffect(() => {
-    if (!preview || !file) {
-      return;
-    }
-    return () => URL.revokeObjectURL(preview);
-  }, [preview, file]);
+  const { profileImageUrl, setProfileImageUrl, reset } = useProfileImageStore();
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -57,9 +29,19 @@ export default function ProfileImageUpload({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0] || null;
-    onFileChange?.(selected);
+    const file = e.target.files?.[0] || null;
+
+    if (!file) {
+      reset();
+      return;
+    }
+    // 파일 선택 시 임시 URL 생성 -> 스토어 업데이트 -> 화면 미리보기
+    const tempUrl = URL.createObjectURL(file);
+    setProfileImageUrl(tempUrl);
+    // TODO: 서버 업로드는 나중에 로그인/토큰 연동 후 구현 예정
   };
+
+  const background = profileImageUrl ?? defaultImageUrl ?? null;
 
   return (
     <div className={cn('relative inline-block h-fit w-fit', className)}>
@@ -72,11 +54,11 @@ export default function ProfileImageUpload({
           }
         )}
         style={{
-          backgroundImage: preview ? `url(${preview})` : undefined,
+          backgroundImage: background ? `url(${background})` : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}>
-        {!preview && (size === 'medium' ? <Icons.ProfileMd /> : <Icons.ProfileLg />)}
+        {!background && (size === 'medium' ? <Icons.ProfileMd /> : <Icons.ProfileLg />)}
       </div>
 
       {edit && (
