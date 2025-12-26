@@ -5,6 +5,7 @@ import { BaseInput } from '@/components/common/input/BaseInput';
 import type { BaseInputProps } from '@/components/common/input/types';
 
 export interface SearchInputProps extends Omit<BaseInputProps, 'type'> {
+  title?: string;
   onSearch?: (value: string) => void;
   searchButtonText?: string;
   showButton?: boolean;
@@ -24,17 +25,30 @@ export interface SearchInputProps extends Omit<BaseInputProps, 'type'> {
  * - 모바일 / 데스크탑 반응형 스타일을 지원합니다.
  * - 검색 버튼은 선택적으로 표시할 수 있습니다.
  * - 빈 검색어 방어 로직이 포함되어 있습니다.
+ * - Controlled/Uncontrolled 모드를 모두 지원합니다.
  *
  * @example
+ * // Uncontrolled 사용
  * ```tsx
  * <SearchInput
+ *   defaultValue="초기값"
  *   placeholder="내가 원하는 체험은"
  *   onSearch={(value) => {
  *     console.log('검색어:', value);
  *   }}
- *   minLength={2}
- *   onEmptySearch={() => {
- *     alert('검색어를 입력해주세요');
+ * />
+ * ```
+ *
+ * @example
+ * // Controlled 사용
+ * ```tsx
+ * const [searchValue, setSearchValue] = useState('');
+ *
+ * <SearchInput
+ *   value={searchValue}
+ *   onChange={(e) => setSearchValue(e.target.value)}
+ *   onSearch={(value) => {
+ *     console.log('검색어:', value);
  *   }}
  * />
  * ```
@@ -43,6 +57,7 @@ export interface SearchInputProps extends Omit<BaseInputProps, 'type'> {
 export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
   (
     {
+      title = '무엇을 체험하고 싶으신가요?',
       placeholder = '내가 원하는 체험은',
       onSearch,
       searchButtonText = '검색하기',
@@ -50,21 +65,33 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       className = '',
       minLength = 1,
       onEmptySearch,
+      value: controlledValue,
+      defaultValue,
+      onChange,
       ...props
     },
     ref
   ) => {
-    const [value, setValue] = useState('');
+    // Controlled vs Uncontrolled 판별
+    const isControlled = controlledValue !== undefined;
+
+    // Uncontrolled 모드용 내부 상태
+    const [internalValue, setInternalValue] = useState(defaultValue || '');
     const [error, setError] = useState(false);
 
+    // 실제 사용할 값 (Controlled이면 외부 값, 아니면 내부 값)
+    const value = isControlled ? controlledValue : internalValue;
+
     const handleSearch = useCallback(() => {
-      const trimmedValue = value.trim();
+      const trimmedValue = String(value).trim();
+
       // 빈 검색어 또는 최소 길이 미달 체크
       if (!trimmedValue || trimmedValue.length < minLength) {
         setError(true);
         onEmptySearch?.();
         return;
       }
+
       setError(false);
       onSearch?.(trimmedValue);
     }, [value, minLength, onSearch, onEmptySearch]);
@@ -78,16 +105,23 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(e.target.value);
+      // Uncontrolled 모드일 때만 내부 상태 업데이트
+      if (!isControlled) {
+        setInternalValue(e.target.value);
+      }
+
       // 입력 시 에러 상태 초기화
       if (error) {
         setError(false);
       }
+
+      // 외부 onChange 콜백 실행 (Controlled 모드에서 필수)
+      onChange?.(e);
     };
 
     return (
       <div className='flex flex-col items-center gap-3 sm:gap-9'>
-        <h1 className='font-lg-bold sm:font-4xl-bold'>무엇을 체험하고 싶으신가요?</h1>
+        {title && <h1 className='font-lg-bold sm:font-4xl-bold'>{title}</h1>}
 
         <div className='relative w-full'>
           {/* 검색 아이콘 */}
