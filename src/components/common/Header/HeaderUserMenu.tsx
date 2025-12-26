@@ -1,7 +1,6 @@
 import Icons from '@/assets/icons';
 import Avatar from '@/components/Avatar';
 import { LogOut } from 'lucide-react';
-import { useEffect, useRef } from 'react';
 
 interface Props {
   userName?: string; // optional로 변경
@@ -21,46 +20,16 @@ export const HeaderUserMenu = ({
   onSignUp,
 }: Props) => {
   const isLoggedIn = !!userName; // userName이 있으면 로그인 상태
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // 외부 클릭 감지
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        onToggle();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onToggle]);
-
-  // ESC 키로 닫기
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onToggle();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onToggle]);
   const handleLogout = () => {
-    alert('로그아웃');
+    // TODO: 로그아웃 API 호출 및 관련 로직 구현
+    console.log('로그아웃 처리');
     onClose();
   };
 
   const handleMyPage = () => {
-    alert('마이페이지 이동');
+    // TODO: 마이페이지로 이동하는 라우팅 로직 구현
+    console.log('마이페이지로 이동');
     onClose();
   };
 
@@ -68,7 +37,9 @@ export const HeaderUserMenu = ({
     if (onLogin) {
       onLogin();
     } else {
-      alert('로그인 페이지로 이동');
+      // onLogin prop이 전달되지 않았을 경우의 처리.
+      // 개발 환경에서만 경고를 표시하거나, 기본 동작을 정의할 수 있습니다.
+      console.warn('onLogin prop이 제공되지 않았습니다.');
     }
     onClose();
   };
@@ -76,7 +47,8 @@ export const HeaderUserMenu = ({
     if (onSignUp) {
       onSignUp();
     } else {
-      alert('로그인 페이지로 이동');
+      // onSignUp prop이 전달되지 않았을 경우의 처리.
+      console.warn('onSignUp prop이 제공되지 않았습니다.');
     }
     onClose();
   };
@@ -84,15 +56,15 @@ export const HeaderUserMenu = ({
   // 로그인하지 않은 경우
   if (!isLoggedIn) {
     return (
-      <div className='relative' ref={containerRef}>
+      <div className='relative'>
         <button
           onClick={handleLogin}
-          className='font-md-medium cursor-pointer rounded-lg px-4 py-2 text-gray-950'>
+          className='font-md-medium hover:text-primary-500 cursor-pointer rounded-lg px-4 py-2 text-gray-950'>
           로그인
         </button>
         <button
           onClick={handleSignUp}
-          className='font-md-medium cursor-pointer rounded-lg px-4 py-2 text-gray-950'>
+          className='font-md-medium hover:text-primary-500 cursor-pointer rounded-lg px-4 py-2 text-gray-950'>
           회원가입
         </button>
       </div>

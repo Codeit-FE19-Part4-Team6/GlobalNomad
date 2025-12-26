@@ -1,6 +1,5 @@
 import Icons from '@/assets/icons';
 import { type Notification } from '@/components/common/Header/types';
-import { useEffect, useRef } from 'react';
 
 interface Props {
   notifications: Notification[];
@@ -9,42 +8,8 @@ interface Props {
 }
 
 export const HeaderNotification = ({ notifications, isOpen, onToggle }: Props) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // 외부 클릭 감지
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        onToggle();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onToggle]);
-
-  // ESC 키로 닫기
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onToggle();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onToggle]);
-
   return (
-    <div className='relative flex items-center gap-5' ref={containerRef}>
+    <div className='relative flex items-center gap-5'>
       <button
         onClick={onToggle}
         className='relative h-6 w-6 cursor-pointer rounded-full transition-colors'

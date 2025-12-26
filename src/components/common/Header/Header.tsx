@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Logo } from '@/components/common/Logo';
 import { HeaderNotification } from '@/components/common/Header/HeaderNotification';
@@ -47,6 +47,21 @@ export const Header = ({ userName, notifications = [], onLogin, onSignUp }: Prop
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const isLoggedIn = !!userName;
 
+  const handleCloseAllDropdowns = () => {
+    setIsUserMenuOpen(false);
+    setIsNotificationOpen(false);
+  };
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCloseAllDropdowns();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
+
   return (
     <header className='sticky top-0 z-50 bg-white'>
       <div className='mx-auto max-w-[1520px] px-6 py-[10px] sm:py-[26px]'>
@@ -81,13 +96,7 @@ export const Header = ({ userName, notifications = [], onLogin, onSignUp }: Prop
       </div>
 
       {(isUserMenuOpen || isNotificationOpen) && (
-        <div
-          className='fixed inset-0 z-40'
-          onClick={() => {
-            setIsUserMenuOpen(false);
-            setIsNotificationOpen(false);
-          }}
-        />
+        <div className='fixed inset-0 z-40' onClick={handleCloseAllDropdowns} />
       )}
     </header>
   );
