@@ -1,26 +1,21 @@
 import { forwardRef } from 'react';
 import { BaseInput } from './BaseInput';
 import { type BaseInputProps } from './types';
-import { useInputValidation, type ValidationType } from '@/hooks/useInputValidation';
 
-export interface TextInputProps extends BaseInputProps {
-  validationType?: ValidationType;
-  validateOnChange?: boolean;
+export interface TextInputProps extends Omit<BaseInputProps, 'rightElement'> {
+  /** input type @default 'text' */
+  type?: 'text' | 'email' | 'tel' | 'url' | 'number' | 'search';
 }
 
 /**
- * TextInput 컴포넌트
+ * SimpleInput 컴포넌트
  *
  * 일반 텍스트 입력을 위한 기본 Input 컴포넌트입니다.
- * BaseInput을 기반으로 하며, type="text"를 기본값으로 사용합니다.
- *
- * 주로 이름, 이메일, 일반 문자열 입력에 사용되며
- * validationType을 통해 입력값 검증 로직을 쉽게 적용할 수 있습니다.
+ * BaseInput을 기반으로 하며, 다양한 type을 지원합니다.
  *
  * @remarks
- * - 내부적으로 BaseInput을 사용합니다.
- * - validationType이 설정된 경우 useInputValidation 훅과 연동됩니다.
- * - error / errorMessage가 외부에서 전달되면 해당 값이 우선 적용됩니다.
+ * - 검증 로직은 포함하지 않으며, 상위 컴포넌트나 폼 라이브러리에서 관리합니다.
+ * - error와 errorMessage props를 통해 외부에서 에러 상태를 제어할 수 있습니다.
  *
  * @example 기본 사용
  * ```tsx
@@ -30,78 +25,71 @@ export interface TextInputProps extends BaseInputProps {
  * />
  * ```
  *
- * @example 이메일 입력 + 실시간 검증
+ * @example 이메일 입력
  * ```tsx
  * <TextInput
  *   label="이메일"
  *   type="email"
  *   placeholder="email@example.com"
- *   validationType="email"
- *   validateOnChange
- *   value={email}
- *   onChange={(e) => setEmail(e.target.value)}
  * />
  * ```
  *
- * @example 폼에서 필수 입력
+ * @example 에러 상태
  * ```tsx
  * <TextInput
  *   label="이메일"
- *   required
+ *   type="email"
+ *   error={!!errors.email}
+ *   errorMessage={errors.email?.message}
+ * />
+ * ```
+ *
+ * @example React Hook Form과 함께 사용
+ * ```tsx
+ * const { register, formState: { errors } } = useForm();
+ *
+ * <TextInput
+ *   label="이메일"
+ *   type="email"
+ *   {...register('email', {
+ *     required: '이메일을 입력해주세요',
+ *     pattern: {
+ *       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+ *       message: '올바른 이메일 형식이 아닙니다'
+ *     }
+ *   })}
+ *   error={!!errors.email}
+ *   errorMessage={errors.email?.message}
+ * />
+ * ```
+ *
+ * @example 커스텀 검증
+ * ```tsx
+ * const [email, setEmail] = useState('');
+ * const [error, setError] = useState('');
+ *
+ * const handleBlur = () => {
+ *   if (!validators.email(email)) {
+ *     setError('올바른 이메일을 입력하세요');
+ *   } else {
+ *     setError('');
+ *   }
+ * };
+ *
+ * <TextInput
+ *   label="이메일"
+ *   type="email"
+ *   value={email}
+ *   onChange={(e) => setEmail(e.target.value)}
+ *   onBlur={handleBlur}
+ *   error={!!error}
+ *   errorMessage={error}
  * />
  * ```
  */
-
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
-  (
-    {
-      type = 'text',
-      validationType,
-      validateOnChange = false,
-      onChange,
-      onBlur,
-      error: externalError,
-      errorMessage: externalErrorMessage,
-      ...props
-    },
-    ref
-  ) => {
-    const {
-      error: validationError,
-      errorMessage: validationErrorMessage,
-      handleChange,
-      handleBlur,
-    } = useInputValidation({
-      type: validationType,
-      validateOnChange,
-    });
-
-    // 외부에서 전달된 error가 우선, 없으면 validation error 사용
-    const finalError = externalError !== undefined ? externalError : validationError;
-    const finalErrorMessage =
-      externalErrorMessage !== undefined ? externalErrorMessage : validationErrorMessage;
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      handleChange(e);
-      onChange?.(e);
-    };
-
-    const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-      handleBlur(e);
-      onBlur?.(e);
-    };
-
-    return (
-      <BaseInput
-        ref={ref}
-        type={type}
-        error={finalError}
-        errorMessage={finalErrorMessage}
-        onChange={handleInputChange}
-        onBlur={handleInputBlur}
-        {...props}
-      />
-    );
+  ({ type = 'text', ...props }, ref) => {
+    return <BaseInput ref={ref} type={type} {...props} />;
   }
 );
 
