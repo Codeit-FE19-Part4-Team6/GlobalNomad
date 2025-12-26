@@ -22,20 +22,24 @@ const queryClient = new QueryClient({
 
 const router = createBrowserRouter([
   {
-    // 헤더와 푸터가 있는 레이아웃이 필요한 페이지들
-    path: '/',
-    element: <Layout />,
     errorElement: <NotFoundPage />,
-    children: [{ path: '/', element: <MainPage /> }],
-    // 헤더/푸터가 필요한 다른 페이지는 여기에 추가
-    // 예: { path: '/about', element: <AboutPage /> },
-  },
-  {
-    // 헤더와 푸터 없이 독립적인 레이아웃이 필요한 페이지들
-    path: '/login',
-    element: <LoginPage />,
-    // 회원가입 및 다른 페이지 추가 시 여기에 작성
-    // 예: { path: '/signup', element: <SignupPage /> },
+    children: [
+      {
+        // 헤더와 푸터가 있는 레이아웃이 필요한 페이지들
+        path: '/',
+        element: <Layout />,
+        children: [{ path: '/', element: <MainPage /> }],
+        // 헤더/푸터가 필요한 다른 페이지는 여기에 추가
+        // 예: { path: '/about', element: <AboutPage /> },
+      },
+      {
+        // 헤더와 푸터 없이 독립적인 레이아웃이 필요한 페이지들
+        path: '/login',
+        element: <LoginPage />,
+        // 회원가입 및 다른 페이지 추가 시 여기에 작성
+        // 예: { path: '/signup', element: <SignupPage /> },
+      },
+    ],
   },
 ]);
 
