@@ -2,3 +2,16 @@
 @import './base/colors.css';
 @import './base/font-utilities.css';
 @import './base/font.css';
+
+@layer utilities {
+  /* Chrome, Safari */
+  input[type='search']::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* Edge */
+  input[type='search']::-ms-clear {
+    display: none;
+  }
+}
