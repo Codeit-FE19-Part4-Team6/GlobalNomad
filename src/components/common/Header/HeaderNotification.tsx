@@ -47,7 +47,7 @@ export const HeaderNotification = ({ notifications, isOpen, onToggle }: Props) =
     <div className='relative flex items-center gap-5' ref={containerRef}>
       <button
         onClick={onToggle}
-        className='relative h-6 w-6 rounded-full transition-colors'
+        className='relative h-6 w-6 cursor-pointer rounded-full transition-colors'
         aria-label={`알림 ${notifications.length}개`}
         aria-expanded={isOpen}
         aria-haspopup='true'>
@@ -70,10 +70,10 @@ export const HeaderNotification = ({ notifications, isOpen, onToggle }: Props) =
           aria-label='알림 목록'
           aria-modal='true'>
           <div className='flex items-center justify-between border-b border-gray-100 px-4 py-3'>
-            <span className='text-sm font-semibold'>알림 {notifications.length}개</span>
+            <span className='font-lg-bold'>알림 {notifications.length}개</span>
             <button
               onClick={onToggle}
-              className='transition-opacity hover:opacity-70'
+              className='cursor-pointer transition-opacity hover:opacity-70'
               aria-label='알림창 닫기'>
               <Icons.Delete />
             </button>
@@ -85,7 +85,7 @@ export const HeaderNotification = ({ notifications, isOpen, onToggle }: Props) =
                 {notifications.map((n) => (
                   <li
                     key={n.id}
-                    className='hover:bg-primary-100 border-b border-gray-50/80 px-4 py-3 transition-colors last:border-b-0'>
+                    className='hover:bg-primary-100 cursor-pointer border-b border-gray-50/80 px-4 py-3 transition-colors last:border-b-0'>
                     <p className='text-sm'>{n.message}</p>
                     <p className='mt-1 text-xs text-gray-500'>{n.time}</p>
                   </li>
