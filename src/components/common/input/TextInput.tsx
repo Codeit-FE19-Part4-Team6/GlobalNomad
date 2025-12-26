@@ -8,7 +8,7 @@ export interface TextInputProps extends Omit<BaseInputProps, 'rightElement'> {
 }
 
 /**
- * SimpleInput 컴포넌트
+ * TextInput 컴포넌트
  *
  * 일반 텍스트 입력을 위한 기본 Input 컴포넌트입니다.
  * BaseInput을 기반으로 하며, 다양한 type을 지원합니다.
