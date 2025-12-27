@@ -79,7 +79,7 @@ export const HeaderUserMenu = ({
         className='flex cursor-pointer items-center space-x-2 rounded-lg px-1 py-2'
         aria-expanded={isOpen}
         aria-haspopup='true'>
-        <Avatar className='h-7.5 w-7.5' />
+        <Avatar />
         <span className='font-md-medium text-gray-950'>{userName}</span>
         <Icons.Down className={`h-6 w-6 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>

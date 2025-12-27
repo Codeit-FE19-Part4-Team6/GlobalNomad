@@ -1,5 +1,7 @@
 export interface Notification {
   id: number;
-  message: string;
+  status: 'rejected' | 'approved';
   time: string;
+  title: string;
+  reservationTime: string;
 }

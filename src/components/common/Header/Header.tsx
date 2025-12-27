@@ -42,9 +42,41 @@ interface Props {
  * ```
  */
 
-export const Header = ({ userName, notifications = [], onLogin, onSignUp }: Props) => {
+// 개발용 mock 데이터
+const MOCK_USER_NAME = '홍길동';
+const MOCK_NOTIFICATIONS: Notification[] = [
+  {
+    id: 1,
+    status: 'rejected',
+    time: '5분 전',
+    title: '함께하면 즐거운 스트릿 댄스',
+    reservationTime: '2024-07-10 14:00~16:00',
+  },
+  {
+    id: 2,
+    status: 'approved',
+    time: '30분 전',
+    title: '함께하면 즐거운 스트릿 댄스',
+    reservationTime: '2024-07-12 10:00~11:00',
+  },
+  {
+    id: 3,
+    status: 'approved',
+    time: '1시간 전',
+    title: '함께하면 즐거운 스트릿 댄스',
+    reservationTime: '2024-07-15 16:00~18:00',
+  },
+];
+
+export const Header = ({
+  userName = MOCK_USER_NAME,
+  notifications: initialNotifications = MOCK_NOTIFICATIONS,
+  onLogin,
+  onSignUp,
+}: Props) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [notifications, setNotifications] = useState(initialNotifications);
   const isLoggedIn = !!userName;
 
   const handleCloseAllDropdowns = () => {
@@ -62,6 +94,12 @@ export const Header = ({ userName, notifications = [], onLogin, onSignUp }: Prop
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
+  // 알림 삭제 핸들러
+  const handleDeleteNotification = (id: number) => {
+    setNotifications(notifications.filter((n) => n.id !== id));
+    // TODO: 실제 API 호출로 서버에서도 삭제
+  };
+
   return (
     <header className='sticky top-0 z-50 bg-white'>
       <div className='mx-auto max-w-[1520px] px-6 py-[10px] sm:py-[26px]'>
@@ -77,6 +115,7 @@ export const Header = ({ userName, notifications = [], onLogin, onSignUp }: Prop
                   setIsNotificationOpen(!isNotificationOpen);
                   setIsUserMenuOpen(false);
                 }}
+                onDeleteNotification={handleDeleteNotification}
               />
             )}
 
