@@ -1,5 +1,6 @@
 import { usePagination } from './PaginationContext';
 import { cn } from '@/utils/cn';
+import { useCallback } from 'react';
 
 interface Props {
   page: number;
@@ -9,10 +10,14 @@ const PaginationItem = ({ page }: Props) => {
   const { currentPage, goTo } = usePagination();
   const isActive = page === currentPage;
 
+  const handleClick = useCallback(() => {
+    goTo(page);
+  }, [goTo, page]);
+
   return (
     <li className='list-none'>
       <button
-        onClick={() => goTo(page)}
+        onClick={handleClick}
         aria-current={isActive ? 'page' : undefined}
         className={cn(
           // 공통 사이즈
