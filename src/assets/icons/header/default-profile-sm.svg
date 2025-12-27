@@ -7,7 +7,7 @@
     <path d="M12.3182 13.9005C12.3939 13.8032 12.5312 13.7838 12.6301 13.8544L12.6395 13.8615L12.665 13.8808C12.7982 13.9779 13.0172 14.077 13.2583 14.0746C13.5011 14.0723 13.7936 13.9674 14.0691 13.5872L14.0763 13.5779C14.1527 13.483 14.2902 13.4643 14.389 13.5374C14.4909 13.6129 14.513 13.7576 14.4384 13.8606L14.4049 13.9056C14.0569 14.3616 13.647 14.5334 13.2627 14.5371C12.9042 14.5406 12.5913 14.3981 12.3946 14.254L12.3569 14.2252L12.3478 14.2177C12.2565 14.1373 12.2426 13.9978 12.3182 13.9005Z" fill="#202020"/>
   </g>
   <defs>
-    <filter id="filter0_d_29267_12044" x="0" y="3.375" width="41.75" height="31.25" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+    <filter id="filter0_d_29267_12044" x="0" y="3.375" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
       <feFlood flood-opacity="0" result="BackgroundImageFix"/>
       <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
       <feOffset dx="4" dy="4"/>
