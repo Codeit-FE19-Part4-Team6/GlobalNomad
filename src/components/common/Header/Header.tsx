@@ -59,6 +59,10 @@ export const Header = ({
   };
 
   useEffect(() => {
+    setNotifications(initialNotifications);
+  }, [initialNotifications]);
+
+  useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         handleCloseAllDropdowns();
