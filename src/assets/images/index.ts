@@ -1,5 +1,5 @@
-import KakaoLogin from '@/assets/images/kakao-login.png';
+import KakaoIcon from '@/assets/images/kakao-login.png';
 
 export default {
-  KakaoLogin,
+  KakaoIcon,
 };
