@@ -5,6 +5,8 @@ import TextArea from '@/components/common/TextArea';
 import { tv } from 'tailwind-variants';
 import Icons from '@/assets/icons';
 import { PrimaryButton } from '@/components/common/button';
+import Title from '@/components/common/Title';
+import Label from '@/components/common/Label';
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -72,7 +74,9 @@ export default function ReviewModal({
         </div>
         <div className='flex flex-col items-center gap-[14px]'>
           <div className='flex flex-col items-center gap-[6px]'>
-            <p className='font-md-bold md:font-lg-bold text-black'>{title}</p>
+            <Title as='h3' className='font-md-bold md:font-lg-bold text-black'>
+              {title}
+            </Title>
             <p className='font-sm-medium md:font-md-medium flex gap-[4px] text-gray-500'>
               {date} /{startTime} - {endTime} ({headCount}명)
             </p>
@@ -87,7 +91,9 @@ export default function ReviewModal({
       </div>
       <div className='flex flex-col gap-[8px]'>
         <div className='flex flex-col gap-[12px] md:gap-[16px]'>
-          <p className='font-lg-bold md:font-xl-bold'>소중한 겸험을 들려주세요.</p>
+          <Label htmlFor='textarea' className='font-lg-bold md:font-xl-bold'>
+            소중한 겸험을 들려주세요.
+          </Label>
           <TextArea
             variant='modal'
             value={content}

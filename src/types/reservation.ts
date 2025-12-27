@@ -2,6 +2,7 @@ export type ReservationStatus = 'confirmed' | 'approved' | 'declined' | 'complet
 
 export type ReservationResponse = {
   id: number;
+  nickname: string;
   teamId: string;
   userId: number;
   activity: {
