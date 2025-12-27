@@ -1,3 +1,13 @@
+import type { ReactNode } from 'react';
+import { type BaseButtonProps } from './types';
+
+type FilterButtonSize = 'sm' | 'md'; // lg 제외
+
+interface FilterButtonProps extends Omit<BaseButtonProps, 'size'> {
+  size?: FilterButtonSize; // BaseButtonProps의 size 대신 사용
+  icon?: ReactNode;
+  selected?: boolean;
+}
 /**
  * FilterButton 컴포넌트
  *
@@ -35,18 +45,6 @@
  * <FilterButton selected>No Icon Selected</FilterButton>
  * ```
  */
-
-import type { ReactNode } from 'react';
-import { type BaseButtonProps } from './types';
-
-type FilterButtonSize = 'sm' | 'md'; // lg 제외
-
-interface FilterButtonProps extends Omit<BaseButtonProps, 'size'> {
-  size?: FilterButtonSize; // BaseButtonProps의 size 대신 사용
-  icon?: ReactNode;
-  selected?: boolean;
-}
-
 export const FilterButton = ({
   children,
   icon,

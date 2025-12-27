@@ -1,3 +1,10 @@
+import type { BaseButtonProps } from './types';
+
+type ActionButtonType = 'neutral' | 'muted';
+
+interface ActionButtonProps extends BaseButtonProps {
+  action?: ActionButtonType;
+}
 /**
  * ActionButton 컴포넌트
  *
@@ -30,15 +37,6 @@
  * </ActionButton>
  * ```
  */
-
-import type { BaseButtonProps } from './types';
-
-type ActionButtonType = 'neutral' | 'muted';
-
-interface ActionButtonProps extends BaseButtonProps {
-  action?: ActionButtonType;
-}
-
 export const ActionButton = ({
   action = 'neutral',
   children,
