@@ -42,35 +42,9 @@ interface Props {
  * ```
  */
 
-// 개발용 mock 데이터
-const MOCK_USER_NAME = '홍길동';
-const MOCK_NOTIFICATIONS: Notification[] = [
-  {
-    id: 1,
-    status: 'rejected',
-    time: '5분 전',
-    title: '함께하면 즐거운 스트릿 댄스',
-    reservationTime: '2024-07-10 14:00~16:00',
-  },
-  {
-    id: 2,
-    status: 'approved',
-    time: '30분 전',
-    title: '함께하면 즐거운 스트릿 댄스',
-    reservationTime: '2024-07-12 10:00~11:00',
-  },
-  {
-    id: 3,
-    status: 'approved',
-    time: '1시간 전',
-    title: '함께하면 즐거운 스트릿 댄스',
-    reservationTime: '2024-07-15 16:00~18:00',
-  },
-];
-
 export const Header = ({
-  userName = MOCK_USER_NAME,
-  notifications: initialNotifications = MOCK_NOTIFICATIONS,
+  userName,
+  notifications: initialNotifications = [],
   onLogin,
   onSignUp,
 }: Props) => {
@@ -83,6 +57,10 @@ export const Header = ({
     setIsUserMenuOpen(false);
     setIsNotificationOpen(false);
   };
+
+  useEffect(() => {
+    setNotifications(initialNotifications);
+  }, [initialNotifications]);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
