@@ -67,11 +67,14 @@ export const checkEmailDuplicate = async (email: string): Promise<boolean> => {
   try {
     // TODO: 실제 API 엔드포인트로 교체
     const response = await fetch(`/api/auth/check-email?email=${email}`);
+    if (!response.ok) {
+      throw new Error('이메일 중복 확인 중 오류가 발생했습니다.');
+    }
     const data = await response.json();
     return data.isDuplicate;
   } catch (error) {
     console.error('이메일 중복 체크 실패:', error);
-    return false;
+    throw error;
   }
 };
 
@@ -99,33 +102,3 @@ export interface SignupFormData {
   password: string;
   passwordConfirm: string;
 }
-
-export const validateSignupForm = (data: SignupFormData): Record<string, string> => {
-  const errors: Record<string, string> = {};
-
-  if (!data.email) {
-    errors.email = '이메일을 입력해주세요';
-  } else if (!isValidEmail(data.email)) {
-    errors.email = '올바른 이메일 형식이 아닙니다';
-  }
-
-  if (!data.nickname) {
-    errors.nickname = '닉네임을 입력해주세요';
-  } else if (!isValidNickname(data.nickname)) {
-    errors.nickname = '닉네임은 2-10자의 한글, 영문, 숫자만 가능합니다';
-  }
-
-  if (!data.password) {
-    errors.password = '비밀번호를 입력해주세요';
-  } else if (!isValidPassword(data.password)) {
-    errors.password = '8자 이상, 영문과 숫자를 포함해야 합니다';
-  }
-
-  if (!data.passwordConfirm) {
-    errors.passwordConfirm = '비밀번호 확인을 입력해주세요';
-  } else if (!isPasswordMatch(data.password, data.passwordConfirm)) {
-    errors.passwordConfirm = '비밀번호가 일치하지 않습니다';
-  }
-
-  return errors;
-};

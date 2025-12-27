@@ -2,6 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   isValidEmail,
   isValidNickname,
@@ -38,28 +39,22 @@ export const useSignupForm = () => {
   const watchNickname = watch('nickname');
   const watchPassword = watch('password');
   const watchPasswordConfirm = watch('passwordConfirm');
+  const navigate = useNavigate();
 
   // 폼 유효성 검사
   useEffect(() => {
     const allFieldsFilled =
-      watchEmail?.trim() !== '' &&
-      watchNickname?.trim() !== '' &&
-      watchPassword?.trim() !== '' &&
-      watchPasswordConfirm?.trim() !== '';
+      !!watchEmail?.trim() &&
+      !!watchNickname?.trim() &&
+      !!watchPassword?.trim() &&
+      !!watchPasswordConfirm?.trim();
 
-    const noErrors = Object.keys(errors).length === 0;
-
-    const passwordsMatch = watchPassword === watchPasswordConfirm;
-
-    setIsFormValid(
-      allFieldsFilled && noErrors && passwordsMatch && emailChecked && nicknameChecked
-    );
+    setIsFormValid(allFieldsFilled && isValid && emailChecked && nicknameChecked);
   }, [
     watchEmail,
     watchNickname,
     watchPassword,
     watchPasswordConfirm,
-    errors,
     isValid,
     emailChecked,
     nicknameChecked,
@@ -152,10 +147,10 @@ export const useSignupForm = () => {
       console.log('회원가입 성공:', result);
 
       // 회원가입 성공 후 처리 (예: 로그인 페이지로 이동)
-      window.location.href = '/login';
+      navigate('/login');
     } catch (error) {
       console.error('회원가입 실패:', error);
-      setError('email', { message: '회원가입에 실패했습니다. 다시 시도해주세요.' });
+      setError('root', { message: '회원가입에 실패했습니다. 다시 시도해주세요.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -173,20 +168,17 @@ export const useSignupForm = () => {
     }),
     nickname: register('nickname', {
       required: '닉네임을 입력해주세요',
-      minLength: { value: 2, message: '닉네임은 2자 이상이어야 합니다' },
-      maxLength: { value: 10, message: '닉네임은 10자 이하여야 합니다' },
       pattern: {
         value: /^[가-힣a-zA-Z0-9]{2,10}$/,
-        message: '한글, 영문, 숫자만 사용 가능합니다',
+        message: '2~10자의 한글, 영문, 숫자만 사용 가능합니다',
       },
       onChange: () => setNicknameChecked(false), // 닉네임 변경 시 체크 초기화
     }),
     password: register('password', {
       required: '비밀번호를 입력해주세요',
-      minLength: { value: 8, message: '8자 이상 입력하세요' },
       pattern: {
         value: /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
-        message: '영문과 숫자를 포함해야 합니다',
+        message: '8자 이상, 영문과 숫자를 포함해야 합니다',
       },
     }),
     passwordConfirm: register('passwordConfirm', {
