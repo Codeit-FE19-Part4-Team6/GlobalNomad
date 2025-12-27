@@ -41,7 +41,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, children }: Paginat
           }
         },
       }}>
-      <nav className='flex items-center justify-center gap-6'>{children}</nav>
+      <nav className='flex items-center justify-center gap-4'>{children}</nav>
     </PaginationContext.Provider>
   );
 };

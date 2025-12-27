@@ -25,7 +25,7 @@ const PaginationItems = () => {
       </ul>
 
       {/* Mobile */}
-      <ul className='flex items-center gap-4 md:hidden'>
+      <ul className='flex list-none items-center gap-4 md:hidden'>
         {start > 1 && <li className='text-gray-400'>…</li>}
 
         {pages

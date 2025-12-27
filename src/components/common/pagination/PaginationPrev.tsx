@@ -1,8 +1,5 @@
 import { usePagination } from './PaginationContext';
 
-/**
- * 이전 페이지 블록으로 이동하는 버튼
- */
 const PaginationPrev = () => {
   const { prevBlock, isFirstBlock } = usePagination();
 
@@ -10,7 +7,8 @@ const PaginationPrev = () => {
     <button
       onClick={prevBlock}
       disabled={isFirstBlock}
-      className='text-gray-400 disabled:opacity-30'>
+      className='flex h-10 w-10 items-center justify-center text-gray-400 disabled:opacity-30'
+      aria-label='이전 페이지 블록'>
       ‹
     </button>
   );

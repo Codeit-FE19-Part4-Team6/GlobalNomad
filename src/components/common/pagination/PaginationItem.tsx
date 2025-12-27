@@ -10,23 +10,21 @@ const PaginationItem = ({ page }: Props) => {
   const isActive = page === currentPage;
 
   return (
-    <li>
+    <li className='list-none'>
       <button
         onClick={() => goTo(page)}
         aria-current={isActive ? 'page' : undefined}
         className={cn(
-          'relative flex flex-col items-center px-3 text-sm',
-          isActive ? 'font-semibold text-black' : 'text-gray-400'
+          // 공통 사이즈
+          'flex h-10 w-10 items-center justify-center text-sm',
+          // underline 공간 확보
+          'border-b-2',
+          // 상태별 스타일
+          isActive
+            ? 'border-[var(--color-primary-500)] font-semibold text-[var(--color-gray-950)]'
+            : 'border-transparent text-[var(--color-gray-400)]'
         )}>
         {page}
-
-        {/* underline */}
-        <span
-          className={cn(
-            'absolute bottom-0 h-[3px] w-[56px] rounded-full bg-blue-500 transition-opacity',
-            isActive ? 'opacity-100' : 'opacity-0'
-          )}
-        />
       </button>
     </li>
   );
