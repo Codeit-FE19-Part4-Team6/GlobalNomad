@@ -91,7 +91,9 @@ export default function ReviewModal({
       </div>
       <div className='flex flex-col gap-[8px]'>
         <div className='flex flex-col gap-[12px] md:gap-[16px]'>
-          <Label className='font-lg-bold md:font-xl-bold'>소중한 겸험을 들려주세요.</Label>
+          <Label htmlFor='review-content' className='font-lg-bold md:font-xl-bold'>
+            소중한 경험을 들려주세요.
+          </Label>
           <TextArea
             variant='modal'
             value={content}

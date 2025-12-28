@@ -168,7 +168,7 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
           <PrimaryButton
             className='font-lg-medium h-[54px] w-[182px] rounded-2xl px-10 py-3.5'
             onClick={() => {
-              // TODO: 라우터 이동
+              // TODO: 라우터 이동 및 추후 콘솔 제거
               console.log('둘러보기 클릭');
             }}>
             둘러보기

@@ -3,7 +3,7 @@ import Icons from '@/assets/icons';
 type MyProfilePageProps = {
   setMobileOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
-export default function MyProfilePagePage({ setMobileOpen }: MyProfilePageProps) {
+export default function MyProfilePage({ setMobileOpen }: MyProfilePageProps) {
   return (
     <>
       <Icons.Down
