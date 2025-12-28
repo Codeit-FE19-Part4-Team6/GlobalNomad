@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icons from '@/assets/icons';
 
 type ImageUploadProps = {
@@ -8,12 +8,7 @@ type ImageUploadProps = {
   onAdd?: (file: File) => void;
   onRemove?: () => void;
 };
-/**
- * ImageUpload 컴포넌트
- * - 파일이 없으면 업로드 버튼을 표시
- * - 파일이 있으면 미리보기 이미지와 삭제 버튼을 표시
- * - 업로드된 이미지 개수와 최대 업로드 가능 개수를 표시
- */
+
 export default function ImageUpload({
   file,
   fileCount = 0,
@@ -22,20 +17,21 @@ export default function ImageUpload({
   onRemove,
 }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const preview = useMemo(() => {
-    if (!file) {
-      return null;
-    }
-    return URL.createObjectURL(file);
-  }, [file]);
+  const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!preview) {
+    if (!file) {
+      setPreview(null);
       return;
     }
-    return () => URL.revokeObjectURL(preview);
-  }, [preview]);
+
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [file]);
 
   const handleClick = () => {
     if (!file) {
@@ -48,6 +44,7 @@ export default function ImageUpload({
     if (!selected) {
       return;
     }
+
     onAdd?.(selected);
     e.target.value = '';
   };
@@ -79,7 +76,7 @@ export default function ImageUpload({
   return (
     <div
       className='relative h-20 w-20 rounded-md border border-gray-100 bg-cover bg-center md:h-32 md:w-32 md:rounded-2xl'
-      style={{ backgroundImage: `url(${preview})` }}>
+      style={{ backgroundImage: preview ? `url(${preview})` : undefined }}>
       <button
         type='button'
         aria-label='삭제'
