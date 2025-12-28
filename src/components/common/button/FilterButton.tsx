@@ -57,7 +57,7 @@ export const FilterButton = ({
   const baseClasses =
     'inline-flex items-center justify-center rounded-full ' +
     'cursor-pointer transition-all duration-200 ease-in-out ' +
-    'leading-none disabled:cursor-not-allowed';
+    'leading-none disabled:cursor-not-allowed whitespace-nowrap';
 
   // 선택 상태에 따른 스타일
   const stateClasses = selected
