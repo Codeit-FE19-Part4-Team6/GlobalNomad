@@ -155,7 +155,7 @@ export default function ReservationInfoModal({
                   headCount={r.headCount}
                   tab={tab}
                   onApprove={() => console.log('승인', r.id)} //임시코드 승인하기 api함수 넘겨주세요
-                  onReject={() => console.log('거절', r.id)} //임시코드  거절하기 api함수 넘겨주세요
+                  onReject={() => console.log('거절', r.id)} //임시코드  거절하기 api함수 넘겨주세요 제거예정
                 />
               ))
             )}
