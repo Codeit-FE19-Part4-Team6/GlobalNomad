@@ -8,13 +8,12 @@ interface CardButtonProps {
   reviewSubmitted?: boolean;
   onReviewClick?: () => void;
   onCancelClick?: () => void;
-  onChangeClick?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
   className?: string;
 }
 /**
- * [Card.CardButton] - 카드 타입에 따른 액션 버튼 (후기작성, 예약변경/취소, 수정/삭제)
+ * [Card.CardButton] - 카드 타입에 따른 액션 버튼 (후기작성, 취소, 수정/삭제)
  *
  * ```tsx
  * // 예약 내역용
@@ -28,7 +27,6 @@ export default function CardButton({
   reviewSubmitted,
   onReviewClick,
   onCancelClick,
-  onChangeClick,
   onEdit,
   onDelete,
   className,
@@ -87,15 +85,9 @@ export default function CardButton({
         {status === 'confirmed' && (
           <div className='flex w-full gap-2 lg:w-auto'>
             <ActionButton
-              action='neutral'
-              onClick={onChangeClick}
-              className='w-full py-2.5 whitespace-nowrap md:w-58 lg:h-7.25 lg:w-17.75 lg:py-0'>
-              예약 변경
-            </ActionButton>
-            <ActionButton
               action='muted'
               onClick={onCancelClick}
-              className='w-full py-2.5 whitespace-nowrap md:w-58 lg:h-7.25 lg:w-17.75 lg:py-0'>
+              className='w-full py-2.5 whitespace-nowrap lg:h-7.25 lg:w-17.75 lg:py-0'>
               예약 취소
             </ActionButton>
           </div>

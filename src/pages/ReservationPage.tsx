@@ -122,10 +122,6 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
     setIsReviewModalOpen(true);
   };
 
-  const handleChangeClick = () => {
-    // TODO: 예약 변경 로직
-  };
-
   const isReviewModalClose = () => {
     setIsReviewModalOpen(false);
   };
@@ -231,7 +227,6 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
                         <Card.CardButton
                           status={item.status}
                           onReviewClick={() => handleReviewClick(item)}
-                          onChangeClick={handleChangeClick}
                           onCancelClick={() => handleCancelClick(item.id)}
                           reviewSubmitted={
                             item.status === 'completed' ? item.reviewSubmitted : undefined
@@ -246,7 +241,6 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
                   <Card.CardButton
                     status={item.status}
                     onReviewClick={() => handleReviewClick(item)}
-                    onChangeClick={handleChangeClick}
                     onCancelClick={() => handleCancelClick(item.id)}
                     reviewSubmitted={item.status === 'completed' ? item.reviewSubmitted : undefined}
                   />
@@ -256,7 +250,6 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
           </div>
         </>
       )}
-
       <CancelReservationModal
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
@@ -265,7 +258,6 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
         confirmText='예약 취소'>
         예약을 취소하시겠습니까?
       </CancelReservationModal>
-
       {selectedReservation && (
         <ReviewModal
           isOpen={isReviewModalOpen}
