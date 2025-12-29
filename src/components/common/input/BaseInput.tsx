@@ -5,9 +5,11 @@
  * 직접 사용보다는 TextInput, NumberInput 등을 사용 권장
  */
 
+import { useId } from 'react';
 import { type BaseInputProps } from './types';
 
 export const BaseInput = ({
+  id,
   error = false,
   errorMessage,
   label,
@@ -18,20 +20,27 @@ export const BaseInput = ({
   ...props
 }: BaseInputProps) => {
   const generatedId = useId();
-  const inputId = props.id ?? generatedId;
+  const inputId = id ?? generatedId;
   const errorId = `${inputId}-error`;
 
   // 상태별 스타일
-  const stateClasses = error
-    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/40'
-    : 'border-gray-100 focus:border-primary-500 focus:ring-primary-500/40';
+  const getStateClasses = () => {
+    if (disabled) {
+      return 'border-gray-200 bg-gray-50 cursor-not-allowed text-gray-400';
+    }
+    if (error) {
+      return 'border-red-500 focus:border-red-500 focus:ring-red-500/40';
+    }
+    return 'border-gray-100 focus:border-primary-500 focus:ring-primary-500/40';
+  };
+
   const paddingLeft = leftElement ? 'pl-14' : 'pl-5';
   const paddingRight = rightElement ? 'pr-12' : 'pr-5';
   const baseClasses = [
     paddingLeft,
     paddingRight,
     'w-full rounded-2xl border h-[54px] transition-all duration-200 outline-none focus:ring-2 focus:ring-opacity-50 placeholder:text-gray-400 font-lg-medium',
-    stateClasses,
+    getStateClasses(),
     className,
   ]
     .filter(Boolean)
@@ -55,15 +64,17 @@ export const BaseInput = ({
           id={inputId}
           disabled={disabled}
           aria-invalid={error}
-          aria-describedby={error ? errorId : undefined}
+          aria-describedby={error && errorMessage ? errorId : undefined}
           {...props}
         />
         {rightElement && (
-          <div className='absolute top-1/2 right-4 -translate-y-1/2'>{rightElement}</div>
+          <div className='absolute top-1/2 right-4 -translate-y-1/2' aria-hidden='true'>
+            {rightElement}
+          </div>
         )}
       </div>
       {errorMessage && (
-        <p id={errorId} className='font-xs-medium mt-1.5 ml-2 text-red-500'>
+        <p id={errorId} className='font-xs-medium mt-1.5 ml-2 text-red-500' role='alert'>
           {errorMessage}
         </p>
       )}
