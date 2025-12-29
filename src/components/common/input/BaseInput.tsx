@@ -17,8 +17,9 @@ export const BaseInput = ({
   disabled = false,
   ...props
 }: BaseInputProps) => {
-  const inputId = props.id;
-  const errorId = inputId ? `${inputId}-error` : undefined;
+  const generatedId = useId();
+  const inputId = props.id ?? generatedId;
+  const errorId = `${inputId}-error`;
 
   // 상태별 스타일
   const stateClasses = error
