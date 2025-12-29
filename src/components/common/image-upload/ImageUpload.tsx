@@ -1,4 +1,3 @@
-// }
 import { useEffect, useRef, useState } from 'react';
 import Icons from '@/assets/icons';
 
@@ -75,8 +74,8 @@ export default function ImageUpload({
 
   return (
     <div
-      className='relative h-20 w-20 rounded-md border border-gray-100 bg-cover bg-center sm:h-32 sm:w-32 sm:rounded-2xl'
-      style={{ backgroundImage: preview ? `url(${preview})` : undefined }}>
+      className='relative h-20 w-20 rounded-md border border-gray-100 bg-cover bg-center md:h-32 md:w-32 md:rounded-2xl'
+      style={{ backgroundImage: `url(${preview})` }}>
       <button
         type='button'
         aria-label='삭제'

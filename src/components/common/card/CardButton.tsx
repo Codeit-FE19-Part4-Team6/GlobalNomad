@@ -12,21 +12,13 @@ interface CardButtonProps {
   onEdit?: () => void;
   onDelete?: () => void;
   className?: string;
-  isMobileOnly?: boolean;
-  isDesktopOnly?: boolean;
 }
-
 /**
  * [Card.CardButton] - 카드 타입에 따른 액션 버튼 (후기작성, 예약변경/취소, 수정/삭제)
  *
- * 1. Variant 대응:
- * - 'reservation': 상태에 따라 후기 작성 또는 예약 변경/취소 버튼 노출.
- * - 'list': 관리자용 수정하기/삭제하기 버튼 노출.
- * 2. 위치 자동 제어: `isMobileOnly` 또는 `isDesktopOnly`를 통해 반응형 중복 노출 방지.
- *
  * ```tsx
  * // 예약 내역용
- * <Card.CardButton status="confirmed" onCancelClick={handleCancel} isDesktopOnly />
+ * <Card.CardButton status="confirmed" onCancelClick={handleCancel} />
  * * // 내 체험 관리(List)용
  * <Card.CardButton onEdit={handleEdit} onDelete={handleDelete} />
  * ```
@@ -40,8 +32,6 @@ export default function CardButton({
   onEdit,
   onDelete,
   className,
-  isMobileOnly = false,
-  isDesktopOnly = false,
 }: CardButtonProps) {
   const { variant } = useCardContext();
 
@@ -49,6 +39,7 @@ export default function CardButton({
     if (!onEdit && !onDelete) {
       return null;
     }
+
     return (
       <div className={cn('mt-3 flex gap-2', className)}>
         {onEdit && (
@@ -74,14 +65,12 @@ export default function CardButton({
   }
 
   if (variant === 'reservation') {
-    const canWriteReview = status === 'completed' && !reviewSubmitted;
+    const canWriteReview = status === 'completed' && reviewSubmitted === false;
 
     return (
       <div
         className={cn(
           'mt-3 flex w-full flex-col gap-2 lg:mt-0 lg:ml-auto lg:w-auto lg:flex-row',
-          isMobileOnly && 'lg:hidden',
-          isDesktopOnly && 'max-lg:hidden',
           className
         )}>
         {canWriteReview && (

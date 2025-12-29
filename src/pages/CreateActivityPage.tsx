@@ -19,41 +19,32 @@ import type { createdActivityRequest } from '@/types/activityRequest';
 import { useCreateActivity } from '@/hooks/useCreateActivity';
 import { isAxiosError } from 'axios';
 // import { useNavigate } from 'react-router-dom';
-/**
- * time 비교용 함수
- * "02:00" -> 2
- */
+
+//문자열 시간을 받아서 숫자로 바꾸는 함수
+//time을 받아서 " : " 기준으로 나눈다음 첫번째 인자를 리턴한다.
 const toHour = (time: string) => {
   return Number(time.split(':')[0]);
 };
 
-/**
- * ✅ 00:00 ~ 23:00 옵션(24개) 만들기
- */
+// 00:00 ~ 23:00
+//hour은 인덱스를 받아서 문자열로 바꾼다 대신에 두자리수여야 하고 한자리 수일경우 0을 채운다 ex) 09
+//그러고 뒤에 :00을 붙여서 리턴한다 ex) 09:00
 const TIME_OPTIONS = Array.from({ length: 24 }, (_, i) => {
   const hour = String(i).padStart(2, '0');
   return `${hour}:00`;
 });
 
-/**
- * ✅ "입력줄(맨 위)" 상태 타입
- * - 이 값들은 + 누르기 전까진 rows에 들어가지 않는다.
- */
+//사용자가 draft에 입력하는 상태 값
+//date가 옵셔널이 아니면 date초기값 필수
+//등록 시 에는 date가 필수지만 입력상황에는 필수가 아니여서 옵셔널
 type ScheduleDraft = {
   date?: Date;
   startTime: string;
   endTime: string;
 };
 
-/**
- * ✅ "아래에 쌓이는 목록" 한 줄 타입
- * - rows는 실제로 쌓인 결과들
- */
-
-/**
- * ✅ 입력줄 초기값 생성 함수
- * + 누른 뒤 입력줄을 초기화할 때도 재사용
- */
+//등록 시 draft를 초기화 하는 함수
+//미리 만들어서 addScheduleFromDraft 함수에 넣어주기만 하면 된다.
 const createDraft = (): ScheduleDraft => {
   return {
     date: undefined,
@@ -72,6 +63,10 @@ export default function CreateActivityPage() {
   const [title, setTitle] = useState('');
   const { mutate, isPending } = useCreateActivity();
   // const navigate = useNavigate();
+
+  //서버로 데이터를 보내는 함수
+  //payload는 보내는 data를 서버가 읽기 좋게 바꾼 형태
+  //성공 시 onSuccess 실패 시 onError
   const handleSubmit = async () => {
     const payload: createdActivityRequest = {
       title,
@@ -103,6 +98,8 @@ export default function CreateActivityPage() {
       },
     });
   };
+
+  //사용자가 입력한 값을 담는 함수
   const onChangeTitle: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setTitle(e.target.value);
   };
@@ -115,11 +112,9 @@ export default function CreateActivityPage() {
     setText(value);
   };
 
-  // ----------------------------
-  // (3) draft(입력줄) 핸들러들
-  // ----------------------------
-
-  // ✅ 날짜 선택
+  //draft에 사용자가 선택한 날짜를 담는 함수
+  //세터함수에 이전값을 가져와서 date만 바꿔준다.
+  // 굳이 selectedDate: Date 로 인수로 설정안하고 date로 해도 되지만 역할을 확실히 하기 위해
   const handleDraftDate = (selectedDate: Date) => {
     setDraft((prev) => {
       return {
@@ -129,10 +124,10 @@ export default function CreateActivityPage() {
     });
   };
 
-  /**
-   * ✅ 시작시간 선택
-   * - 종료시간은 "시작시간보다 큰 값" 중 첫 번째로 자동 보정
-   */
+  //사용자가 선택한 값을 받아서 종료시간을 filter 하고 그 중 첫번째 인자를 고르는 함수
+  //배열로 만들었던 시간들 중 사용자가 선택한 시간(nextStartTime) 보다 큰 값만 추출
+  //추출 한 값중 첫 번째 인덱스를 종료시간에 담는다.
+  //세터함수에 이전 값을 가져와서(date) 시작시간과 종료시간을 사용자가 지정함 값으로 바꾼다.
   const handleDraftStartTime = (nextStartTime: string) => {
     const nextEndOptions = TIME_OPTIONS.filter((t) => toHour(t) > toHour(nextStartTime));
     const nextEndTime = nextEndOptions[0] ?? nextStartTime;
@@ -146,7 +141,9 @@ export default function CreateActivityPage() {
     });
   };
 
-  // ✅ 종료시간 선택
+  // 종료시간을 직접 바꿨을 때 값 저장
+  // 위에 코드는 시작시간을 바꾸면 종료시간을 시간시작 + 1시간인 값으로 바꿔주지만
+  // handleDraftEenTime 사용자가 종료시간도 직접 선택했을때의 값을 저장
   const handleDraftEndTime = (nextEndTime: string) => {
     setDraft((prev) => {
       return {
@@ -156,6 +153,11 @@ export default function CreateActivityPage() {
     });
   };
 
+  //date를 필수로 하기위해 조건문
+  //setRows는 이전에 rows를 받고 새로운 row를 추가해서 새로운 배열을 만듦
+  //서버에 post시 아직 서버의 id를 모르기 때문에 랜덤으로 구분하기 위한 아이디값 생성
+  //date옆에 ! 는 타입스크립트에게 null, undefinded가 아니라는 확신을 준다.
+  //위에 만들어 두었던 초기화 함수 실행
   const addScheduleFromDraft = () => {
     // ✅ 날짜를 선택 안 했으면 추가하지 않음 (필수 조건)
     if (!draft.date) {
@@ -165,7 +167,7 @@ export default function CreateActivityPage() {
     setRows((prevRows) => {
       const newRow: ScheduleRow = {
         uiId: crypto.randomUUID(),
-        date: draft.date!, // 위에서 체크했으니 ! 가능
+        date: draft.date!,
         startTime: draft.startTime,
         endTime: draft.endTime,
       };
@@ -177,10 +179,9 @@ export default function CreateActivityPage() {
     setDraft(createDraft());
   };
 
-  /**
-   * ✅ - 버튼
-   * - 선택한 줄(row)만 삭제
-   */
+  //사용자가 선택한 값을 인자로 받아서 이전 rows값들 중
+  //row.id와 사용자가 선택한 uiId가 같지 않은 것 들만 추출해서 새 배열로 만든다.
+  //즉 사용자가 선택한 아이디만 삭제
   const removeRow = (uiId: string) => {
     setRows((prevRows) => {
       return prevRows.filter((row) => row.uiId !== uiId);

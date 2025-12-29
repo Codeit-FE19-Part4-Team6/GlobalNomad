@@ -19,9 +19,9 @@ export default function Avatar({ className }: AvatarProps) {
   const displayUrl = previewUrl ?? profileImageUrl ?? null;
 
   return (
-    <div className={cn('relative inline-block h-fit w-fit border-gray-200', className)}>
+    <div className={cn('relative inline-block h-7.5 w-7.5 border-gray-200', className)}>
       {displayUrl ? (
-        <img src={displayUrl} alt='Profile' className='h-7.5 w-7.5 rounded-full object-cover' />
+        <img src={displayUrl} alt='Profile' className='h-full w-full rounded-full object-cover' />
       ) : (
         <Icons.ProfileSm />
       )}

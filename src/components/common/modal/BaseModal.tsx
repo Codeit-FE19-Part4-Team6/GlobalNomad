@@ -18,11 +18,11 @@ type BaseModalProps = {
 };
 
 const ModalLayout = tv({
-  base: 'fixed inset-0 z-30 flex items-center justify-center bg-gray-900/70 bg-cover bg-no-repeat',
+  base: 'fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/70 bg-cover bg-no-repeat',
 });
 
 const ModalContainer = tv({
-  base: 'flex flex-col bg-white rounded-[30px]',
+  base: 'flex flex-col bg-white rounded-[30px] z-[9999]',
   variants: {
     size: {
       confirm: 'w-[320px] md:w-[400px]',

@@ -14,4 +14,8 @@
   input[type='search']::-ms-clear {
     display: none;
   }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
