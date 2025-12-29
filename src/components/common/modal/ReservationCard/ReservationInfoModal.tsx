@@ -8,6 +8,7 @@ import ReservationCard from '@/components/common/modal/ReservationCard/Reservati
 import type { ReservationStatus, ReservationResponse } from '@/types/reservation';
 import TabButton from '@/components/common/modal/ReservationCard/ReservationTab';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
+import Label from '@/components/common/Label';
 
 type ReservationProps = {
   isOpen: boolean;
@@ -110,7 +111,7 @@ export default function ReservationInfoModal({
       <div className='flex min-h-[233px] flex-col px-5 pt-4 pb-6 sm:flex-row sm:gap-[20px] lg:flex-col'>
         {/* 예약 시간 */}
         <section className='mb-4 sm:w-[50%] lg:w-full'>
-          <h3 className='font-xl-bold mb-2 text-black'>예약 시간</h3>
+          <Label className='font-xl-bold mb-2 text-black'>예약 시간</Label>
 
           <div className='rounded-xl border border-gray-200 px-3 py-2'>
             <Dropdown className='relative w-full'>
@@ -139,7 +140,7 @@ export default function ReservationInfoModal({
         </section>
 
         <section className='sm:w-[50%] lg:w-full'>
-          <h3 className='font-xl-bold text-black-50 mb-2'>예약 내역</h3>
+          <Label className='font-xl-bold text-black-50 mb-2'>예약 내역</Label>
 
           <div className='scrollbar-hide max-h-[235px] space-y-3 overflow-y-auto'>
             {visibleList.length === 0 ? (

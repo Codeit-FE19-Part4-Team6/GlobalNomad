@@ -1,6 +1,7 @@
 import type { ReservationStatus } from '@/types/reservation';
 import Label from '@/components/common/Label';
 import { ActionButton } from '@/components/common/button';
+import { StateBadge } from '@/components/common/badge';
 
 interface ReservationCardProps {
   nickname: string;
@@ -51,16 +52,8 @@ export default function ReservationCard({
             </>
           )}
 
-          {tab === 'approved' && (
-            <Label className='font-sm-bold inline-flex h-[24px] w-[63px] cursor-pointer items-center justify-center rounded-full bg-cyan-50 text-cyan-600'>
-              예약승인
-            </Label>
-          )}
-          {tab === 'declined' && (
-            <Label className='font-sm-bold inline-flex h-[24px] w-[63px] cursor-pointer items-center justify-center rounded-full bg-red-50 text-red-500'>
-              예약거절
-            </Label>
-          )}
+          {tab === 'approved' && <StateBadge status='approved'></StateBadge>}
+          {tab === 'declined' && <StateBadge status='declined'></StateBadge>}
         </div>
       </div>
     </div>
