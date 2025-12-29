@@ -1,7 +1,7 @@
 import { ActionButton, PrimaryButton } from '@/components/common/button';
 import { useCardContext } from '@/components/common/card/CardContext';
 import type { ReservationStatus } from '@/types/reservation';
-import { cn } from 'tailwind-variants';
+import { cn } from '@/utils/cn';
 
 interface CardButtonProps {
   status?: ReservationStatus;
