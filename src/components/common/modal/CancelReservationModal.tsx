@@ -1,6 +1,6 @@
 import BaseModal from '@/components/common/modal/BaseModal';
 import { tv } from 'tailwind-variants';
-import Icons from '@/assets/icons';
+import Images from '@/assets/images';
 import { cn } from '@/utils/cn';
 import { SecondaryButton } from '@/components/common/button';
 
@@ -61,12 +61,12 @@ export default function CancelReservationModal({
       closeOnEsc={!isLoading}
       containerClassName={cn(BaseModalStyles(), className)}>
       <div className='flex flex-col items-center'>
-        <Icons.WarningSm className='block h-12.25 w-12.25 md:hidden' />
-        <Icons.WarningLg className='hidden h-22 w-22 md:block' />
+        <img src={Images.WarningLg} alt='Warning' className='block h-[49px] w-[49px] md:hidden' />
+        <img src={Images.WarningLg} alt='Warning' className='hidden h-22 w-22 md:block' />
         <p className='font-lg-bold md:font-xl-bold text-black'>{children}</p>
       </div>
 
-      <div className='flex w-full justify-center gap-[12px]'>
+      <div className='flex w-full justify-center gap-3'>
         <SecondaryButton size='md' onClick={onClose} className={BtnStyles({ variant: 'base' })}>
           {cancelText}
         </SecondaryButton>

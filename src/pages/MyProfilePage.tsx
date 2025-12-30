@@ -107,7 +107,7 @@ export default function MyProfilePage({ setMobileOpen }: MyProfilePageProps) {
       <div className='flex justify-center'>
         <PrimaryButton
           disabled={!isFormChanged}
-          className='font-lg-bold md:font-md-bold mt-8 mb-3 h-12 w-full rounded-[14px] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 md:mt-6 md:h-[41px] md:w-30 md:rounded-xl lg:w-auto lg:max-w-160'>
+          className='font-lg-bold md:font-md-bold mt-8 mb-3 h-12 w-full rounded-[14px] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 md:mt-6 md:h-[41px] md:w-30 md:rounded-xl lg:w-auto lg:max-w-160'>
           수정하기
         </PrimaryButton>
       </div>
