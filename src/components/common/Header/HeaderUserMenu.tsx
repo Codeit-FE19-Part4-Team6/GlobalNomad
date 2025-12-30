@@ -1,5 +1,6 @@
 import Icons from '@/assets/icons';
-import Avatar from '@/components/Avatar';
+import Avatar from '@/components/common/Avatar';
+
 import { LogOut } from 'lucide-react';
 
 interface Props {

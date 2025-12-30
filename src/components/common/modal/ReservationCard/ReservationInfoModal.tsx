@@ -54,7 +54,7 @@ export default function ReservationInfoModal({
     };
   }, [reservations]);
 
-  // ✅ 보여줄 리스트(탭 + 시간 필터)
+  // 보여줄 리스트(탭 + 시간 필터)
   const visibleList = useMemo(() => {
     return reservations.filter((r) => {
       const timeText = `${r.startTime} - ${r.endTime}`;
@@ -70,7 +70,7 @@ export default function ReservationInfoModal({
     <div
       onMouseEnter={() => setIsMouseOnModal(true)}
       onMouseLeave={() => setIsMouseOnModal(false)}
-      className='w-full rounded-tl-[24px] rounded-tr-[24px] rounded-b-none bg-white lg:w-[340px] lg:rounded-[24px] lg:shadow-[0_8px_24px_rgba(0,0,0,0.12)]'>
+      className='w-full rounded-tl-3xl rounded-tr-3xl rounded-b-none bg-white lg:w-85 lg:rounded-3xl lg:shadow-[0_8px_24px_rgba(0,0,0,0.12)]'>
       {/* header */}
       <div className='mb-[12px] flex items-center justify-between px-[24px] pt-[30px]'>
         <h2 className='font-2xl-bold text-black-50'>{dateText}</h2>
@@ -108,7 +108,7 @@ export default function ReservationInfoModal({
       </div>
 
       {/* content */}
-      <div className='flex min-h-[233px] flex-col px-5 pt-4 pb-6 sm:flex-row sm:gap-[20px] lg:flex-col'>
+      <div className='flex min-h-[233px] flex-col px-5 pt-4 pb-6 sm:flex-row sm:gap-5 lg:flex-col'>
         {/* 예약 시간 */}
         <section className='mb-4 flex flex-col gap-[12px] sm:w-[50%] lg:w-full'>
           <Label className='font-xl-bold mb-2 text-black'>예약 시간</Label>

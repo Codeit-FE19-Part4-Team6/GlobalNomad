@@ -38,14 +38,14 @@ export default function ReservationCard({
                 action='neutral'
                 onClick={onApprove}
                 type='button'
-                className='bg-color-white font-md-medium h-[29px] w-[68px] rounded-[8px] border border-gray-50 whitespace-nowrap text-gray-600 hover:bg-gray-50'>
+                className='bg-color-white font-md-medium h-[29px] w-17 rounded-lg border border-gray-50 whitespace-nowrap text-gray-600 hover:bg-gray-50'>
                 승인하기
               </ActionButton>
               <ActionButton
                 action='muted'
                 type='button'
                 onClick={onReject}
-                className='font-md-medium h-[29px] w-[68px] rounded-[8px] bg-gray-50 whitespace-nowrap text-gray-600 hover:bg-gray-100'>
+                className='font-md-medium h-[29px] w-17 rounded-lg bg-gray-50 whitespace-nowrap text-gray-600 hover:bg-gray-100'>
                 거절하기
               </ActionButton>
             </>
