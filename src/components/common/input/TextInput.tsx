@@ -1,8 +1,6 @@
-import { forwardRef } from 'react';
 import { BaseInput } from './BaseInput';
 import { type BaseInputProps } from './types';
-
-export interface TextInputProps extends Omit<BaseInputProps, 'rightElement'> {
+export interface TextInputProps extends BaseInputProps {
   /** input type @default 'text' */
   type?: 'text' | 'email' | 'tel' | 'url' | 'number' | 'search';
 }
@@ -43,25 +41,7 @@ export interface TextInputProps extends Omit<BaseInputProps, 'rightElement'> {
  *   errorMessage={errors.email?.message}
  * />
  * ```
- *
- * @example React Hook Form과 함께 사용
- * ```tsx
- * const { register, formState: { errors } } = useForm();
- *
- * <TextInput
- *   label="이메일"
- *   type="email"
- *   {...register('email', {
- *     required: '이메일을 입력해주세요',
- *     pattern: {
- *       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
- *       message: '올바른 이메일 형식이 아닙니다'
- *     }
- *   })}
- *   error={!!errors.email}
- *   errorMessage={errors.email?.message}
- * />
- * ```
+
  *
  * @example 커스텀 검증
  * ```tsx
@@ -87,10 +67,8 @@ export interface TextInputProps extends Omit<BaseInputProps, 'rightElement'> {
  * />
  * ```
  */
-export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
-  ({ type = 'text', ...props }, ref) => {
-    return <BaseInput ref={ref} type={type} {...props} />;
-  }
-);
+export const TextInput = ({ type = 'text', ...props }: TextInputProps) => {
+  return <BaseInput type={type} {...props} />;
+};
 
 TextInput.displayName = 'TextInput';

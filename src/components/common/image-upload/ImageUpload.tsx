@@ -48,14 +48,13 @@ export default function ImageUpload({
     onAdd?.(selected);
     e.target.value = '';
   };
-
   if (!file) {
     return (
       <div>
         <button
           type='button'
           onClick={handleClick}
-          className='flex h-20 w-20 flex-col items-center justify-center gap-0.5 rounded-md border border-gray-100 bg-white px-5 py-1.5 md:h-32 md:w-32 md:gap-2.5 md:rounded-2xl md:py-4'>
+          className='flex h-20 w-20 flex-col items-center justify-center gap-0.5 rounded-md border border-gray-100 bg-white px-5 py-1.5 sm:h-32 sm:w-32 sm:gap-2.5 sm:rounded-2xl sm:py-4'>
           <Icons.PasswordHidden className='h-10 w-10 px-[6.67px] pt-2.5 pb-[6.14px] text-gray-400' />
           <div className='font-sm-medium md:font-md-medium text-gray-600'>
             {fileCount}/{maxFiles}
@@ -76,7 +75,7 @@ export default function ImageUpload({
   return (
     <div
       className='relative h-20 w-20 rounded-md border border-gray-100 bg-cover bg-center md:h-32 md:w-32 md:rounded-2xl'
-      style={{ backgroundImage: preview ? `url(${preview})` : undefined }}>
+      style={{ backgroundImage: `url(${preview})` }}>
       <button
         type='button'
         aria-label='삭제'
