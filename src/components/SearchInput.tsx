@@ -109,12 +109,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       if (!isControlled) {
         setInternalValue(e.target.value);
       }
-
-      // 입력 시 에러 상태 초기화
-      if (error) {
-        setError(false);
-      }
-
+      setError(false);
       // 외부 onChange 콜백 실행 (Controlled 모드에서 필수)
       onChange?.(e);
     };

@@ -1,7 +1,7 @@
 // src/hooks/useSignupForm.ts
 
 import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   isValidEmail,
@@ -20,9 +20,8 @@ export interface SignupFormInputs {
 
 export const useSignupForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [emailChecked, setEmailChecked] = useState(false);
-  const [nicknameChecked, setNicknameChecked] = useState(false);
-  const [isFormValid, setIsFormValid] = useState(false);
+  const [lastCheckedEmail, setLastCheckedEmail] = useState('');
+  const [lastCheckedNickname, setLastCheckedNickname] = useState('');
 
   const {
     register,
@@ -32,7 +31,7 @@ export const useSignupForm = () => {
     clearErrors,
     formState: { errors, isValid },
   } = useForm<SignupFormInputs>({
-    mode: 'onChange', // 실시간 검증으로 변경
+    mode: 'onChange',
   });
 
   const watchEmail = watch('email');
@@ -41,15 +40,18 @@ export const useSignupForm = () => {
   const watchPasswordConfirm = watch('passwordConfirm');
   const navigate = useNavigate();
 
+  const emailChecked = lastCheckedEmail === watchEmail && !!watchEmail;
+  const nicknameChecked = lastCheckedNickname === watchNickname && !!watchNickname;
+
   // 폼 유효성 검사
-  useEffect(() => {
+  const isFormValid = useMemo(() => {
     const allFieldsFilled =
       !!watchEmail?.trim() &&
       !!watchNickname?.trim() &&
       !!watchPassword?.trim() &&
       !!watchPasswordConfirm?.trim();
 
-    setIsFormValid(allFieldsFilled && isValid && emailChecked && nicknameChecked);
+    return allFieldsFilled && isValid && emailChecked && nicknameChecked;
   }, [
     watchEmail,
     watchNickname,
@@ -60,7 +62,6 @@ export const useSignupForm = () => {
     nicknameChecked,
   ]);
 
-  // 이메일 중복 체크
   const handleEmailCheck = async (email: string) => {
     if (!isValidEmail(email)) {
       setError('email', { message: '올바른 이메일 형식이 아닙니다' });
@@ -70,19 +71,18 @@ export const useSignupForm = () => {
       const isDuplicate = await checkEmailDuplicate(email);
       if (isDuplicate) {
         setError('email', { message: '이미 사용 중인 이메일입니다' });
-        setEmailChecked(false);
         return false;
       }
       clearErrors('email');
-      setEmailChecked(true);
+      setLastCheckedEmail(email);
       return true;
     } catch (error) {
-      setError('email', { message: '이메일 중복 확인에 실패했습니다' });
+      const message = error instanceof Error ? error.message : '이메일 중복 확인에 실패했습니다';
+      setError('email', { message });
       return false;
     }
   };
 
-  // 닉네임 중복 체크
   const handleNicknameCheck = async (nickname: string) => {
     if (!isValidNickname(nickname)) {
       setError('nickname', { message: '2-10자의 한글, 영문, 숫자만 가능합니다' });
@@ -93,40 +93,22 @@ export const useSignupForm = () => {
       const isDuplicate = await checkNicknameDuplicate(nickname);
       if (isDuplicate) {
         setError('nickname', { message: '이미 사용 중인 닉네임입니다' });
-        setNicknameChecked(false);
         return false;
       }
       clearErrors('nickname');
-      setNicknameChecked(true);
+      setLastCheckedNickname(nickname);
       return true;
     } catch (error) {
-      setError('nickname', { message: '닉네임 중복 확인에 실패했습니다' });
+      const message = error instanceof Error ? error.message : '닉네임 중복 확인에 실패했습니다';
+      setError('nickname', { message });
       return false;
     }
   };
 
-  // 폼 제출
   const onSubmit = async (data: SignupFormInputs) => {
+    // isFormValid가 true일 때만 호출되므로 중복 체크 재확인 불필요
     setIsSubmitting(true);
     try {
-      // 중복 체크 확인
-      if (!emailChecked) {
-        const isEmailValid = await handleEmailCheck(data.email);
-        if (!isEmailValid) {
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      if (!nicknameChecked) {
-        const isNicknameValid = await handleNicknameCheck(data.nickname);
-        if (!isNicknameValid) {
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      // TODO: 실제 회원가입 API 호출
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
@@ -140,23 +122,22 @@ export const useSignupForm = () => {
       });
 
       if (!response.ok) {
-        throw new Error('회원가입에 실패했습니다');
+        const errorData = await response.json();
+        throw new Error(errorData.message || '회원가입에 실패했습니다');
       }
 
       const result = await response.json();
       console.log('회원가입 성공:', result);
-
-      // 회원가입 성공 후 처리 (예: 로그인 페이지로 이동)
       navigate('/login');
     } catch (error) {
-      console.error('회원가입 실패:', error);
-      setError('root', { message: '회원가입에 실패했습니다. 다시 시도해주세요.' });
+      const message =
+        error instanceof Error ? error.message : '회원가입에 실패했습니다. 다시 시도해주세요.';
+      setError('root', { message });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // 폼 등록 설정
   const registerOptions = {
     email: register('email', {
       required: '이메일을 입력해주세요',
@@ -164,7 +145,6 @@ export const useSignupForm = () => {
         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
         message: '올바른 이메일 형식이 아닙니다',
       },
-      onChange: () => setEmailChecked(false), // 이메일 변경 시 체크 초기화
     }),
     nickname: register('nickname', {
       required: '닉네임을 입력해주세요',
@@ -172,7 +152,6 @@ export const useSignupForm = () => {
         value: /^[가-힣a-zA-Z0-9]{2,10}$/,
         message: '2~10자의 한글, 영문, 숫자만 사용 가능합니다',
       },
-      onChange: () => setNicknameChecked(false), // 닉네임 변경 시 체크 초기화
     }),
     password: register('password', {
       required: '비밀번호를 입력해주세요',
