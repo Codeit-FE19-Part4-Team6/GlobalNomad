@@ -343,9 +343,9 @@ export interface MyActivityEditResponse {
  * MyNotifications 타입
  */
 // 내 알림 리스트 조회 응답
-export interface Notification {
+export interface NotificationsResponse {
   cursorId: number;
-  notification: {
+  notifications: {
     id: number;
     teamId: string;
     userId: number;
