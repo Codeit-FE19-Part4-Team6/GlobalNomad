@@ -76,7 +76,7 @@ function InnerCalendar({
       className='font-md-medium h-80 w-full overflow-auto rounded-xl border border-gray-100 bg-white p-2 md:rounded-2xl'
       modifiersClassNames={{
         selected: 'bg-primary-100 text-primary-500 font-md-bold rounded-full',
-        today: 'text-primary-500 font-md-medium',
+        today: 'text-primary-950 font-md-medium',
         disabled: 'text-gray-300 cursor-not-allowed',
       }}
       disabled={[{ before: new Date() }]}
