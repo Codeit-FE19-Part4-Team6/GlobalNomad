@@ -1,16 +1,18 @@
 import { http } from '@/apis/http';
-import type { MyActivitiesParams, Notification } from '@/apis/type';
+import type { MyActivitiesParams, NotificationsResponse } from '@/apis/type';
 
 const notificationApi = {
   // 내 알림 리스트 조회
   getNotifications: async (params: MyActivitiesParams) => {
-    return http.get<Notification>('/my-notifications', {
+    const response = await http.get<NotificationsResponse>('/my-notifications', {
       params,
     });
+    return response.data;
   },
-
+  // 내 알림 리스트 삭제
   deleteNotification: async (notificationId: number) => {
-    return http.delete(`/my-notifications/${notificationId}`);
+    const response = await http.delete(`/my-notifications/${notificationId}`);
+    return response.data;
   },
 };
 
