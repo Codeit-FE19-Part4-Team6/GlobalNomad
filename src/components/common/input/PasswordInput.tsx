@@ -1,9 +1,8 @@
-import { forwardRef, useState } from 'react';
+import { useState } from 'react';
 import { BaseInput } from './BaseInput';
 import { type BaseInputProps } from './types';
 import Icons from '@/assets/icons';
 
-// ✅ 개선 - 명시적으로 추가
 export interface PasswordInputProps extends Omit<BaseInputProps, 'type' | 'rightElement'> {
   /** 비밀번호 보기/숨기기 토글 표시 여부 @default true */
   showToggle?: boolean;
@@ -50,29 +49,22 @@ export interface PasswordInputProps extends Omit<BaseInputProps, 'type' | 'right
  * />
  * ```
  */
-export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ showToggle = true, ...props }, ref) => {
-    const [showPassword, setShowPassword] = useState(false);
+export const PasswordInput = ({ showToggle = true, ...props }: PasswordInputProps) => {
+  const [showPassword, setShowPassword] = useState(false);
 
-    const toggleButton = showToggle ? (
-      <button
-        type='button'
-        onClick={() => setShowPassword((prev) => !prev)}
-        className='text-gray-500 transition-colors hover:text-gray-700'
-        aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}>
-        {showPassword ? <Icons.PasswordShow /> : <Icons.PasswordHidden />}
-      </button>
-    ) : undefined;
+  const toggleButton = showToggle ? (
+    <button
+      type='button'
+      onClick={() => setShowPassword((prev) => !prev)}
+      className='text-gray-500 transition-colors hover:text-gray-700'
+      aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}>
+      {showPassword ? <Icons.PasswordShow /> : <Icons.PasswordHidden />}
+    </button>
+  ) : undefined;
 
-    return (
-      <BaseInput
-        ref={ref}
-        type={showPassword ? 'text' : 'password'}
-        rightElement={toggleButton}
-        {...props}
-      />
-    );
-  }
-);
+  return (
+    <BaseInput type={showPassword ? 'text' : 'password'} rightElement={toggleButton} {...props} />
+  );
+};
 
 PasswordInput.displayName = 'PasswordInput';
