@@ -18,7 +18,6 @@ type ActivePage = 'profile' | 'bookings' | 'experiences' | 'status';
 export default function MyPageLayout() {
   const [activePage, setActivePage] = useState<ActivePage>('bookings');
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const handleMobileSelect = (page: ActivePage) => {
     setActivePage(page);
     setMobileOpen(true);
