@@ -269,7 +269,7 @@ export interface MyActivityReservationResponse {
     teamId: string;
     activityId: number;
     scheduleId: number;
-    status: string;
+    status: 'declined' | 'pending' | 'confirmed';
     reviewSubmitted: boolean;
     totalPrice: number;
     headCount: number;
