@@ -71,7 +71,7 @@ export const Header = ({ userName, onLogin, onSignUp }: Props) => {
 
   return (
     <header className='sticky top-0 z-50 bg-white'>
-      <div className='mx-auto max-w-[1520px] px-6 py-[10px] sm:py-[26px]'>
+      <div className='mx-auto max-w-380 px-6 py-[10px] sm:py-[26px]'>
         <div className='flex h-16 items-center justify-between'>
           <Logo />
           <div className='flex items-center space-x-4'>

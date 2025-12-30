@@ -50,22 +50,22 @@ export default function CardsideBar({
         <SidebarButton
           theme='MyProfile'
           onClick={onProfileClick}
-          selected={activePage === 'profile'} // ← 여기
+          selected={activePage === 'profile'}
         />
         <SidebarButton
           theme='MyBookings'
           onClick={onBookingsClick}
-          selected={activePage === 'bookings'} // ← 여기
+          selected={activePage === 'bookings'}
         />
         <SidebarButton
           theme='MyExperiences'
           onClick={onExperiencesClick}
-          selected={activePage === 'experiences'} // ← 여기
+          selected={activePage === 'experiences'}
         />
         <SidebarButton
           theme='BookingStatus'
           onClick={onBookingStatusClick}
-          selected={activePage === 'status'} // ← 여기
+          selected={activePage === 'status'}
         />
       </div>
     </div>
