@@ -18,16 +18,16 @@ export default function ReservationCard({
   onReject,
 }: ReservationCardProps) {
   return (
-    <div className='flex h-[94px] flex-col justify-center rounded-[16px] border border-gray-100 px-[16px]'>
+    <div className='flex h-[94px] flex-col justify-center rounded-[16px] border border-gray-50 px-[16px]'>
       <div className='flex items-center justify-between gap-3'>
-        <div className='space-y-1'>
-          <div className='text-[13px] text-gray-600'>
-            <span className='font-lg-bold mr-[8px] text-gray-500'>닉네임</span>
-            <span className='font-lg-medium text-black-50'>{nickname}</span>
+        <div className='flex flex-col gap-[10px] space-y-1'>
+          <div className='font-md-bold text-gray-600'>
+            <span className='lg:font-lg-bold font-lg-bold mr-[8px] text-gray-500'>닉네임</span>
+            <span className='font-md-medium lg:font-lg-medium text-black-50'>{nickname}</span>
           </div>
-          <div className='text-[13px] text-gray-600'>
-            <span className='font-lg-bold mr-[22px] text-gray-500'>인원</span>
-            <span className='font-lg-medium text-black-50'>{headCount}명</span>
+          <div className='font-md-bold text-gray-600'>
+            <span className='lg:font-lg-bold font-lg-bold mr-[22px] text-gray-500'>인원</span>
+            <span className='font-md-medium lg:font-lg-medium text-black-50'>{headCount}명</span>
           </div>
         </div>
 

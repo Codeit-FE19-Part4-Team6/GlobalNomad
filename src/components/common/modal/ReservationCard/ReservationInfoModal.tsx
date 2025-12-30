@@ -72,7 +72,7 @@ export default function ReservationInfoModal({
       onMouseLeave={() => setIsMouseOnModal(false)}
       className='w-full rounded-tl-[24px] rounded-tr-[24px] rounded-b-none bg-white lg:w-[340px] lg:rounded-[24px] lg:shadow-[0_8px_24px_rgba(0,0,0,0.12)]'>
       {/* header */}
-      <div className='flex items-center justify-between px-[24px] pt-[30px]'>
+      <div className='mb-[12px] flex items-center justify-between px-[24px] pt-[30px]'>
         <h2 className='font-2xl-bold text-black-50'>{dateText}</h2>
 
         <button
@@ -86,7 +86,7 @@ export default function ReservationInfoModal({
 
       {/* tabs */}
       <div className='px-5 pt-3'>
-        <div className='flex gap-6 text-[13px]'>
+        <div className='font-lg-bold flex gap-[8px]'>
           <TabButton
             label={`신청 ${reservationCount.confirmed}`}
             active={tab === 'confirmed'}
@@ -110,25 +110,25 @@ export default function ReservationInfoModal({
       {/* content */}
       <div className='flex min-h-[233px] flex-col px-5 pt-4 pb-6 sm:flex-row sm:gap-[20px] lg:flex-col'>
         {/* 예약 시간 */}
-        <section className='mb-4 sm:w-[50%] lg:w-full'>
+        <section className='mb-4 flex flex-col gap-[12px] sm:w-[50%] lg:w-full'>
           <Label className='font-xl-bold mb-2 text-black'>예약 시간</Label>
 
-          <div className='rounded-xl border border-gray-200 px-3 py-2'>
+          <div className='flex h-[48px] items-center rounded-xl border border-gray-50 px-[20px] lg:h-[54px]'>
             <Dropdown className='relative w-full'>
               <DropdownTrigger className='flex w-full items-center justify-between'>
                 <span className='font-lg-medium'>{selectedTime || '예약 내역이 없습니다.'}</span>
                 <Icons.ArrowDown />
               </DropdownTrigger>
-              <DropdownList className='scrollbar-hide absolute mt-2 max-h-[132px] w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 px-3 py-2 shadow-md'>
+              <DropdownList className='scrollbar-hide absolute mt-2 flex max-h-[132px] w-full flex-col gap-[4px] overflow-y-auto rounded-xl border border-gray-50 bg-white p-1 px-3 py-2 shadow-md'>
                 {reservationTime.length === 0 ? (
-                  <div className='px-3 py-2 text-[13px] text-gray-500'>예약 시간이 없습니다.</div>
+                  <div className='font-md-bold px-3 py-2 text-gray-500'>예약 시간이 없습니다.</div>
                 ) : (
                   reservationTime.map((time) => (
                     <DropdownItem
                       key={time}
                       onClick={() => setSelectedTime(time)}
-                      className={`cursor-pointer rounded-lg px-3 py-2 text-[14px] hover:bg-gray-50 ${
-                        time === selectedTime ? 'bg-gray-100 font-semibold' : ''
+                      className={`font-lg-medium cursor-pointer rounded-lg px-3 py-2 text-gray-950 ${
+                        time === selectedTime ? 'font-lg-medium bg-gray-50' : ''
                       }`}>
                       {time}
                     </DropdownItem>
@@ -139,7 +139,7 @@ export default function ReservationInfoModal({
           </div>
         </section>
 
-        <section className='sm:w-[50%] lg:w-full'>
+        <section className='flex flex-col gap-[12px] sm:w-[50%] lg:w-full'>
           <Label className='font-xl-bold text-black-50 mb-2'>예약 내역</Label>
 
           <div className='scrollbar-hide max-h-[235px] space-y-3 overflow-y-auto'>
