@@ -74,7 +74,7 @@ export default function ReviewModal({
         </div>
         <div className='flex flex-col items-center gap-[14px]'>
           <div className='flex flex-col items-center gap-[6px]'>
-            <Title as='h3' className='font-md-bold md:font-lg-bold text-black'>
+            <Title as='h5' weight='bold' size='md' className='md:font-lg-bold'>
               {title}
             </Title>
             <p className='font-sm-medium md:font-md-medium flex gap-[4px] text-gray-500'>
