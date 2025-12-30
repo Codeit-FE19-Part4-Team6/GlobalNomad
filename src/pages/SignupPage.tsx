@@ -21,7 +21,7 @@ const SignupPage = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className='mx-auto my-[60px] flex max-w-[328px] flex-col items-center justify-center sm:my-[120px] sm:max-w-[640px]'>
+      className='mx-auto my-15 flex max-w-82 flex-col items-center justify-center sm:my-30 sm:max-w-160'>
       <Logo
         direction='vertical'
         iconClassName='h-[144px] w-[144px] mb-6'

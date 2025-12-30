@@ -4,6 +4,7 @@ import { PrimaryButton } from '@/components/common/button';
 import { PasswordInput, TextInput } from '@/components/common/input';
 import Title from '@/components/common/Title';
 import { useForm } from 'react-hook-form';
+import { useMemo } from 'react';
 
 type MyProfilePageProps = {
   setMobileOpen?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,7 +17,8 @@ type FormValues = {
   newPasswordConfirm: string;
 };
 
-// TODO: mock 내 정보 추후 제거 (내 정보 조회 API 대체)
+// TODO: 추후 내 정보 조회 API로 대체 예정
+// 현재는 UI/로직 테스트를 위한 mock 데이터
 const mockMyInfo = {
   nickname: '수정 전 이름',
   email: 'test@email.com',
@@ -37,25 +39,25 @@ export default function MyProfilePage({ setMobileOpen }: MyProfilePageProps) {
     },
   });
 
-  // 프로필 이미지 스토어
+  // previewUrl이 존재하면 사용자가 이미지를 변경한 상태
   const { previewUrl } = useProfileImageStore();
 
-  // 현재 폼 값 감시
-  const values = watch();
+  // 필요한 필드만 개별적으로 watch
+  const nickname = watch('nickname');
+  const newPassword = watch('newPassword');
+  const newPasswordConfirm = watch('newPasswordConfirm');
 
-  // 🔹 변경 여부 판단
-  const isNicknameChanged =
-    values.nickname.trim() !== '' && values.nickname !== mockMyInfo.nickname;
+  // 닉네임: 값이 있고 + 기존 닉네임과 다를 때
+  // 비밀번호: 비밀번호 or 비밀번호 확인 중 하나라도 입력되면 변경
+  // 이미지: previewUrl이 존재하면 변경
+  // useMemo를 사용해 의존 값이 바뀔 때만 재계산
+  const isFormChanged = useMemo(() => {
+    const isNicknameChanged = nickname.trim() !== '' && nickname !== mockMyInfo.nickname;
+    const isPasswordChanged = newPassword.trim().length > 0 || newPasswordConfirm.trim().length > 0;
+    const isImageChanged = !!previewUrl;
 
-  // 비밀번호 / 비밀번호 확인 중 하나라도 입력되면 변경
-  const isPasswordChanged =
-    values.newPassword.trim().length > 0 || values.newPasswordConfirm.trim().length > 0;
-
-  // 이미지가 바뀌었는지
-  const isImageChanged = !!previewUrl;
-
-  // 이메일은 수정 불가 변경 여부에서 제외
-  const isFormChanged = isNicknameChanged || isPasswordChanged || isImageChanged;
+    return isNicknameChanged || isPasswordChanged || isImageChanged;
+  }, [nickname, newPassword, newPasswordConfirm, previewUrl]);
 
   return (
     <div className='flex w-full flex-col gap-5 md:gap-6'>
@@ -98,7 +100,7 @@ export default function MyProfilePage({ setMobileOpen }: MyProfilePageProps) {
           placeholder='비밀번호를 한 번 더 입력해주세요'
           {...register('newPasswordConfirm', {
             validate: (value) =>
-              !values.newPassword || value === values.newPassword || '비밀번호가 일치하지 않습니다',
+              !newPassword || value === newPassword || '비밀번호가 일치하지 않습니다',
           })}
           error={!!errors.newPasswordConfirm}
           errorMessage={errors.newPasswordConfirm?.message}

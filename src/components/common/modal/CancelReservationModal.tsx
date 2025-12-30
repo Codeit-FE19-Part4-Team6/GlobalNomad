@@ -61,8 +61,7 @@ export default function CancelReservationModal({
       closeOnEsc={!isLoading}
       containerClassName={cn(BaseModalStyles(), className)}>
       <div className='flex flex-col items-center'>
-        <img src={Images.WarningLg} alt='Warning' className='block h-[49px] w-[49px] md:hidden' />
-        <img src={Images.WarningLg} alt='Warning' className='hidden h-22 w-22 md:block' />
+        <img src={Images.WarningLg} alt='Warning' className='h-[49px] w-[49px] md:h-22 md:w-22' />
         <p className='font-lg-bold md:font-xl-bold text-black'>{children}</p>
       </div>
 
