@@ -1,5 +1,5 @@
 import axios, { isAxiosError, type AxiosRequestConfig } from 'axios';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from '../libs/config';
 import { token } from './auth/token';
 import { refreshAccessToken } from './auth/refreshToken';
 

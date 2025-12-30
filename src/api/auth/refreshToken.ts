@@ -1,5 +1,5 @@
 import { refreshHttp } from '../refreshHttp';
-import { token } from '../auth/token';
+import { token } from './token';
 //서버에서 보내주는 타입
 type RefreshResponse = {
   accessToken: string;

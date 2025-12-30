@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { createActivity } from '@/libs/api/activity';
+import { createActivity } from '@/api/activity';
 import type { createdActivityRequest } from '@/types/activityRequest';
 
 export const useCreateActivity = () => {
