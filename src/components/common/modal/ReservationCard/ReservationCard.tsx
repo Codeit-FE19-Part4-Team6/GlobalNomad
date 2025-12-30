@@ -1,5 +1,4 @@
 import type { ReservationStatus } from '@/types/reservation';
-import Label from '@/components/common/Label';
 import { ActionButton } from '@/components/common/button';
 import { StateBadge } from '@/components/common/badge';
 
