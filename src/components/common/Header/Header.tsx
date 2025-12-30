@@ -7,7 +7,6 @@ import { type Notification } from '@/components/common/Header/types';
 
 interface Props {
   userName?: string;
-  notifications?: Notification[];
   onLogin?: () => void;
   onSignUp?: () => void;
 }
@@ -42,25 +41,17 @@ interface Props {
  * ```
  */
 
-export const Header = ({
-  userName,
-  notifications: initialNotifications = [],
-  onLogin,
-  onSignUp,
-}: Props) => {
+export const Header = ({ userName, onLogin, onSignUp }: Props) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
   const isLoggedIn = !!userName;
 
   const handleCloseAllDropdowns = () => {
     setIsUserMenuOpen(false);
     setIsNotificationOpen(false);
   };
-
-  useEffect(() => {
-    setNotifications(initialNotifications);
-  }, [initialNotifications]);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -74,8 +65,8 @@ export const Header = ({
 
   // 알림 삭제 핸들러
   const handleDeleteNotification = (id: number) => {
-    setNotifications(notifications.filter((n) => n.id !== id));
     // TODO: 실제 API 호출로 서버에서도 삭제
+    setNotifications((prev) => prev.filter((notification) => notification.id !== id));
   };
 
   return (
