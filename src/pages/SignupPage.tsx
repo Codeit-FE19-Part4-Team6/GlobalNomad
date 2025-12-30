@@ -85,7 +85,7 @@ const SignupPage = () => {
 
         <SecondaryButton type='button' className='w-full'>
           <div className='flex items-center gap-2 text-gray-600'>
-            <img src={Images.KakaoIcon} alt='카카오 로그인 버튼' className='h-6 w-6' />
+            <img src={Images.KakaoLogin} alt='카카오 로그인 버튼' className='h-6 w-6' />
             카카오 회원가입
           </div>
         </SecondaryButton>
