@@ -38,7 +38,7 @@ export default function TextArea({
         className={cn(
           'w-full resize-none border border-gray-100 bg-white px-5 placeholder:text-gray-400 focus:outline-none',
           variant === 'default'
-            ? 'placeholder:font-lg-medium md:placeholder:font-lg-medium font-md-medium md:font-lg-medium h-35 rounded-2xl py-4 md:h-50'
+            ? 'placeholder:font-lg-medium md:placeholder:font-lg-medium font-md-medium md:font-lg-medium h-35 max-w-175 rounded-2xl py-4 md:h-50'
             : 'placeholder:font-md-medium md:placeholder:font-lg-medium font-md-medium h-44.75 rounded-xl py-5',
           className
         )}

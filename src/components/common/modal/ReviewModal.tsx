@@ -3,7 +3,7 @@ import BaseModal from '@/components/common/modal/BaseModal';
 import RatingStar from '@/components/common/RatingStar';
 import TextArea from '@/components/common/TextArea';
 import { tv } from 'tailwind-variants';
-import icons from '@/assets/icons';
+import Icons from '@/assets/icons';
 import { PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
 import Label from '@/components/common/Label';
@@ -69,7 +69,7 @@ export default function ReviewModal({
       <div>
         <div className='mb-[4px] flex justify-end'>
           <button onClick={onClose} className='h-[24px] w-[24px]'>
-            <icons.Delete />
+            <Icons.Delete />
           </button>
         </div>
         <div className='flex flex-col items-center gap-[14px]'>
@@ -91,8 +91,8 @@ export default function ReviewModal({
       </div>
       <div className='flex flex-col gap-[8px]'>
         <div className='flex flex-col gap-[12px] md:gap-[16px]'>
-          <Label htmlFor='textarea' className='font-lg-bold md:font-xl-bold'>
-            소중한 겸험을 들려주세요.
+          <Label htmlFor='review-content' className='font-lg-bold md:font-xl-bold'>
+            소중한 경험을 들려주세요.
           </Label>
           <TextArea
             variant='modal'

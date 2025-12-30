@@ -29,7 +29,7 @@ type DropdownProps = {
  *     <DropdownItem onClick={...}>아이템2</DropdownItem>
  *   </DropdownList>
  * </Dropdown>
- * ```
+ * ```~
  *
  * 확장 사용:
  * - DatePicker, Calendar Popover 등

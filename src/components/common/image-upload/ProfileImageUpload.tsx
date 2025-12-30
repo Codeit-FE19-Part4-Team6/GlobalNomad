@@ -1,65 +1,52 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef } from 'react';
 import Icons from '@/assets/icons';
 import { cn } from '@/utils/cn';
+import { useProfileImageStore } from '@/stores/profileImageStore';
 
 type ProfileImageUploadProps = {
-  size?: 'Medium' | 'Large';
-  file?: File | null;
-  onFileChange?: (file: File | null) => void;
+  size?: 'medium' | 'large';
   edit?: boolean;
   className?: string;
   defaultImageUrl?: string | null;
 };
-
 /**
- * 프로필 이미지 업로드 컴포넌트
+ * ProfileImageUpload 컴포넌트
  *
- * - 프로필 이미지 미리보기 지원
- * - 기본 이미지 URL(defaultImageUrl) 표시 가능
- * - Medium / Large 사이즈
+ * - 프로필 이미지 선택 및 미리보기 UI 담당
+ * - edit=true 시 우측 하단 편집 버튼 표시, 클릭하면 파일 선택 가능
+ * - 파일 선택 시 setPreviewUrl 호출하여 store 상태 업데이트
+ * - 서버 업로드는 TODO로 남겨두었으며, API 연동 시 profileImageUrl 상태를 업데이트하면 자동 반영
  *
- * @example
- * <ProfileImageUpload
- *   size="Large"
- *   file={file}
- *   defaultImageUrl={user.profileImage}
- *   edit
- *   onFileChange={setFile}
- * />
+ * 사용 예시:
+ * <ProfileImageUpload size="large" edit />
  */
 export default function ProfileImageUpload({
-  size = 'Medium',
-  file,
-  onFileChange,
+  size = 'medium',
   edit = false,
-  defaultImageUrl,
   className,
+  defaultImageUrl,
 }: ProfileImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const preview = useMemo(() => {
-    if (file) {
-      return URL.createObjectURL(file);
-    }
-    return defaultImageUrl ?? null;
-  }, [file, defaultImageUrl]);
-
-  useEffect(() => {
-    if (!preview || !file) {
-      return;
-    }
-    return () => URL.revokeObjectURL(preview);
-  }, [preview, file]);
+  const { previewUrl, profileImageUrl, setPreviewUrl, clearPreview } = useProfileImageStore();
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     inputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0] || null;
-    onFileChange?.(selected);
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      clearPreview();
+      return;
+    }
+
+    setPreviewUrl(file);
+
+    // TODO: 서버 업로드 (나중에 API 연동)
   };
+
+  const background = previewUrl ?? profileImageUrl ?? defaultImageUrl ?? null;
 
   return (
     <div className={cn('relative inline-block h-fit w-fit', className)}>
@@ -67,16 +54,16 @@ export default function ProfileImageUpload({
         className={cn(
           'flex aspect-square items-center justify-center overflow-hidden rounded-full bg-gray-200',
           {
-            'h-17.5 w-17.5': size === 'Medium',
-            'h-30 w-30': size === 'Large',
+            'h-17.5 w-17.5': size === 'medium',
+            'h-30 w-30': size === 'large',
           }
         )}
         style={{
-          backgroundImage: preview ? `url(${preview})` : undefined,
+          backgroundImage: background ? `url(${background})` : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}>
-        {!preview && (size === 'Medium' ? <Icons.ProfileMd /> : <Icons.ProfileLg />)}
+        {!background && (size === 'medium' ? <Icons.ProfileMd /> : <Icons.ProfileLg />)}
       </div>
 
       {edit && (
@@ -86,8 +73,8 @@ export default function ProfileImageUpload({
           className={cn(
             'absolute right-0 bottom-0 flex items-center justify-center rounded-full bg-gray-300',
             {
-              'h-6 w-6 p-[5.6px]': size === 'Medium',
-              'h-7.5 w-7.5 p-1.75': size === 'Large',
+              'h-6 w-6 p-[5.6px]': size === 'medium',
+              'h-7.5 w-7.5 p-1.75': size === 'large',
             }
           )}>
           <Icons.Edit className='text-white' />
