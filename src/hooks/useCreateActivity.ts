@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
-import activityApi from '@/apis/activity';
-import type { CreateActivityRequest } from '@/apis/type';
+import { createActivity } from '@/apis/activity';
+import type { createdActivityRequest } from '@/types/activityRequest';
 
 export const useCreateActivity = () => {
   return useMutation({
-    mutationFn: (payload: CreateActivityRequest) => activityApi.createActivity(payload),
+    mutationFn: (payload: createdActivityRequest) => createActivity(payload),
   });
 };
