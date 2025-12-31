@@ -11,6 +11,6 @@ export type createdActivityRequest = {
   price: number;
   address: string;
   schedules: scheduleRequest[];
-  bannerImageUrl: string[];
+  bannerImageUrl: string;
   introImageUrls: string[];
 };

@@ -17,9 +17,14 @@ import type { ScheduleRow } from '@/types/ScheduleRow';
 import { mapRowsToScheduleRequests } from '@/libs/mapper/activity';
 import type { createdActivityRequest } from '@/types/activityRequest';
 import { useCreateActivity } from '@/hooks/useCreateActivity';
+import { uploadActivityImage } from '@/libs/api/uploadActivityImage';
 import { isAxiosError } from 'axios';
 // import { useNavigate } from 'react-router-dom';
 
+const MAX_BANNER = 1;
+const MAX_INTRO = 4;
+
+//------------------------------
 //문자열 시간을 받아서 숫자로 바꾸는 함수
 //time을 받아서 " : " 기준으로 나눈다음 첫번째 인자를 리턴한다.
 const toHour = (time: string) => {
@@ -62,41 +67,85 @@ export default function CreateActivityPage() {
   const [rows, setRows] = useState<ScheduleRow[]>([]);
   const [title, setTitle] = useState('');
   const { mutate, isPending } = useCreateActivity();
+  const [bannerImages, setBannerImages] = useState<File[]>([]); // 수정
+  const [introImages, setIntroImages] = useState<File[]>([]); // 수정
   // const navigate = useNavigate();
+
+  const isFormValid =
+    title.trim() &&
+    category &&
+    text.trim() &&
+    Number(price) > 0 &&
+    address.trim() &&
+    rows.length > 0;
+  //bannerImages.length > 0;
+
+  const addBannerImage = (file: File) => {
+    setBannerImages((prev) => {
+      if (prev.length >= MAX_BANNER) {
+        return prev;
+      }
+      return [...prev, file];
+    });
+  };
+
+  const removeBannerImage = (index: number) => {
+    setBannerImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const addIntroImage = (file: File) => {
+    setIntroImages((prev) => {
+      if (prev.length >= MAX_INTRO) {
+        return prev;
+      }
+      return [...prev, file];
+    });
+  };
+
+  const removeIntroImage = (index: number) => {
+    setIntroImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   //서버로 데이터를 보내는 함수
   //payload는 보내는 data를 서버가 읽기 좋게 바꾼 형태
   //성공 시 onSuccess 실패 시 onError
   const handleSubmit = async () => {
-    const payload: createdActivityRequest = {
-      title,
-      category,
-      content: text, // 너는 설명 state가 text니까 content에 text 넣기
-      price: Number(price),
-      address,
-      schedules: mapRowsToScheduleRequests(rows),
-      bannerImageUrl: [],
-      introImageUrls: [],
-    };
+    try {
+      const bannerFile = bannerImages[0];
+      const bannerImageUrl = bannerFile ? await uploadActivityImage(bannerFile) : '';
 
-    mutate(payload, {
-      onSuccess: () => {
-        // 1️⃣ 성공 알림
-        alert('체험이 등록되었습니다');
+      const introImageUrls = await Promise.all(
+        introImages.map((file: File) => uploadActivityImage(file))
+      );
 
-        // 2️⃣ 생성된 체험 상세 페이지로 이동
-        // navigate(`/activities/${data.id}`);
-        console.log(payload);
-      },
+      const payload: createdActivityRequest = {
+        title,
+        category,
+        content: text,
+        price: Number(price),
+        address,
+        schedules: mapRowsToScheduleRequests(rows),
+        bannerImageUrl,
+        introImageUrls,
+      };
 
-      onError: (error) => {
-        if (isAxiosError(error)) {
-          alert(error.response?.data?.message ?? '서버 오류');
-        } else {
-          alert('알 수 없는 오류가 발생했습니다');
-        }
-      },
-    });
+      mutate(payload, {
+        onSuccess: () => {
+          alert('체험이 등록되었습니다');
+          console.log(payload);
+        },
+        onError: (error) => {
+          if (isAxiosError(error)) {
+            alert(error.response?.data?.message ?? '서버 오류');
+          } else {
+            alert('알 수 없는 오류가 발생했습니다');
+          }
+        },
+      });
+    } catch (e) {
+      alert('이미지 업로드 중 오류가 발생했습니다');
+      console.error(e);
+    }
   };
 
   //사용자가 입력한 값을 담는 함수
@@ -192,20 +241,20 @@ export default function CreateActivityPage() {
   // (5) 렌더
   // ----------------------------
   return (
-    <div className='mx-auto flex w-full flex-col gap-[30px] px-[24px] md:w-[700px] md:px-[30px] lg:px-[0px]'>
-      <div className='flex flex-col gap-[24px]'>
+    <div className='mx-auto flex w-full flex-col gap-7.5 px-6 md:w-175 md:px-7.5 lg:px-0'>
+      <div className='flex flex-col gap-6'>
         <Title as='h3' className='font-xl-bold text-gray-950'>
           내 체험등록
         </Title>
 
         {/* 제목 */}
-        <div className='flex flex-col gap-[10px]'>
+        <div className='flex flex-col gap-2.5'>
           <Label className='font-lg-bold text-gray-950'>제목</Label>
           <BaseInput onChange={onChangeTitle} id='title' placeholder='제목을 입력해 주세요' />
         </div>
 
         {/* 카테고리 */}
-        <div className='flex flex-col gap-[10px]'>
+        <div className='flex flex-col gap-2.5'>
           <Label className='font-lg-bold text-gray-950'>카테고리</Label>
 
           <Dropdown className='relative w-full'>
@@ -230,7 +279,7 @@ export default function CreateActivityPage() {
         </div>
 
         {/* 설명 */}
-        <div className='flex flex-col gap-[10px]'>
+        <div className='flex flex-col gap-2.5'>
           <Label className='font-lg-bold text-gray-950'>설명</Label>
           <TextArea
             value={text}
@@ -241,7 +290,7 @@ export default function CreateActivityPage() {
         </div>
 
         {/* 가격 */}
-        <div className='flex flex-col gap-[10px]'>
+        <div className='flex flex-col gap-2.5'>
           <Label className='font-lg-bold text-gray-950'>가격</Label>
           <BaseInput
             value={price}
@@ -252,7 +301,7 @@ export default function CreateActivityPage() {
         </div>
 
         {/* 주소 */}
-        <div className='flex flex-col gap-[10px]'>
+        <div className='flex flex-col gap-2.5'>
           <Label className='font-lg-bold text-gray-950'>주소</Label>
           <BaseInput
             value={address}
@@ -270,11 +319,11 @@ export default function CreateActivityPage() {
     ✅ 예약 가능한 시간대
     ---------------------------- */}
       <div className='w-full'>
-        <Title className='font-lg-bold mb-[18px] text-gray-950' as='h4'>
+        <Title className='font-lg-bold mb-4.5 text-gray-950' as='h4'>
           예약 가능한 시간대
         </Title>
 
-        <div className='flex flex-col gap-[10px]'>
+        <div className='flex flex-col gap-2.5'>
           {/* ✅ 헤더: 모바일에서 숨기고(sm 이상에서만 보이기) */}
           <div className='hidden w-full grid-cols-[1fr_160px_200px_auto] items-end gap-4 sm:grid'>
             <Label className='font-lg-medium text-gray-950'>날짜</Label>
@@ -301,15 +350,15 @@ export default function CreateActivityPage() {
             {/* (2) 시작/종료 (모바일에서 가로로 한 줄) */}
             <div className='grid grid-cols-[1fr_auto_1fr_auto] items-end gap-2 sm:contents'>
               {/* 시작 시간 */}
-              <div className='w-full sm:w-[160px]'>
+              <div className='w-full sm:w-40'>
                 <Label className='font-lg-medium text-gray-950 sm:hidden'>시작 시간</Label>
                 <Dropdown className='relative w-full'>
-                  <DropdownTrigger className='flex h-[54px] w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
+                  <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
                     <span>{draft.startTime}</span>
                     <Icons.ArrowDown />
                   </DropdownTrigger>
 
-                  <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-[160px] w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
+                  <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
                     {TIME_OPTIONS.map((time) => (
                       <DropdownItem
                         key={time}
@@ -323,18 +372,18 @@ export default function CreateActivityPage() {
               </div>
 
               {/* 가운데 ~ */}
-              <span className='mb-[16px] text-gray-400 sm:hidden'>-</span>
+              <span className='mb-4 text-gray-400 sm:hidden'>-</span>
 
               {/* 종료 시간 */}
-              <div className='w-full sm:w-[160px]'>
+              <div className='w-full sm:w-40'>
                 <Label className='font-lg-medium text-gray-950 sm:hidden'>종료 시간</Label>
                 <Dropdown className='relative w-full'>
-                  <DropdownTrigger className='flex h-[54px] w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
+                  <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
                     <span>{draft.endTime}</span>
                     <Icons.ArrowDown />
                   </DropdownTrigger>
 
-                  <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-[160px] w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
+                  <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
                     {TIME_OPTIONS.filter((t) => toHour(t) > toHour(draft.startTime)).map((time) => (
                       <DropdownItem
                         key={time}
@@ -347,19 +396,19 @@ export default function CreateActivityPage() {
                 </Dropdown>
               </div>
               {/* ✅ 모바일에서 + 버튼은 시간 옆 */}
-              <div className='mb-[6px] shrink-0 sm:hidden'>
-                <CircleButton variant='plus' onClick={addScheduleFromDraft} />
+              <div className='mb-1.5 shrink-0 sm:hidden'>
+                <CircleButton variant='plus' icon={<Icons.Plus />} onClick={addScheduleFromDraft} />
               </div>
 
               {/* ✅ sm 이상에서만 보이는 + 버튼 자리(원래대로) */}
               <div className='hidden sm:flex sm:justify-end'>
-                <CircleButton variant='plus' onClick={addScheduleFromDraft} />
+                <CircleButton variant='plus' icon={<Icons.Plus />} onClick={addScheduleFromDraft} />
               </div>
             </div>
           </div>
         </div>
 
-        <span className='border-grey-100 mt-[20px] mb-[20px] block w-full border-b' />
+        <span className='border-grey-100 mt-5 mb-5 block w-full border-b' />
 
         {/* ✅ 아래 목록(rows)
       - 모바일: 2줄 구조 + (- 버튼은 날짜 줄 오른쪽)
@@ -381,16 +430,16 @@ export default function CreateActivityPage() {
 
             {/* 시작/종료 */}
             <div className='grid grid-cols-[1fr_auto_1fr_auto] items-end gap-2 sm:contents'>
-              <div className='w-full sm:w-[160px]'>
+              <div className='w-full sm:w-40'>
                 <Label className='font-lg-medium text-gray-950 sm:hidden'>시작 시간</Label>
                 <div className='flex h-13.5 items-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900'>
                   {row.startTime}
                 </div>
               </div>
 
-              <span className='mb-[16px] text-gray-400 sm:hidden'>-</span>
+              <span className='mb-4 text-gray-400 sm:hidden'>-</span>
 
-              <div className='w-full sm:w-[160px]'>
+              <div className='w-full sm:w-40'>
                 <Label className='font-lg-medium text-gray-950 sm:hidden'>종료 시간</Label>
                 <div className='flex h-13.5 items-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900'>
                   {row.endTime}
@@ -399,32 +448,53 @@ export default function CreateActivityPage() {
 
               {/* ✅ sm 이상에서는 원래 자리의 - 버튼 */}
               <div className='hidden sm:flex sm:justify-end'>
-                <CircleButton variant='minus' onClick={() => removeRow(row.uiId)} />
+                <CircleButton
+                  variant='minus'
+                  icon={<Icons.Minus />}
+                  onClick={() => removeRow(row.uiId)}
+                />
               </div>
 
               {/* - 버튼: 모바일에서는 날짜 옆 */}
-              <div className='mb-[6px] shrink-0 sm:hidden'>
-                <CircleButton variant='minus' onClick={() => removeRow(row.uiId)} />
+              <div className='mb-1.5 shrink-0 sm:hidden'>
+                <CircleButton
+                  variant='minus'
+                  icon={<Icons.Minus />}
+                  onClick={() => removeRow(row.uiId)}
+                />
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className='flex flex-col gap-[10px]'>
+      <div className='flex flex-col gap-2.5'>
         <Label>
           <span className='font-lg-bold text-gray-950'>배너 이미지 등록</span>
         </Label>
-        <BannerImageSection />
+        <BannerImageSection
+          images={bannerImages}
+          maxFiles={MAX_BANNER}
+          onAdd={addBannerImage}
+          onRemove={removeBannerImage}
+        />
       </div>
-      <div className='flex flex-col gap-[10px]'>
+      <div className='flex flex-col gap-2.5'>
         <Label>
           <span className='font-lg-bold text-gray-950'>소개 이미지 등록</span>
         </Label>
-        <IntroImageSection />
+        <IntroImageSection
+          images={introImages}
+          maxFiles={MAX_INTRO}
+          onAdd={addIntroImage}
+          onRemove={removeIntroImage}
+        />
       </div>
-      <div className='mb-[30px] flex justify-center md:mb-[53px] lg:mb-[106px]'>
-        <PrimaryButton onClick={handleSubmit} className='font-md-bold h-[41px] w-[120px]'>
+      <div className='mb-7.5 flex justify-center md:mb-13.25 lg:mb-26.5'>
+        <PrimaryButton
+          disabled={!isFormValid || isPending}
+          onClick={handleSubmit}
+          className='font-md-bold h-10.25 w-30'>
           {isPending ? '등록 중...' : '등록하기'}
         </PrimaryButton>
       </div>
