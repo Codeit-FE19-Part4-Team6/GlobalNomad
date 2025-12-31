@@ -20,13 +20,13 @@ export default function ReservationCard({
   return (
     <div className='flex h-23.5 flex-col justify-center rounded-2xl border border-gray-50 px-4'>
       <div className='flex items-center justify-between gap-3'>
-        <div className='flex flex-col gap-2.5 space-y-1'>
-          <div className='font-md-bold text-gray-600'>
-            <span className='lg:font-lg-bold font-lg-bold mr-2 text-gray-500'>닉네임</span>
+        <div className='flex flex-col gap-2.5'>
+          <div>
+            <span className='lg:font-lg-bold font-md-bold mr-2 text-gray-500'>닉네임</span>
             <span className='font-md-medium lg:font-lg-medium text-black-50'>{nickname}</span>
           </div>
-          <div className='font-md-bold text-gray-600'>
-            <span className='lg:font-lg-bold font-lg-bold mr-5.5 text-gray-500'>인원</span>
+          <div>
+            <span className='lg:font-lg-bold font-md-bold mr-5.5 text-gray-500'>인원</span>
             <span className='font-md-medium lg:font-lg-medium text-black-50'>{headCount}명</span>
           </div>
         </div>

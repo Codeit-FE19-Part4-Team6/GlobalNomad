@@ -9,7 +9,7 @@ export default function TabButton({
 }) {
   return (
     <button type='button' onClick={onClick} className='relative w-full pb-3 lg:w-17.5'>
-      <span className={active ? 'font-lg-bold text-primary-500' : 'font-lg-bold text-gray-500'}>
+      <span className={active ? 'font-lg-bold text-primary-500' : 'font-lg-medium text-gray-500'}>
         {label}
       </span>
 
