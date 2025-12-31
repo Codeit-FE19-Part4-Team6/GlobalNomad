@@ -31,6 +31,8 @@
   };
  */
 
+export type ActivityCategory = '문화 · 예술' | '식음료' | '투어' | '스포츠' | '관광' | '웰빙';
+
 // 사용자 인증 관련 타입
 export interface SignupRequest {
   email: string;
@@ -61,7 +63,7 @@ export interface Activity {
 export interface ActivityRequest {
   method: 'cursor' | 'offset';
   cursorId?: number;
-  category?: '문화 · 예술' | '식음료' | '투어' | '스포츠' | '관광' | '웰빙';
+  category?: ActivityCategory;
   sort?: 'most_reviewed' | 'price_asc' | 'price_desc' | 'latest';
   page?: number;
   size?: number;
@@ -310,7 +312,7 @@ export interface UpdateMyActivityReservationStatusResponse {
 // 내 체험 수정 요청
 export interface MyActivityEditRequest {
   title: string;
-  category: '문화 • 예술' | '식음료' | '투어' | '스포츠' | '관광' | '웰빙';
+  category: ActivityCategory;
   description: string;
   price: number;
   address: string;
