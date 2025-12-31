@@ -8,13 +8,13 @@ export default function TabButton({
   onClick: () => void;
 }) {
   return (
-    <button type='button' onClick={onClick} className='relative w-[100%] pb-3 lg:w-[70px]'>
+    <button type='button' onClick={onClick} className='relative w-full pb-3 lg:w-17.5'>
       <span className={active ? 'font-lg-bold text-primary-500' : 'font-lg-bold text-gray-500'}>
         {label}
       </span>
 
       {active && (
-        <span className='bg-primary-500 absolute right-0 bottom-[-5px] left-0 h-[2px] rounded lg:w-[70px]' />
+        <span className='bg-primary-500 absolute right-0 -bottom-1.25 left-0 h-0.5 rounded lg:w-17.5' />
       )}
     </button>
   );
