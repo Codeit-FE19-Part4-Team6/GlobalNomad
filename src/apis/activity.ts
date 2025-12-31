@@ -1,4 +1,4 @@
-import { http } from '@/libs/api/http';
+import { http } from '@/apis/http';
 import type { createdActivityRequest } from '@/types/activityRequest';
 
 export type CreatedActivityResponse = {
