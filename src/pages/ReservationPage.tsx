@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import Card from '@/components/common/card';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
 import ReviewModal from '@/components/common/modal/ReviewModal';
@@ -80,18 +81,18 @@ const mockReservations: Reservation[] = [
   },
 ];
 
-type ReservationPageProps = {
-  setMobileOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+type OutletContextType = {
+  setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function ReservationPage({ setMobileOpen }: ReservationPageProps) {
+export default function ReservationPage() {
   const [selected, setSelected] = useState<Reservation['status']>('confirmed');
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null);
   const [reservations, setReservations] = useState<Reservation[]>(mockReservations);
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
-
+  const { setMobileOpen } = useOutletContext<OutletContextType>();
   const filteredReservations = reservations.filter((item) => item.status === selected);
 
   const handleReviewClick = (reservation: Reservation) => {
@@ -126,7 +127,7 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
       <div className='flex flex-col items-start gap-2.5 py-2.5'>
         <Icons.Down
           className='block rotate-90 cursor-pointer md:hidden'
-          onClick={() => setMobileOpen?.(false)}
+          onClick={() => setMobileOpen(false)}
         />
         <Title as='h3' size='xl' weight='bold'>
           예약내역

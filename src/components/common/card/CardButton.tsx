@@ -25,7 +25,6 @@ export default function CardButton({
 }: CardButtonProps) {
   const { variant } = useCardContext();
 
-  // 리스트용 버튼 (수정 / 삭제)
   if (variant === 'list') {
     if (!onEdit && !onDelete) {
       return null;

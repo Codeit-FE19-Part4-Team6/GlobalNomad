@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import './index.css';
+import { Navigate } from 'react-router-dom';
 import { StrictMode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -7,7 +8,11 @@ import Layout from './components/common/Layout.tsx';
 import MainPage from './pages/MainPage.tsx';
 import LoginPage from '@/pages/LoginPage.tsx';
 import NotFoundPage from '@/pages/NotFoundPage.tsx';
-
+import MyPageLayout from '@/pages/MyPageLayout';
+import MyProfilePage from '@/pages/MyProfilePage';
+import ReservationPage from '@/pages/ReservationPage';
+import MyExperiencesPage from '@/pages/MyExperiencesPage';
+import BookingStatusPage from '@/pages/BookingStatusPage';
 // QueryClient를 컴포넌트 밖에서 한 번만 생성
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,19 +30,29 @@ const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
     children: [
       {
-        // 헤더와 푸터가 있는 레이아웃이 필요한 페이지들
         path: '/',
         element: <Layout />,
-        children: [{ path: '/', element: <MainPage /> }],
-        // 헤더/푸터가 필요한 다른 페이지는 여기에 추가
-        // 예: { path: '/about', element: <AboutPage /> },
+        children: [
+          { index: true, element: <MainPage /> },
+          {
+            path: 'mypage',
+            element: <MyPageLayout />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to='reservation' replace />,
+              },
+              { path: 'profile', element: <MyProfilePage /> },
+              { path: 'reservation', element: <ReservationPage /> },
+              { path: 'experiences', element: <MyExperiencesPage /> },
+              { path: 'status', element: <BookingStatusPage /> },
+            ],
+          },
+        ],
       },
       {
-        // 헤더와 푸터 없이 독립적인 레이아웃이 필요한 페이지들
         path: '/login',
         element: <LoginPage />,
-        // 회원가입 및 다른 페이지 추가 시 여기에 작성
-        // 예: { path: '/signup', element: <SignupPage /> },
       },
     ],
   },
