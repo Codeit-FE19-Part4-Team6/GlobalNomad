@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import Card from '@/components/common/card';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
 import ReviewModal from '@/components/common/modal/ReviewModal';
 import { FilterButton, PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
-import type { MyReservationsResponse } from '@/apis/type';
 import { StateBadge } from '@/components/common/badge';
 import { Down, Earth } from '@/assets/icons';
+import type { MyReservationsResponse } from '@/apis/type';
+import { useSearchParams } from 'react-router-dom';
 
 type Reservation = {
   id: number;
@@ -22,7 +22,7 @@ type Reservation = {
   reviewSubmitted?: boolean;
 };
 
-// TODO: mock 데이터
+// mock 데이터
 const mockReservations: Reservation[] = [
   {
     id: 1,
@@ -59,7 +59,7 @@ const mockReservations: Reservation[] = [
   },
   {
     id: 4,
-    title: '에약 대기 예시',
+    title: '예약 대기 예시',
     bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
     status: 'pending',
     totalPrice: 32000,
@@ -81,37 +81,43 @@ const mockReservations: Reservation[] = [
   },
 ];
 
-type OutletContextType = {
+type Props = {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function ReservationPage() {
-  const [selected, setSelected] = useState<Reservation['status']>('confirmed');
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+export default function ReservationPage({ setMobileOpen }: Props) {
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false); // 모달 상태
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null);
+  const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null); // 선택된 예약 정보
   const [reservations, setReservations] = useState<Reservation[]>(mockReservations);
-  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
-  const { setMobileOpen } = useOutletContext<OutletContextType>();
-  const filteredReservations = reservations.filter((item) => item.status === selected);
-
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null); // 예약 목록 상태
+  const [searchParams, setSearchParams] = useSearchParams(); // 필터 상태
+  const statusParam = searchParams.get('status') as Reservation['status'] | null;
+  const [selected, setSelected] = useState<Reservation['status']>(statusParam || 'confirmed'); // 현재 선택된 예약 상태 (기본값: 예약 완료)
+  const filteredReservations = reservations.filter((item) => item.status === selected); // 선택된 상태값에 따른 예약 목록 필터링
+  // 리뷰 작성 버튼 클릭
   const handleReviewClick = (reservation: Reservation) => {
     setSelectedReservation(reservation);
     setIsReviewModalOpen(true);
   };
-
-  const isReviewModalClose = () => setIsReviewModalOpen(false);
-
+  // 필터 버튼 클릭
+  const handleFilterClick = (status: Reservation['status']) => {
+    setSelected(status);
+    searchParams.set('status', status); // URL 쿼리 파라미터와 상태 동기화
+    setSearchParams(searchParams);
+  };
+  const isReviewModalClose = () => setIsReviewModalOpen(false); // 리뷰 모달 닫기
+  // 예약 취소 버튼 클릭
   const handleCancelClick = (id: number) => {
     setSelectedReservationId(id);
     setIsCancelModalOpen(true);
   };
-
+  // 예약 취소 확정
   const handleConfirmCancel = () => {
     if (selectedReservationId === null) {
       return;
     }
-
+    // 선택된 예약 상태를 canceled로 변경
     setReservations((prev) =>
       prev.map((item) =>
         item.id === selectedReservationId ? { ...item, status: 'canceled' } : item
@@ -121,7 +127,6 @@ export default function ReservationPage() {
     setIsCancelModalOpen(false);
     setSelectedReservationId(null);
   };
-
   return (
     <div className='flex flex-col gap-10 px-4 md:px-7.5'>
       <div className='flex flex-col items-start gap-2.5 py-2.5'>
@@ -134,7 +139,6 @@ export default function ReservationPage() {
         </Title>
         <div className='font-md-medium text-gray-500'>예약내역 변경 및 취소할 수 있습니다.</div>
       </div>
-
       {reservations.length === 0 ? (
         <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
           <div className='flex flex-col items-center justify-center'>
@@ -152,31 +156,23 @@ export default function ReservationPage() {
       ) : (
         <>
           <div className='scrollbar-hide -mr-6 mb-3.25 flex flex-nowrap gap-2 overflow-x-auto md:mb-7.5'>
-            <FilterButton
-              selected={selected === 'confirmed'}
-              onClick={() => setSelected('confirmed')}>
-              예약 완료
-            </FilterButton>
-            <FilterButton
-              selected={selected === 'canceled'}
-              onClick={() => setSelected('canceled')}>
-              예약 취소
-            </FilterButton>
-            <FilterButton
-              selected={selected === 'declined'}
-              onClick={() => setSelected('declined')}>
-              예약 거절
-            </FilterButton>
-            <FilterButton
-              selected={selected === 'completed'}
-              onClick={() => setSelected('completed')}>
-              체험 완료
-            </FilterButton>
-            <FilterButton selected={selected === 'pending'} onClick={() => setSelected('pending')}>
-              예약 대기
-            </FilterButton>
+            {['confirmed', 'canceled', 'declined', 'completed', 'pending'].map((s) => (
+              <FilterButton
+                key={s}
+                selected={selected === s}
+                onClick={() => handleFilterClick(s as Reservation['status'])}>
+                {s === 'confirmed'
+                  ? '예약 완료'
+                  : s === 'canceled'
+                    ? '예약 취소'
+                    : s === 'declined'
+                      ? '예약 거절'
+                      : s === 'completed'
+                        ? '체험 완료'
+                        : '예약 대기'}
+              </FilterButton>
+            ))}
           </div>
-
           <div className='flex flex-col gap-7.5 lg:gap-6'>
             {filteredReservations.map((item) => (
               <Card
@@ -217,7 +213,6 @@ export default function ReservationPage() {
           </div>
         </>
       )}
-
       <CancelReservationModal
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
@@ -226,7 +221,6 @@ export default function ReservationPage() {
         confirmText='예약 취소'>
         예약을 취소하시겠습니까?
       </CancelReservationModal>
-
       {selectedReservation && (
         <ReviewModal
           isOpen={isReviewModalOpen}

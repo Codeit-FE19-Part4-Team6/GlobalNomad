@@ -1,4 +1,3 @@
-import { useOutletContext } from 'react-router-dom';
 import { useProfileImageStore } from '@/stores/profileImageStore';
 import { PrimaryButton } from '@/components/common/button';
 import { PasswordInput, TextInput } from '@/components/common/input';
@@ -7,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { useMemo } from 'react';
 import { Down } from '@/assets/icons';
 
-type OutletContextType = {
+type Props = {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -18,15 +17,18 @@ type FormValues = {
   newPasswordConfirm: string;
 };
 
-// mock data
+// mock 데이터 (추후 API 응답으로 대체 예정)
 const mockMyInfo = {
   nickname: '수정 전 이름',
   email: 'test@email.com',
 };
 
-export default function MyProfilePage() {
-  const { setMobileOpen } = useOutletContext<OutletContextType>();
-
+export default function MyProfilePage({ setMobileOpen }: Props) {
+  /**
+   * react-hook-form 설정
+   * - onBlur: input 포커스가 빠질 때 검증
+   * - defaultValues: 초기 폼 상태
+   */
   const {
     register,
     watch,
@@ -40,13 +42,25 @@ export default function MyProfilePage() {
       newPasswordConfirm: '',
     },
   });
-
+  /**
+   * 프로필 이미지 미리보기 상태
+   * - 이미지 변경 여부 판단에 사용
+   */
   const { previewUrl } = useProfileImageStore();
-
+  /**
+   * 입력값 실시간 감시
+   * 변경 여부 판단을 위해 사용
+   */
   const nickname = watch('nickname');
   const newPassword = watch('newPassword');
   const newPasswordConfirm = watch('newPasswordConfirm');
-
+  /**
+   * 폼 변경 여부 계산
+   * - 닉네임 변경
+   * - 비밀번호 입력 여부
+   * - 프로필 이미지 변경 여부
+   * → 하나라도 변경되면 "수정하기" 버튼 활성화
+   */
   const isFormChanged = useMemo(() => {
     const isNicknameChanged = nickname.trim() !== '' && nickname !== mockMyInfo.nickname;
     const isPasswordChanged = newPassword.trim().length > 0 || newPasswordConfirm.trim().length > 0;
