@@ -61,7 +61,7 @@ export interface Activity {
 export interface ActivityRequest {
   method: 'cursor' | 'offset';
   cursorId?: number;
-  category?: '문화 • 예술' | '식음료' | '투어' | '스포츠' | '관광' | '웰빙';
+  category?: '문화 · 예술' | '식음료' | '투어' | '스포츠' | '관광' | '웰빙';
   sort?: 'most_reviewed' | 'price_asc' | 'price_desc' | 'latest';
   page?: number;
   size?: number;
