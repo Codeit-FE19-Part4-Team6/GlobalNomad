@@ -7,7 +7,7 @@ import Layout from './components/common/Layout.tsx';
 import MainPage from './pages/MainPage.tsx';
 import LoginPage from '@/pages/LoginPage.tsx';
 import NotFoundPage from '@/pages/NotFoundPage.tsx';
-import MyPageLayout from '@/pages/mypage/MyPageLayout.tsx';
+import MyPageLayout from '@/pages/MyPageLayout.tsx';
 
 // QueryClient 생성
 const queryClient = new QueryClient({

@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Card from '@/components/common/card';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
 import ReviewModal from '@/components/common/modal/ReviewModal';
 import { FilterButton, PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
-import { StateBadge } from '@/components/common/badge';
 import { Down, Earth } from '@/assets/icons';
 import type { MyReservationsResponse } from '@/apis/type';
 import { useSearchParams } from 'react-router-dom';
@@ -80,6 +79,9 @@ const mockReservations: Reservation[] = [
     endTime: '18:00',
   },
 ];
+const STATUS_LIST = ['confirmed', 'canceled', 'declined', 'completed', 'pending'] as const;
+
+type Status = (typeof STATUS_LIST)[number];
 
 type Props = {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -92,8 +94,16 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   const [reservations, setReservations] = useState<Reservation[]>(mockReservations);
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null); // 예약 목록 상태
   const [searchParams, setSearchParams] = useSearchParams(); // 필터 상태
-  const statusParam = searchParams.get('status') as Reservation['status'] | null;
-  const [selected, setSelected] = useState<Reservation['status']>(statusParam || 'confirmed'); // 현재 선택된 예약 상태 (기본값: 예약 완료)
+  const rawStatus = searchParams.get('status');
+  const statusParam: Status = STATUS_LIST.includes(rawStatus as Status)
+    ? (rawStatus as Status)
+    : 'confirmed';
+  const [selected, setSelected] = useState<Status>(statusParam);
+
+  useEffect(() => {
+    setSelected(statusParam);
+  }, [statusParam]);
+
   const filteredReservations = reservations.filter((item) => item.status === selected); // 선택된 상태값에 따른 예약 목록 필터링
   // 리뷰 작성 버튼 클릭
   const handleReviewClick = (reservation: Reservation) => {
@@ -181,7 +191,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
                 className='border-t border-gray-50 pt-5 first:border-t-0 lg:mt-0 lg:mb-3 lg:border-t-0 lg:pt-0'>
                 <div className='flex flex-row'>
                   <Card.Content>
-                    <StateBadge status={item.status} />
+                    <Card.Badge status={item.status} />
                     <Card.Title title={item.title} />
                     <Card.Schedule
                       date={item.date}
