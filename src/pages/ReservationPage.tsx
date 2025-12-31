@@ -5,9 +5,9 @@ import CancelReservationModal from '@/components/common/modal/CancelReservationM
 import ReviewModal from '@/components/common/modal/ReviewModal';
 import { FilterButton, PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
-import Icons from '@/assets/icons';
 import type { MyReservationsResponse } from '@/apis/type';
 import { StateBadge } from '@/components/common/badge';
+import { Down, Earth } from '@/assets/icons';
 
 type Reservation = {
   id: number;
@@ -125,7 +125,7 @@ export default function ReservationPage() {
   return (
     <div className='flex flex-col gap-10 px-4 md:px-7.5'>
       <div className='flex flex-col items-start gap-2.5 py-2.5'>
-        <Icons.Down
+        <Down
           className='block rotate-90 cursor-pointer md:hidden'
           onClick={() => setMobileOpen(false)}
         />
@@ -138,7 +138,7 @@ export default function ReservationPage() {
       {reservations.length === 0 ? (
         <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
           <div className='flex flex-col items-center justify-center'>
-            <Icons.Earth className='mb-7.5' />
+            <Earth className='mb-7.5' />
             <div className='font-xl-medium text-center whitespace-nowrap text-gray-600'>
               아직 등록한 체험이 없어요
             </div>

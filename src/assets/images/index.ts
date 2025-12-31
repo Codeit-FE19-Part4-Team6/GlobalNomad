@@ -1,7 +1,2 @@
-import KakaoLogin from '@/assets/images/kakao-login.png';
-import WarningLg from '@/assets/images/warning-lg.webp';
-
-export default {
-  KakaoLogin,
-  WarningLg,
-};
+export { default as KakaoLogin } from './kakao-login.png';
+export { default as WarningIcon } from './warning-lg.webp';

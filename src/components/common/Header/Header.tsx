@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-
 import { Logo } from '@/components/common/Logo';
 import { HeaderNotification } from '@/components/common/Header/HeaderNotification';
 import { HeaderUserMenu } from '@/components/common/Header/HeaderUserMenu';

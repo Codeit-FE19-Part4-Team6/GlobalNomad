@@ -3,10 +3,11 @@ import BaseModal from '@/components/common/modal/BaseModal';
 import RatingStar from '@/components/common/RatingStar';
 import TextArea from '@/components/common/TextArea';
 import { tv } from 'tailwind-variants';
-import Icons from '@/assets/icons';
+
 import { PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
 import Label from '@/components/common/Label';
+import { Delete } from '@/assets/icons';
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -69,7 +70,7 @@ export default function ReviewModal({
       <div>
         <div className='mb-1 flex justify-end'>
           <button onClick={onClose} className='h-6 w-6'>
-            <Icons.Delete />
+            <Delete />
           </button>
         </div>
         <div className='flex flex-col items-center gap-[14px]'>

@@ -1,4 +1,4 @@
-import Icons from '@/assets/icons';
+import { Down, User } from '@/assets/icons';
 import Avatar from '@/components/common/Avatar';
 
 import { LogOut } from 'lucide-react';
@@ -82,7 +82,7 @@ export const HeaderUserMenu = ({
         aria-haspopup='true'>
         <Avatar />
         <span className='font-md-medium text-gray-950'>{userName}</span>
-        <Icons.Down className={`h-6 w-6 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <Down className={`h-6 w-6 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
@@ -90,7 +90,7 @@ export const HeaderUserMenu = ({
           <button
             onClick={handleMyPage}
             className='hover:bg-primary-100 font-sm-medium flex w-full cursor-pointer items-center space-x-2 px-4 py-3 text-left'>
-            <Icons.User className='h-4 w-4' />
+            <User className='h-4 w-4' />
             <span>마이페이지</span>
           </button>
 

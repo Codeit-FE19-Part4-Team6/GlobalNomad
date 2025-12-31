@@ -1,11 +1,12 @@
 import { useOutletContext } from 'react-router-dom';
 import { useProfileImageStore } from '@/stores/profileImageStore';
-import Icons from '@/assets/icons';
+
 import { PrimaryButton } from '@/components/common/button';
 import { PasswordInput, TextInput } from '@/components/common/input';
 import Title from '@/components/common/Title';
 import { useForm } from 'react-hook-form';
 import { useMemo } from 'react';
+import { Down } from '@/assets/icons';
 
 type OutletContextType = {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -58,7 +59,7 @@ export default function MyProfilePage() {
   return (
     <div className='flex w-full flex-col gap-5 md:gap-6'>
       <div className='flex flex-col items-start gap-2.5 py-2.5'>
-        <Icons.Down
+        <Down
           className='block rotate-90 cursor-pointer md:hidden'
           onClick={() => setMobileOpen(false)}
         />

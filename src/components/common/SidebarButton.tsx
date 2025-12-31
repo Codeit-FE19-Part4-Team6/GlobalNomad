@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/utils/cn';
-import Icons from '@/assets/icons';
+import { Calendar, List, Setting, User } from '@/assets/icons';
 
 const ButtonStyle = cva(
   `group w-full flex items-center gap-2 transition-colors font-lg-medium
@@ -34,10 +34,10 @@ type AsProps<T extends React.ElementType> = SidebarButtonProps<T> &
 
 // themeConfig에서 아이콘 컴포넌트만 저장
 const themeConfig = {
-  MyProfile: { label: '내 정보', icon: Icons.User },
-  MyBookings: { label: '예약 내역', icon: Icons.List },
-  MyExperiences: { label: '내 체험 관리', icon: Icons.Setting },
-  BookingStatus: { label: '예약 현황', icon: Icons.Calendar },
+  MyProfile: { label: '내 정보', icon: User },
+  MyBookings: { label: '예약 내역', icon: List },
+  MyExperiences: { label: '내 체험 관리', icon: Setting },
+  BookingStatus: { label: '예약 현황', icon: Calendar },
 } as const;
 /**
  * 사이드바 전용 버튼 컴포넌트

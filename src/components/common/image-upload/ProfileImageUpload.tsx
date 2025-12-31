@@ -1,7 +1,8 @@
 import { useRef } from 'react';
-import Icons from '@/assets/icons';
+
 import { cn } from '@/utils/cn';
 import { useProfileImageStore } from '@/stores/profileImageStore';
+import { Edit, ProfileLg, ProfileMd } from '@/assets/icons';
 
 type ProfileImageUploadProps = {
   size?: 'medium' | 'large';
@@ -74,7 +75,7 @@ export default function ProfileImageUpload({
           backgroundPosition: 'center',
         }}>
         {/* 이미지 없으면 기본 아이콘 표시 */}
-        {!background && (size === 'medium' ? <Icons.ProfileMd /> : <Icons.ProfileLg />)}
+        {!background && (size === 'medium' ? <ProfileMd /> : <ProfileLg />)}
       </div>
 
       {edit && (
@@ -88,7 +89,7 @@ export default function ProfileImageUpload({
               'h-7.5 w-7.5 p-1.75': size === 'large',
             }
           )}>
-          <Icons.Edit className='text-white' />
+          <Edit className='text-white' />
         </button>
       )}
 

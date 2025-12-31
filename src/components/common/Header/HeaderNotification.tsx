@@ -1,4 +1,4 @@
-import Icons from '@/assets/icons';
+import { Bell, Delete } from '@/assets/icons';
 import { type Notification } from '@/components/common/Header/types';
 import { useState } from 'react';
 
@@ -30,7 +30,7 @@ export const HeaderNotification = ({
         aria-label={`알림 ${notifications.length}개`}
         aria-expanded={isOpen}
         aria-haspopup='true'>
-        <Icons.Bell className={isOpen ? 'text-primary-500' : 'text-gray-600 hover:text-gray-900'} />
+        <Bell className={isOpen ? 'text-primary-500' : 'text-gray-600 hover:text-gray-900'} />
 
         {notifications.length > 0 && (
           <span
@@ -54,7 +54,7 @@ export const HeaderNotification = ({
               onClick={onToggle}
               className='cursor-pointer transition-opacity hover:opacity-50'
               aria-label='알림창 닫기'>
-              <Icons.Delete />
+              <Delete />
             </button>
           </div>
 
@@ -84,7 +84,7 @@ export const HeaderNotification = ({
                               onClick={(e) => handleDelete(e, n.id)}
                               className={`hover:text-primary-500 absolute top-[0.6] left-13 cursor-pointer transition-opacity ${hoveredId === n.id ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
                               aria-label={`알림 삭제: ${n.title}`}>
-                              <Icons.Delete className='h-5 w-5' />
+                              <Delete className='h-5 w-5' />
                             </button>
                           )}
                         </div>

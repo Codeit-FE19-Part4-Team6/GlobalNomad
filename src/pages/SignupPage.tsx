@@ -1,5 +1,4 @@
 // src/pages/SignupPage.tsx
-
 import { Logo } from '@/components/common/Logo';
 import { PrimaryButton, SecondaryButton } from '@/components/common/button';
 import { PasswordInput, TextInput } from '@/components/common/input';
