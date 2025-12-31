@@ -58,7 +58,7 @@ const mockReservations: Reservation[] = [
   },
   {
     id: 4,
-    title: '예약 대기 예시',
+    title: '예약 승인 예시',
     bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
     status: 'pending',
     totalPrice: 32000,
@@ -179,7 +179,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
                       ? '예약 거절'
                       : s === 'completed'
                         ? '체험 완료'
-                        : '예약 대기'}
+                        : '예약 승인'}
               </FilterButton>
             ))}
           </div>

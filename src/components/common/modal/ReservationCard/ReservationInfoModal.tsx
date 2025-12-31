@@ -3,12 +3,13 @@ import Dropdown from '@/components/common/dropdown/Dropdown';
 import DropdownTrigger from '@/components/common/dropdown/DropdownTrigger';
 import DropdownList from '@/components/common/dropdown/DropdownList';
 import DropdownItem from '@/components/common/dropdown/DropdownItem';
-import Icons from '@/assets/icons';
 import ReservationCard from '@/components/common/modal/ReservationCard/ReservationCard';
-import type { ReservationStatus, ReservationResponse } from '@/types/reservation';
+
 import TabButton from '@/components/common/modal/ReservationCard/ReservationTab';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import Label from '@/components/common/Label';
+import { ArrowDown, Delete } from '@/assets/icons';
+import type { ReservationResponse, ReservationStatus } from '@/types/reservation';
 
 type ReservationProps = {
   isOpen: boolean;
@@ -49,7 +50,7 @@ export default function ReservationInfoModal({
   const reservationCount = useMemo(() => {
     return {
       confirmed: reservations.filter((r) => r.status === 'confirmed').length,
-      approved: reservations.filter((r) => r.status === 'approved').length,
+      approved: reservations.filter((r) => r.status === 'pending').length,
       declined: reservations.filter((r) => r.status === 'declined').length,
     };
   }, [reservations]);
@@ -80,7 +81,7 @@ export default function ReservationInfoModal({
           onClick={onClose}
           aria-label='닫기'
           className='grid h-8 w-8 cursor-pointer place-items-center rounded-full hover:bg-gray-100'>
-          <Icons.Delete />
+          <Delete />
         </button>
       </div>
 
@@ -94,8 +95,8 @@ export default function ReservationInfoModal({
           />
           <TabButton
             label={`승인 ${reservationCount.approved}`}
-            active={tab === 'approved'}
-            onClick={() => setTab('approved')}
+            active={tab === 'pending'}
+            onClick={() => setTab('pending')}
           />
           <TabButton
             label={`거절 ${reservationCount.declined}`}
@@ -117,7 +118,7 @@ export default function ReservationInfoModal({
             <Dropdown className='relative w-full'>
               <DropdownTrigger className='flex w-full items-center justify-between'>
                 <span className='font-lg-medium'>{selectedTime || '예약 내역이 없습니다.'}</span>
-                <Icons.ArrowDown />
+                <ArrowDown />
               </DropdownTrigger>
               <DropdownList className='scrollbar-hide absolute mt-2 flex max-h-33 w-full flex-col gap-1 overflow-y-auto rounded-xl border border-gray-50 bg-white p-1 px-3 py-2 shadow-md'>
                 {reservationTime.length === 0 ? (

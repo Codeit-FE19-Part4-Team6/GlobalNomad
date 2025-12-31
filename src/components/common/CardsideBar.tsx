@@ -1,7 +1,8 @@
 import ProfileImageUpload from '@/components/common/image-upload/ProfileImageUpload';
 import SidebarButton from '@/components/common/SidebarButton';
 import { cn } from '@/utils/cn';
-import type { ActivePage } from '@/types/mypage';
+
+type ActivePage = 'profile' | 'reservation' | 'experiences' | 'status';
 
 type Props = {
   variant: 'desktop' | 'tablet' | 'mobile';
@@ -13,11 +14,6 @@ type Props = {
   onBookingStatusClick?: () => void;
 };
 
-/**
- * CardsideBar 컴포넌트
- * - activePage 기준으로 선택 상태 표시
- * - 클릭 시 상위 컴포넌트에서 라우팅 처리
- */
 export default function CardsideBar({
   variant,
   activePage,

@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
-import Icons from '@/assets/icons';
 import { PrimaryButton } from '@/components/common/button';
 import { BaseInput } from '@/components/common/input/BaseInput';
 import type { BaseInputProps } from '@/components/common/input/types';
+import { Search } from '@/assets/icons';
 
 export interface SearchInputProps extends Omit<BaseInputProps, 'type'> {
   title?: string;
@@ -122,7 +122,7 @@ export const SearchInput = ({
       <div className='relative w-full'>
         {/* 검색 아이콘 */}
         <div className='absolute top-1/2 left-5 -translate-y-1/2 text-gray-500' aria-hidden='true'>
-          <Icons.Search />
+          <Search />
         </div>
 
         {/* Input */}

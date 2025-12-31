@@ -1,21 +1,23 @@
 import { BaseBadge } from './BaseBadge';
-import type { MyReservationsResponse } from '@/apis/type';
+import type { ReservationStatusWithCanceled } from '@/types/reservation';
 
-type ReservationStatus = MyReservationsResponse['reservations'][number]['status'];
-type ReservationStatusWithCanceled = ReservationStatus | 'canceled';
-
-const statusColor: Record<ReservationStatus, 'green' | 'red' | 'darkblue' | 'cyan'> = {
+const statusColor: Record<
+  ReservationStatusWithCanceled,
+  'green' | 'red' | 'darkblue' | 'cyan' | 'darkgray'
+> = {
   confirmed: 'green', // 예약 완료
   declined: 'red', // 예약 거절
   completed: 'darkblue', // 체험 완료
-  pending: 'cyan', // 예약 대기
+  pending: 'cyan', // 예약 승인
+  canceled: 'darkgray', // 예약 취소
 };
 
-const statusLabel: Record<ReservationStatus, string> = {
+const statusLabel: Record<ReservationStatusWithCanceled, string> = {
   confirmed: '예약 완료',
   declined: '예약 거절',
   completed: '체험 완료',
-  pending: '예약 대기',
+  pending: '예약 승인',
+  canceled: '예약 취소',
 };
 
 type StateBadgeProps = {
@@ -23,14 +25,6 @@ type StateBadgeProps = {
 };
 
 export function StateBadge({ status }: StateBadgeProps) {
-  if (status === 'canceled') {
-    return (
-      <BaseBadge color='darkgray' size='status'>
-        예약 취소
-      </BaseBadge>
-    );
-  }
-
   return (
     <BaseBadge color={statusColor[status]} size='status'>
       {statusLabel[status]}
