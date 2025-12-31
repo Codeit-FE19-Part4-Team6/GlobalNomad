@@ -54,9 +54,15 @@ export const isPasswordMatch = (password: string, confirmPassword: string): bool
  * 에러 메시지 추출 헬퍼
  */
 export const getErrorMessage = (error: any): string | undefined => {
-  if (!error) return undefined;
-  if (typeof error === 'string') return error;
-  if (error.message) return error.message;
+  if (!error) {
+    return undefined;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (error.message) {
+    return error.message;
+  }
   return undefined;
 };
 
