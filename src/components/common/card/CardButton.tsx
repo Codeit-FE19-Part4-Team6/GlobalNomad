@@ -1,30 +1,22 @@
+import type { MyReservationsResponse } from '@/apis/type';
 import { ActionButton, PrimaryButton } from '@/components/common/button';
 import { useCardContext } from '@/components/common/card/CardContext';
-import type { ReservationStatus } from '@/types/reservation';
 import { cn } from '@/utils/cn';
 
 interface CardButtonProps {
-  status?: ReservationStatus;
-  reviewSubmitted?: boolean;
+  status?: MyReservationsResponse['reservations'][number]['status'] | 'canceled';
   onReviewClick?: () => void;
   onCancelClick?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
   className?: string;
 }
+
 /**
  * [Card.CardButton] - 카드 타입에 따른 액션 버튼 (후기작성, 취소, 수정/삭제)
- *
- * ```tsx
- * // 예약 내역용
- * <Card.CardButton status="confirmed" onCancelClick={handleCancel} />
- * * // 내 체험 관리(List)용
- * <Card.CardButton onEdit={handleEdit} onDelete={handleDelete} />
- * ```
  */
 export default function CardButton({
   status,
-  reviewSubmitted,
   onReviewClick,
   onCancelClick,
   onEdit,
@@ -33,6 +25,7 @@ export default function CardButton({
 }: CardButtonProps) {
   const { variant } = useCardContext();
 
+  // 리스트용 버튼 (수정 / 삭제)
   if (variant === 'list') {
     if (!onEdit && !onDelete) {
       return null;
@@ -63,7 +56,11 @@ export default function CardButton({
   }
 
   if (variant === 'reservation') {
-    const canWriteReview = status === 'completed' && reviewSubmitted === false;
+    if (!status || status === 'canceled') {
+      return null;
+    }
+
+    const canWriteReview = status === 'completed';
 
     return (
       <div

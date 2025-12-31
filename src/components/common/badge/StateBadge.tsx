@@ -1,35 +1,36 @@
 import { BaseBadge } from './BaseBadge';
-import type { ReservationStatus } from '@/types/reservation';
+import type { MyReservationsResponse } from '@/apis/type';
 
-const statusColor: Record<ReservationStatus, 'darkgray' | 'green' | 'red' | 'darkblue' | 'cyan'> = {
-  canceled: 'darkgray',
-  confirmed: 'green',
-  declined: 'red',
-  completed: 'darkblue',
-  approved: 'cyan',
+type ReservationStatus = MyReservationsResponse['reservations'][number]['status'];
+type ReservationStatusWithCanceled = ReservationStatus | 'canceled';
+
+const statusColor: Record<ReservationStatus, 'green' | 'red' | 'darkblue' | 'cyan'> = {
+  confirmed: 'green', // 예약 완료
+  declined: 'red', // 예약 거절
+  completed: 'darkblue', // 체험 완료
+  pending: 'cyan', // 예약 대기
 };
 
 const statusLabel: Record<ReservationStatus, string> = {
-  canceled: '예약 취소',
   confirmed: '예약 완료',
   declined: '예약 거절',
   completed: '체험 완료',
-  approved: '예약 승인',
+  pending: '예약 대기',
 };
 
 type StateBadgeProps = {
-  status: ReservationStatus;
+  status: ReservationStatusWithCanceled;
 };
 
-/**
- * 예약의 현재 상태를 색상과 텍스트로 표현하는 상태 뱃지 컴포넌트입니다.
- *
- * 승인, 거절, 완료, 취소 등 예약 진행 단계를 직관적으로 확인할 수 있습니다.
- *
- * @example
- * <StateBadge status="approved" />
- */
 export function StateBadge({ status }: StateBadgeProps) {
+  if (status === 'canceled') {
+    return (
+      <BaseBadge color='darkgray' size='status'>
+        예약 취소
+      </BaseBadge>
+    );
+  }
+
   return (
     <BaseBadge color={statusColor[status]} size='status'>
       {statusLabel[status]}

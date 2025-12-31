@@ -1,19 +1,18 @@
-import { FilterButton } from '@/components/common/button';
+import { useState } from 'react';
 import Card from '@/components/common/card';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
+import ReviewModal from '@/components/common/modal/ReviewModal';
+import { FilterButton, PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
 import Icons from '@/assets/icons';
-import type { ReservationStatus } from '@/types/reservation';
-import { useState } from 'react';
-
-import { PrimaryButton } from '@/components/common/button';
-import ReviewModal from '@/components/common/modal/ReviewModal';
+import type { MyReservationsResponse } from '@/apis/type';
+import { StateBadge } from '@/components/common/badge';
 
 type Reservation = {
   id: number;
   title: string;
   bannerImageUrl: string;
-  status: ReservationStatus;
+  status: MyReservationsResponse['reservations'][number]['status'] | 'canceled';
   totalPrice: number;
   headCount: number;
   date: string;
@@ -21,22 +20,12 @@ type Reservation = {
   endTime: string;
   reviewSubmitted?: boolean;
 };
-// TODO: 추후 mock 데이터 제거
-const mockReservations: {
-  id: number;
-  title: string;
-  bannerImageUrl: string;
-  status: ReservationStatus;
-  totalPrice: number;
-  headCount: number;
-  date: string;
-  startTime: string;
-  endTime: string;
-  reviewSubmitted?: boolean;
-}[] = [
+
+// TODO: mock 데이터
+const mockReservations: Reservation[] = [
   {
     id: 1,
-    title: '별빛 밤바다 요트 투어',
+    title: '예약 완료 예시',
     bannerImageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
     status: 'confirmed',
     totalPrice: 45000,
@@ -47,21 +36,20 @@ const mockReservations: {
   },
   {
     id: 2,
-    title: '한강 선셋 카약 체험',
+    title: '체험 완료 예시',
     bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
     status: 'completed',
     totalPrice: 32000,
-    reviewSubmitted: false,
-    headCount: 41,
+    headCount: 4,
     date: '2025-01-15',
     startTime: '16:00',
     endTime: '18:00',
   },
   {
     id: 3,
-    title: '한강 선셋 카약 체험',
+    title: '예약 취소 예시',
     bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'declined',
+    status: 'canceled',
     totalPrice: 32000,
     headCount: 1,
     date: '2025-01-15',
@@ -70,20 +58,9 @@ const mockReservations: {
   },
   {
     id: 4,
-    title: '한강 선셋 카약 체험',
+    title: '에약 대기 예시',
     bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'canceled',
-    totalPrice: 32000,
-    headCount: 9,
-    date: '2025-01-15',
-    startTime: '16:00',
-    endTime: '18:00',
-  },
-  {
-    id: 5,
-    title: '한강 선셋 카약 체험',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'approved',
+    status: 'pending',
     totalPrice: 32000,
     headCount: 1,
     date: '2025-01-15',
@@ -91,28 +68,28 @@ const mockReservations: {
     endTime: '18:00',
   },
   {
-    id: 6,
-    title: '한강 선셋 카약 체험',
+    id: 5,
+    title: '예약 거절 예시',
     bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'completed',
+    status: 'declined',
     totalPrice: 32000,
-    headCount: 5,
-    reviewSubmitted: true,
+    headCount: 1,
     date: '2025-01-15',
     startTime: '16:00',
     endTime: '18:00',
   },
 ];
+
 type ReservationPageProps = {
   setMobileOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
+
 export default function ReservationPage({ setMobileOpen }: ReservationPageProps) {
-  const [selected, setSelected] = useState<ReservationStatus>('approved');
+  const [selected, setSelected] = useState<Reservation['status']>('confirmed');
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null);
-  const [reservations, setReservations] = useState(mockReservations);
-  // const [reservations, setReservations] = useState<Reservation[]>([]); TODO: useState 초기값 변경
+  const [reservations, setReservations] = useState<Reservation[]>(mockReservations);
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
 
   const filteredReservations = reservations.filter((item) => item.status === selected);
@@ -122,20 +99,24 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
     setIsReviewModalOpen(true);
   };
 
-  const isReviewModalClose = () => {
-    setIsReviewModalOpen(false);
-  };
+  const isReviewModalClose = () => setIsReviewModalOpen(false);
+
   const handleCancelClick = (id: number) => {
     setSelectedReservationId(id);
     setIsCancelModalOpen(true);
   };
 
-  const handleConfirmCancel = async () => {
+  const handleConfirmCancel = () => {
     if (selectedReservationId === null) {
       return;
     }
 
-    setReservations((prev) => prev.filter((item) => item.id !== selectedReservationId));
+    setReservations((prev) =>
+      prev.map((item) =>
+        item.id === selectedReservationId ? { ...item, status: 'canceled' } : item
+      )
+    );
+    setSelected('canceled');
     setIsCancelModalOpen(false);
     setSelectedReservationId(null);
   };
@@ -163,10 +144,7 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
           </div>
           <PrimaryButton
             className='font-lg-medium h-[54px] w-[182px] rounded-2xl px-10 py-3.5'
-            onClick={() => {
-              // TODO: 라우터 이동 및 추후 콘솔 제거
-              console.log('둘러보기 클릭');
-            }}>
+            onClick={() => console.log('둘러보기 클릭')}>
             둘러보기
           </PrimaryButton>
         </div>
@@ -174,19 +152,14 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
         <>
           <div className='scrollbar-hide -mr-6 mb-3.25 flex flex-nowrap gap-2 overflow-x-auto md:mb-7.5'>
             <FilterButton
-              selected={selected === 'approved'}
-              onClick={() => setSelected('approved')}>
-              예약 승인
+              selected={selected === 'confirmed'}
+              onClick={() => setSelected('confirmed')}>
+              예약 완료
             </FilterButton>
             <FilterButton
               selected={selected === 'canceled'}
               onClick={() => setSelected('canceled')}>
               예약 취소
-            </FilterButton>
-            <FilterButton
-              selected={selected === 'confirmed'}
-              onClick={() => setSelected('confirmed')}>
-              예약 완료
             </FilterButton>
             <FilterButton
               selected={selected === 'declined'}
@@ -198,6 +171,9 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
               onClick={() => setSelected('completed')}>
               체험 완료
             </FilterButton>
+            <FilterButton selected={selected === 'pending'} onClick={() => setSelected('pending')}>
+              예약 대기
+            </FilterButton>
           </div>
 
           <div className='flex flex-col gap-7.5 lg:gap-6'>
@@ -206,18 +182,12 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
                 key={item.id}
                 variant='reservation'
                 className='border-t border-gray-50 pt-5 first:border-t-0 lg:mt-0 lg:mb-3 lg:border-t-0 lg:pt-0'>
-                <Card.Schedule
-                  date={item.date} // TODO: 날짜 포멧
-                  startTime={item.startTime}
-                  endTime={item.endTime}
-                  isMobileDate
-                />
                 <div className='flex flex-row'>
                   <Card.Content>
-                    <Card.Badge status={item.status} />
+                    <StateBadge status={item.status} />
                     <Card.Title title={item.title} />
                     <Card.Schedule
-                      date={item.date} // TODO: 날짜 포멧
+                      date={item.date}
                       startTime={item.startTime}
                       endTime={item.endTime}
                     />
@@ -228,9 +198,6 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
                           status={item.status}
                           onReviewClick={() => handleReviewClick(item)}
                           onCancelClick={() => handleCancelClick(item.id)}
-                          reviewSubmitted={
-                            item.status === 'completed' ? item.reviewSubmitted : undefined
-                          }
                         />
                       </div>
                     </div>
@@ -242,7 +209,6 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
                     status={item.status}
                     onReviewClick={() => handleReviewClick(item)}
                     onCancelClick={() => handleCancelClick(item.id)}
-                    reviewSubmitted={item.status === 'completed' ? item.reviewSubmitted : undefined}
                   />
                 </div>
               </Card>
@@ -250,6 +216,7 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
           </div>
         </>
       )}
+
       <CancelReservationModal
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
@@ -258,6 +225,7 @@ export default function ReservationPage({ setMobileOpen }: ReservationPageProps)
         confirmText='예약 취소'>
         예약을 취소하시겠습니까?
       </CancelReservationModal>
+
       {selectedReservation && (
         <ReviewModal
           isOpen={isReviewModalOpen}
