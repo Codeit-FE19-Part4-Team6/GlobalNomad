@@ -1,6 +1,5 @@
 import { useOutletContext } from 'react-router-dom';
 import { useProfileImageStore } from '@/stores/profileImageStore';
-
 import { PrimaryButton } from '@/components/common/button';
 import { PasswordInput, TextInput } from '@/components/common/input';
 import Title from '@/components/common/Title';
