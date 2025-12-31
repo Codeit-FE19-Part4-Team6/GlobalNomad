@@ -17,6 +17,7 @@ export const BaseInput = ({
   leftElement,
   rightElement,
   disabled = false,
+  ref,
   ...props
 }: BaseInputProps) => {
   const generatedId = useId();
@@ -60,6 +61,7 @@ export const BaseInput = ({
           </div>
         )}
         <input
+          ref={ref}
           className={baseClasses}
           id={inputId}
           disabled={disabled}
