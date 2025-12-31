@@ -7,7 +7,7 @@ export type scheduleRequest = {
 export type createdActivityRequest = {
   title: string;
   category: string;
-  content: string;
+  description: string;
   price: number;
   address: string;
   schedules: scheduleRequest[];
