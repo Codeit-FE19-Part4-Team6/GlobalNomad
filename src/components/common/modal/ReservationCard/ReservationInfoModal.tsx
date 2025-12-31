@@ -72,7 +72,7 @@ export default function ReservationInfoModal({
       onMouseLeave={() => setIsMouseOnModal(false)}
       className='w-full rounded-tl-3xl rounded-tr-3xl rounded-b-none bg-white lg:w-85 lg:rounded-3xl lg:shadow-[0_8px_24px_rgba(0,0,0,0.12)]'>
       {/* header */}
-      <div className='mb-3 flex items-center justify-between px-6 pt-7.5'>
+      <div className='mb-3 flex items-center justify-between px-6 pt-[30px]'>
         <h2 className='font-2xl-bold text-black-50'>{dateText}</h2>
 
         <button
@@ -104,16 +104,16 @@ export default function ReservationInfoModal({
           />
         </div>
 
-        <div className='mt-1 h-px w-full bg-gray-100' />
+        <div className='mt-1 h-[1px] w-full bg-gray-100' />
       </div>
 
       {/* content */}
-      <div className='flex min-h-58.25 flex-col px-5 pt-4 pb-6 sm:flex-row sm:gap-5 lg:flex-col'>
+      <div className='flex min-h-[233px] flex-col px-5 pt-4 pb-6 sm:flex-row sm:gap-5 lg:flex-col'>
         {/* 예약 시간 */}
         <section className='mb-4 flex flex-col gap-3 sm:w-[50%] lg:w-full'>
           <Label className='font-xl-bold mb-2 text-black'>예약 시간</Label>
 
-          <div className='flex h-12 items-center rounded-xl border border-gray-50 px-5 lg:h-13.5'>
+          <div className='flex h-12 items-center rounded-xl border border-gray-50 px-5 lg:h-[54px]'>
             <Dropdown className='relative w-full'>
               <DropdownTrigger className='flex w-full items-center justify-between'>
                 <span className='font-lg-medium'>{selectedTime || '예약 내역이 없습니다.'}</span>
@@ -142,7 +142,7 @@ export default function ReservationInfoModal({
         <section className='flex flex-col gap-3 sm:w-[50%] lg:w-full'>
           <Label className='font-xl-bold text-black-50 mb-2'>예약 내역</Label>
 
-          <div className='scrollbar-hide max-h-58.75 space-y-3 overflow-y-auto'>
+          <div className='scrollbar-hide max-h-[235px] space-y-3 overflow-y-auto'>
             {visibleList.length === 0 ? (
               <div className='font-md-medium rounded-xl border border-gray-200 py-8 text-center text-gray-500'>
                 예약 내역이 없습니다.
