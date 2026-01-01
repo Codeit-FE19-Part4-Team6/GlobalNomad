@@ -58,7 +58,6 @@ export default function ProfileImageUpload({
     }
 
     setPreviewUrl(file); // 브라우저 미리보기용
-    setFile(file); // MyProfilePage에서 감지 가능
   };
 
   // 이미지 표시 결정: preview > 서버 이미지 > 기본 이미지

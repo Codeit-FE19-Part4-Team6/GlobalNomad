@@ -17,15 +17,8 @@ export const uploadImageToServer = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append('image', file);
 
-  try {
-    const res = await http.post<{ profileImageUrl: string }>('/users/me/image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    /**
-     * 서버에서 내려주는 업로드된 이미지 URL 반환
-     */
-    return res.data.profileImageUrl;
-  } catch (error: any) {
-    throw error;
-  }
+  const res = await http.post<{ profileImageUrl: string }>('/users/me/image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res.data.profileImageUrl; // 서버에서 내려주는 업로드된 이미지 URL 반환
 };

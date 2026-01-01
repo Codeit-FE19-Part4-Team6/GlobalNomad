@@ -117,7 +117,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
         payload.newPassword = values.newPassword.trim();
       }
 
-      await editMyInfo(payload as UserEditRequest); // 내 정보 수정 API 호출
+      await editMyInfo(payload); // 내 정보 수정 API 호출
 
       alert('내 정보가 수정되었습니다.');
 
