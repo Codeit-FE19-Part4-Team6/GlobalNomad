@@ -37,8 +37,6 @@ import StarOff from '@/assets/icons/page/star-off.svg';
 import Star from '@/assets/icons/page/star.svg';
 import Tour from '@/assets/icons/page/tour.svg';
 import User from '@/assets/icons/page/user.svg';
-import WarningLg from '@/assets/icons/page/warning-lg.svg';
-import WarningSm from '@/assets/icons/page/warning-sm.svg';
 import Warning from '@/assets/icons/page/warning.svg';
 import Wellbeing from '@/assets/icons/page/wellbeing.svg';
 
@@ -82,8 +80,6 @@ export default {
   Star,
   Tour,
   User,
-  WarningLg,
-  WarningSm,
   Warning,
   Wellbeing,
 };

@@ -1,5 +1,4 @@
-// src/libs/api/activityImage.ts
-import { http } from '@/libs/api/http';
+import { http } from '@/apis/http';
 
 type UploadActivityImageResponse = {
   activityImageUrl: string;

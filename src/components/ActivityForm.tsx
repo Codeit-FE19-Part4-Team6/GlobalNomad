@@ -1,10 +1,12 @@
-// src/pages/activities/ActivityForm.tsx
 import { useEffect, useMemo, useState } from 'react';
 import Label from '@/components/common/Label';
 import Title from '@/components/common/Title';
 import { BaseInput } from '@/components/common/input/BaseInput';
 import TextArea from '@/components/common/TextArea';
-import Icons from '@/assets/icons';
+// import Icons from '@/assets/icons';
+// import ArrowDown from '@/assets/icons/page/arrow-down.svg';
+// import Plus from '@/assets/icons/page/plus.svg';
+// import Minus from '@/assets/icons/page/minus.svg';
 import Dropdown from '@/components/common/dropdown/Dropdown';
 import DropdownTrigger from '@/components/common/dropdown/DropdownTrigger';
 import DropdownList from '@/components/common/dropdown/DropdownList';
@@ -14,10 +16,9 @@ import { CircleButton } from '@/components/common/button/CircleButton';
 import { PrimaryButton } from '@/components/common/button';
 import BannerImageSection from '@/components/common/image-upload/BannerImageSection';
 import IntroImageSection from '@/components/common/image-upload/IntroImageSection';
-
 import type { ScheduleRow } from '@/types/ScheduleRow';
 import { mapRowsToScheduleRequests } from '@/libs/mapper/activity';
-import type { createdActivityRequest } from '@/types/activityRequest';
+import type { CreateActivityRequest } from '@/apis/type';
 
 const MAX_BANNER = 1;
 const MAX_INTRO = 4;
@@ -58,13 +59,8 @@ export type ActivityFormInitialData = {
   price: number;
   address: string;
   rows: ScheduleRow[];
-
-  // ✅ 수정모드에서 기존 이미지 URL을 받아서 보여주려면 필요
-  // (지금 섹션 컴포넌트가 URL 미리보기를 지원 안 하면, 추후 URL용 섹션 추가 필요)
-  // 우선은 "수정 시에도 새로 업로드" 중심으로 작동하게 두고,
-  // 너가 URL 미리보기까지 원하면 섹션 컴포넌트 확장해주면 됨.
-  // bannerImageUrl?: string;
-  // introImageUrls?: string[];
+  bannerImageUrl: string;
+  subImageUrls: string[];
 };
 
 type ActivityFormProps = {
@@ -73,13 +69,13 @@ type ActivityFormProps = {
   // edit일 때 초기값 주입
   initialData?: ActivityFormInitialData;
 
-  // 등록/수정 페이지에서 POST/PATCH를 연결
-  onSubmit: (payload: createdActivityRequest) => Promise<void> | void;
+  //부모 페이지에서 등록,수정 구분해서 처리
+  onSubmit: (payload: CreateActivityRequest) => Promise<void> | void;
 
-  // 이미지 업로드 함수 (File -> url)
+  //파일을 url스트링으로
   uploadImage: (file: File) => Promise<string>;
 
-  // 버튼 로딩/disabled
+  // 페이지에서의 상태를 받아서 버튼 비활성화
   isPending?: boolean;
 
   // 버튼 문구
@@ -109,9 +105,9 @@ export default function ActivityForm({
   const [bannerImages, setBannerImages] = useState<File[]>([]);
   const [introImages, setIntroImages] = useState<File[]>([]);
 
-  // ==========================
+  const [existingBannerUrl, setExistingBannerUrl] = useState<string>('');
+  const [existingSubImageUrls, setExistingSubImageUrls] = useState<string[]>([]);
   // 수정모드: 초기값 주입
-  // ==========================
   useEffect(() => {
     if (!initialData) {
       return;
@@ -123,8 +119,9 @@ export default function ActivityForm({
     setPrice(String(initialData.price ?? ''));
     setAddress(initialData.address ?? '');
     setRows(initialData.rows ?? []);
-
-    // ✅ 이미지 File은 서버에서 바로 못 내려오니까(보통 URL임)
+    setExistingBannerUrl(initialData.bannerImageUrl ?? '');
+    setExistingSubImageUrls(initialData.subImageUrls ?? []);
+    // 이미지 File은 서버에서 바로 못 내려오니까(보통 URL임)
     // edit에서도 "새로 업로드"부터 작동하게 초기화
     setBannerImages([]);
     setIntroImages([]);
@@ -132,9 +129,7 @@ export default function ActivityForm({
     setDraft(createDraft());
   }, [initialData]);
 
-  // ==========================
-  // 유효성(네 코드 그대로)
-  // ==========================
+  // 유효성
   const isFormValid = useMemo(() => {
     return (
       title.trim() &&
@@ -146,9 +141,7 @@ export default function ActivityForm({
     );
   }, [title, category, text, price, address, rows.length]);
 
-  // ==========================
-  // 이미지 add/remove(네 코드 그대로)
-  // ==========================
+  // 이미지 add/remove
   const addBannerImage = (file: File) => {
     setBannerImages((prev) => {
       if (prev.length >= MAX_BANNER) {
@@ -212,7 +205,7 @@ export default function ActivityForm({
 
   // 종료시간을 직접 바꿨을 때 값 저장
   // 위에 코드는 시작시간을 바꾸면 종료시간을 시간시작 + 1시간인 값으로 바꿔주지만
-  // handleDraftEenTime 사용자가 종료시간도 직접 선택했을때의 값을 저장
+  // handleDraftEndTime 사용자가 종료시간도 직접 선택했을때의 값을 저장
   const handleDraftEndTime = (nextEndTime: string) => {
     setDraft((prev) => ({ ...prev, endTime: nextEndTime }));
   };
@@ -247,23 +240,26 @@ export default function ActivityForm({
     setRows((prevRows) => prevRows.filter((row) => row.uiId !== uiId));
   };
 
-  // ==========================
-  // ✅ 공통 submit
+  //  공통 submit
   // - 여기서 POST/PATCH 결정하지 않음
   // - payload 만들고 onSubmit(payload)만 호출
-  // ==========================
   const handleSubmit = async () => {
     if (!isFormValid || isPending) {
       return;
     }
 
-    // 이미지 업로드 -> URL 변환
+    let bannerImageUrl = existingBannerUrl;
     const bannerFile = bannerImages[0];
-    const bannerImageUrl = bannerFile ? await uploadImage(bannerFile) : '';
+    if (bannerFile) {
+      bannerImageUrl = await uploadImage(bannerFile);
+    }
 
-    const introImageUrls = await Promise.all(introImages.map((file) => uploadImage(file)));
+    let subImageUrls = existingSubImageUrls;
+    if (introImages.length > 0) {
+      subImageUrls = await Promise.all(introImages.map((file) => uploadImage(file)));
+    }
 
-    const payload: createdActivityRequest = {
+    const payload: CreateActivityRequest = {
       title,
       category,
       description: text,
@@ -271,7 +267,7 @@ export default function ActivityForm({
       address,
       schedules: mapRowsToScheduleRequests(rows),
       bannerImageUrl,
-      introImageUrls,
+      subImageUrls,
     };
 
     await onSubmit(payload);
@@ -304,7 +300,7 @@ export default function ActivityForm({
               <span className={category ? 'text-gray-900' : 'text-gray-400'}>
                 {category || '카테고리를 선택해 주세요'}
               </span>
-              <Icons.ArrowDown />
+              {/* <ArrowDown /> */}
             </DropdownTrigger>
 
             <DropdownList className='absolute top-full left-0 z-50 mt-2 w-full rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
@@ -382,7 +378,7 @@ export default function ActivityForm({
                 <Dropdown className='relative w-full'>
                   <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
                     <span>{draft.startTime}</span>
-                    <Icons.ArrowDown />
+                    {/* <ArrowDown /> */}
                   </DropdownTrigger>
 
                   <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
@@ -405,7 +401,7 @@ export default function ActivityForm({
                 <Dropdown className='relative w-full'>
                   <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
                     <span>{draft.endTime}</span>
-                    <Icons.ArrowDown />
+                    {/* <ArrowDown /> */}
                   </DropdownTrigger>
 
                   <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
@@ -422,11 +418,11 @@ export default function ActivityForm({
               </div>
 
               <div className='mb-1.5 shrink-0 sm:hidden'>
-                <CircleButton variant='plus' icon={<Icons.Plus />} onClick={addScheduleFromDraft} />
+                <CircleButton variant='plus' onClick={addScheduleFromDraft} />
               </div>
 
               <div className='hidden sm:flex sm:justify-end'>
-                <CircleButton variant='plus' icon={<Icons.Plus />} onClick={addScheduleFromDraft} />
+                <CircleButton variant='plus' onClick={addScheduleFromDraft} />
               </div>
             </div>
           </div>
@@ -467,7 +463,7 @@ export default function ActivityForm({
               <div className='hidden sm:flex sm:justify-end'>
                 <CircleButton
                   variant='minus'
-                  icon={<Icons.Minus />}
+                  // icon={<Minus />}
                   onClick={() => removeRow(row.uiId)}
                 />
               </div>
@@ -475,7 +471,7 @@ export default function ActivityForm({
               <div className='mb-1.5 shrink-0 sm:hidden'>
                 <CircleButton
                   variant='minus'
-                  icon={<Icons.Minus />}
+                  // icon={<Minus />}
                   onClick={() => removeRow(row.uiId)}
                 />
               </div>

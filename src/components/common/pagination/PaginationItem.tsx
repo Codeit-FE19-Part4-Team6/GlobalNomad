@@ -26,8 +26,8 @@ const PaginationItem = ({ page }: Props) => {
           'border-b-2',
           // 상태별 스타일
           isActive
-            ? 'border-[var(--color-primary-500)] font-semibold text-[var(--color-gray-950)]'
-            : 'border-transparent text-[var(--color-gray-400)]'
+            ? 'border-primary-500 font-semibold text-gray-950'
+            : 'border-transparent text-gray-400'
         )}>
         {page}
       </button>

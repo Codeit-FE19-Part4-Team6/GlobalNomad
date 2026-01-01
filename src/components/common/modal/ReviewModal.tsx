@@ -67,8 +67,8 @@ export default function ReviewModal({
       size='review'
       closeOnEsc>
       <div>
-        <div className='mb-[4px] flex justify-end'>
-          <button onClick={onClose} className='h-[24px] w-[24px]'>
+        <div className='mb-1 flex justify-end'>
+          <button onClick={onClose} className='h-6 w-6'>
             <Icons.Delete />
           </button>
         </div>
@@ -77,20 +77,20 @@ export default function ReviewModal({
             <Title as='h5' weight='bold' size='md' className='md:font-lg-bold'>
               {title}
             </Title>
-            <p className='font-sm-medium md:font-md-medium flex gap-[4px] text-gray-500'>
+            <p className='font-sm-medium md:font-md-medium flex gap-1 text-gray-500'>
               {date} /{startTime} - {endTime} ({headCount}명)
             </p>
           </div>
 
           <RatingStar
-            className='gap-[6px] md:gap-[12px] [&_svg]:h-[36px] [&_svg]:w-[36px] md:[&_svg]:h-[42px] md:[&_svg]:w-[42px]'
+            className='gap-[6px] md:gap-3 [&_svg]:h-9 [&_svg]:w-9 md:[&_svg]:h-10.5 md:[&_svg]:w-[42px]'
             value={rating}
             onChange={setRating}
           />
         </div>
       </div>
-      <div className='flex flex-col gap-[8px]'>
-        <div className='flex flex-col gap-[12px] md:gap-[16px]'>
+      <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-3 md:gap-4'>
           <Label htmlFor='review-content' className='font-lg-bold md:font-xl-bold'>
             소중한 경험을 들려주세요.
           </Label>
@@ -108,7 +108,7 @@ export default function ReviewModal({
       </div>
       <PrimaryButton
         disabled={isSubmitDisabled}
-        className='[@media(max-width:640px)]:h-[41px] [@media(max-width:640px)]:rounded-[12px]'
+        className='[@media(max-width:640px)]:h-[41px] [@media(max-width:640px)]:rounded-xl'
         size='lg'
         onClick={handleSubmit}>
         <span className='font-md-bold md:font-lg-bold'>작성하기</span>
