@@ -5,9 +5,9 @@ import { Header } from '@/components/common/Header/Header';
 const Layout = () => {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <Outlet />
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

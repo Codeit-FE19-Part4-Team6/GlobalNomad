@@ -1,13 +1,13 @@
 import { useProfileImageStore } from '@/stores/profileImageStore';
-import Icons from '@/assets/icons';
 import { PrimaryButton } from '@/components/common/button';
 import { PasswordInput, TextInput } from '@/components/common/input';
 import Title from '@/components/common/Title';
 import { useForm } from 'react-hook-form';
 import { useMemo } from 'react';
+import { Down } from '@/assets/icons';
 
-type MyProfilePageProps = {
-  setMobileOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+type Props = {
+  setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 type FormValues = {
@@ -17,14 +17,18 @@ type FormValues = {
   newPasswordConfirm: string;
 };
 
-// TODO: 추후 내 정보 조회 API로 대체 예정
-// 현재는 UI/로직 테스트를 위한 mock 데이터
+// mock 데이터 (추후 API 응답으로 대체 예정)
 const mockMyInfo = {
   nickname: '수정 전 이름',
   email: 'test@email.com',
 };
 
-export default function MyProfilePage({ setMobileOpen }: MyProfilePageProps) {
+export default function MyProfilePage({ setMobileOpen }: Props) {
+  /**
+   * react-hook-form 설정
+   * - onBlur: input 포커스가 빠질 때 검증
+   * - defaultValues: 초기 폼 상태
+   */
   const {
     register,
     watch,
@@ -38,19 +42,25 @@ export default function MyProfilePage({ setMobileOpen }: MyProfilePageProps) {
       newPasswordConfirm: '',
     },
   });
-
-  // previewUrl이 존재하면 사용자가 이미지를 변경한 상태
+  /**
+   * 프로필 이미지 미리보기 상태
+   * - 이미지 변경 여부 판단에 사용
+   */
   const { previewUrl } = useProfileImageStore();
-
-  // 필요한 필드만 개별적으로 watch
+  /**
+   * 입력값 실시간 감시
+   * 변경 여부 판단을 위해 사용
+   */
   const nickname = watch('nickname');
   const newPassword = watch('newPassword');
   const newPasswordConfirm = watch('newPasswordConfirm');
-
-  // 닉네임: 값이 있고 + 기존 닉네임과 다를 때
-  // 비밀번호: 비밀번호 or 비밀번호 확인 중 하나라도 입력되면 변경
-  // 이미지: previewUrl이 존재하면 변경
-  // useMemo를 사용해 의존 값이 바뀔 때만 재계산
+  /**
+   * 폼 변경 여부 계산
+   * - 닉네임 변경
+   * - 비밀번호 입력 여부
+   * - 프로필 이미지 변경 여부
+   * → 하나라도 변경되면 "수정하기" 버튼 활성화
+   */
   const isFormChanged = useMemo(() => {
     const isNicknameChanged = nickname.trim() !== '' && nickname !== mockMyInfo.nickname;
     const isPasswordChanged = newPassword.trim().length > 0 || newPasswordConfirm.trim().length > 0;
@@ -62,9 +72,9 @@ export default function MyProfilePage({ setMobileOpen }: MyProfilePageProps) {
   return (
     <div className='flex w-full flex-col gap-5 md:gap-6'>
       <div className='flex flex-col items-start gap-2.5 py-2.5'>
-        <Icons.Down
+        <Down
           className='block rotate-90 cursor-pointer md:hidden'
-          onClick={() => setMobileOpen?.(false)}
+          onClick={() => setMobileOpen(false)}
         />
         <Title as='h3' size='xl' weight='bold'>
           내 정보
@@ -73,6 +83,7 @@ export default function MyProfilePage({ setMobileOpen }: MyProfilePageProps) {
           닉네임과 비밀번호, 프로필 이미지를 수정하실 수 있습니다.
         </div>
       </div>
+
       <div className='flex flex-col gap-[18px] md:gap-6'>
         <TextInput label='닉네임' placeholder={mockMyInfo.nickname} {...register('nickname')} />
         <TextInput
@@ -87,10 +98,7 @@ export default function MyProfilePage({ setMobileOpen }: MyProfilePageProps) {
           label='비밀번호'
           placeholder='8자 이상 입력해주세요'
           {...register('newPassword', {
-            minLength: {
-              value: 8,
-              message: '8자 이상 입력하세요',
-            },
+            minLength: { value: 8, message: '8자 이상 입력하세요' },
           })}
           error={!!errors.newPassword}
           errorMessage={errors.newPassword?.message}
@@ -106,6 +114,7 @@ export default function MyProfilePage({ setMobileOpen }: MyProfilePageProps) {
           errorMessage={errors.newPasswordConfirm?.message}
         />
       </div>
+
       <div className='flex justify-center'>
         <PrimaryButton
           disabled={!isFormChanged}

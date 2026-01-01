@@ -2,11 +2,11 @@ import ProfileImageUpload from '@/components/common/image-upload/ProfileImageUpl
 import SidebarButton from '@/components/common/SidebarButton';
 import { cn } from '@/utils/cn';
 
-type ActivePage = 'profile' | 'bookings' | 'experiences' | 'status';
+type ActivePage = 'profile' | 'reservation' | 'experiences' | 'status';
 
 type Props = {
   variant: 'desktop' | 'tablet' | 'mobile';
-  activePage: ActivePage; // 현재 선택된 페이지
+  activePage: ActivePage;
   defaultImageUrl?: string | null;
   onProfileClick?: () => void;
   onBookingsClick?: () => void;
@@ -14,15 +14,6 @@ type Props = {
   onBookingStatusClick?: () => void;
 };
 
-/* CardsideBar 컴포넌트
- *
- * - 사용자 프로필 이미지 업로드(ProfileImageUpload)와 사이드바 버튼들을 렌더링
- * - defaultImageUrl: 사용자가 아직 이미지를 선택하지 않았을 때 표시할 기본 이미지
- * - variant: 화면 크기/레이아웃에 따라 desktop / tablet / mobile 스타일 적용
- *
- * 사용 예시:
- * <CardsideBar variant="tablet" />
- */
 export default function CardsideBar({
   variant,
   activePage,
@@ -50,22 +41,22 @@ export default function CardsideBar({
         <SidebarButton
           theme='MyProfile'
           onClick={onProfileClick}
-          selected={activePage === 'profile'} // ← 여기
+          selected={activePage === 'profile'}
         />
         <SidebarButton
           theme='MyBookings'
           onClick={onBookingsClick}
-          selected={activePage === 'bookings'} // ← 여기
+          selected={activePage === 'reservation'}
         />
         <SidebarButton
           theme='MyExperiences'
           onClick={onExperiencesClick}
-          selected={activePage === 'experiences'} // ← 여기
+          selected={activePage === 'experiences'}
         />
         <SidebarButton
           theme='BookingStatus'
           onClick={onBookingStatusClick}
-          selected={activePage === 'status'} // ← 여기
+          selected={activePage === 'status'}
         />
       </div>
     </div>

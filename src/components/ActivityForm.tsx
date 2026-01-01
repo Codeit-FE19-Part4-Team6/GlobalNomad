@@ -3,10 +3,9 @@ import Label from '@/components/common/Label';
 import Title from '@/components/common/Title';
 import { BaseInput } from '@/components/common/input/BaseInput';
 import TextArea from '@/components/common/TextArea';
-import Icons from '@/assets/icons';
-// import ArrowDown from '@/assets/icons/page/arrow-down.svg';
-// import Plus from '@/assets/icons/page/plus.svg';
-// import Minus from '@/assets/icons/page/minus.svg';
+import { ArrowDown } from '@/assets/icons/index';
+import { Plus } from '@/assets/icons/index';
+import { Minus } from '@/assets/icons/index';
 import Dropdown from '@/components/common/dropdown/Dropdown';
 import DropdownTrigger from '@/components/common/dropdown/DropdownTrigger';
 import DropdownList from '@/components/common/dropdown/DropdownList';
@@ -307,7 +306,7 @@ export default function ActivityForm({
               <span className={category ? 'text-gray-900' : 'text-gray-400'}>
                 {category || '카테고리를 선택해 주세요'}
               </span>
-              <Icons.ArrowDown />
+              <ArrowDown />
             </DropdownTrigger>
 
             <DropdownList className='absolute top-full left-0 z-50 mt-2 w-full rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
@@ -389,7 +388,7 @@ export default function ActivityForm({
                 <Dropdown className='relative w-full'>
                   <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
                     <span>{draft.startTime}</span>
-                    <Icons.ArrowDown />
+                    <ArrowDown />
                   </DropdownTrigger>
 
                   <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
@@ -412,7 +411,7 @@ export default function ActivityForm({
                 <Dropdown className='relative w-full'>
                   <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
                     <span>{draft.endTime}</span>
-                    <Icons.ArrowDown />
+                    <ArrowDown />
                   </DropdownTrigger>
 
                   <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
@@ -429,11 +428,11 @@ export default function ActivityForm({
               </div>
 
               <div className='mb-1.5 shrink-0 sm:hidden'>
-                <CircleButton variant='plus' icon={<Icons.Plus />} onClick={addScheduleFromDraft} />
+                <CircleButton variant='plus' icon={<Plus />} onClick={addScheduleFromDraft} />
               </div>
 
               <div className='hidden sm:flex sm:justify-end'>
-                <CircleButton variant='plus' icon={<Icons.Plus />} onClick={addScheduleFromDraft} />
+                <CircleButton variant='plus' icon={<Plus />} onClick={addScheduleFromDraft} />
               </div>
             </div>
           </div>
@@ -474,7 +473,7 @@ export default function ActivityForm({
               <div className='hidden sm:flex sm:justify-end'>
                 <CircleButton
                   variant='minus'
-                  icon={<Icons.Minus />}
+                  icon={<Minus />}
                   onClick={() => removeRow(row.uiId)}
                 />
               </div>
@@ -482,7 +481,7 @@ export default function ActivityForm({
               <div className='mb-1.5 shrink-0 sm:hidden'>
                 <CircleButton
                   variant='minus'
-                  icon={<Icons.Minus />}
+                  icon={<Minus />}
                   onClick={() => removeRow(row.uiId)}
                 />
               </div>

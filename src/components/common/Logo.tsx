@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import Logos from '@/assets/logos';
+
 import { cn } from '@/utils/cn';
+import { LogoSm, LogoTitleSm } from '@/assets/logos';
 
 type LogoProps = {
   className?: string;
@@ -54,11 +55,9 @@ export function Logo({
           direction === 'horizontal' && 'flex-row gap-2',
           direction === 'vertical' && 'flex-col gap-1'
         )}>
-        <Logos.LogoSm className={cn('block h-6 w-auto', iconClassName)} />
+        <LogoSm className={cn('block h-6 w-auto', iconClassName)} />
 
-        {showTitle && (
-          <Logos.LogoTitleSm className={cn('hidden h-4 w-auto sm:block', titleClassName)} />
-        )}
+        {showTitle && <LogoTitleSm className={cn('hidden h-4 w-auto sm:block', titleClassName)} />}
       </Link>
     </div>
   );

@@ -1,6 +1,6 @@
-import type { ReservationStatus } from '@/types/reservation';
 import { ActionButton } from '@/components/common/button';
 import { StateBadge } from '@/components/common/badge';
+import type { ReservationStatus } from '@/types/reservation';
 
 interface ReservationCardProps {
   nickname: string;
@@ -51,7 +51,7 @@ export default function ReservationCard({
             </>
           )}
 
-          {tab === 'approved' && <StateBadge status='approved'></StateBadge>}
+          {tab === 'pending' && <StateBadge status='pending'></StateBadge>}
           {tab === 'declined' && <StateBadge status='declined'></StateBadge>}
         </div>
       </div>

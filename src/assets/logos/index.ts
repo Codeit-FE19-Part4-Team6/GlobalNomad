@@ -1,11 +1,4 @@
-import LogoLg from '@/assets/logos/logo-lg.svg';
-import LogoSm from '@/assets/logos/logo-sm.svg';
-import LogoTitleLg from '@/assets/logos/logo-title-lg.svg';
-import LogoTitleSm from '@/assets/logos/logo-title-sm.svg';
-
-export default {
-  LogoLg,
-  LogoSm,
-  LogoTitleLg,
-  LogoTitleSm,
-};
+export { default as LogoLg } from './logo-lg.svg';
+export { default as LogoSm } from './logo-sm.svg';
+export { default as LogoTitleLg } from './logo-title-lg.svg';
+export { default as LogoTitleSm } from './logo-title-sm.svg';

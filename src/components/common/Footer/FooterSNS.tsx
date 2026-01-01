@@ -1,5 +1,3 @@
-import Icons from '@/assets/icons';
-
 /**
  * FooterSNS 컴포넌트
  *
@@ -15,19 +13,21 @@ import Icons from '@/assets/icons';
  * - 접근성을 고려하여 모든 링크에 `aria-label`을 제공합니다.
  */
 
+import { FaceBook, Instagram, X, Youtube } from '@/assets/icons';
+
 const snsLinks = [
   {
-    Icon: Icons.FaceBook,
+    Icon: FaceBook,
     label: '페이스북으로 이동',
     href: '#',
   },
   {
-    Icon: Icons.Instagram,
+    Icon: Instagram,
     label: '인스타그램으로 이동',
     href: '#',
   },
-  { Icon: Icons.Youtube, label: '유튜브로 이동', href: '#' },
-  { Icon: Icons.X, label: 'X로 이동', href: '#' },
+  { Icon: Youtube, label: '유튜브로 이동', href: '#' },
+  { Icon: X, label: 'X로 이동', href: '#' },
 ];
 
 const FooterSNS = () => {
