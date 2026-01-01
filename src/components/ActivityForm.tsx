@@ -3,7 +3,7 @@ import Label from '@/components/common/Label';
 import Title from '@/components/common/Title';
 import { BaseInput } from '@/components/common/input/BaseInput';
 import TextArea from '@/components/common/TextArea';
-// import Icons from '@/assets/icons';
+import Icons from '@/assets/icons';
 // import ArrowDown from '@/assets/icons/page/arrow-down.svg';
 // import Plus from '@/assets/icons/page/plus.svg';
 // import Minus from '@/assets/icons/page/minus.svg';
@@ -55,7 +55,7 @@ const createDraft = (): ScheduleDraft => ({
 export type ActivityFormInitialData = {
   title: string;
   category: string;
-  content: string;
+  description: string;
   price: number;
   address: string;
   rows: ScheduleRow[];
@@ -115,7 +115,7 @@ export default function ActivityForm({
 
     setTitle(initialData.title ?? '');
     setCategory(initialData.category ?? '');
-    setText(initialData.content ?? '');
+    setText(initialData.description ?? '');
     setPrice(String(initialData.price ?? ''));
     setAddress(initialData.address ?? '');
     setRows(initialData.rows ?? []);
@@ -134,7 +134,7 @@ export default function ActivityForm({
     return (
       title.trim() &&
       category &&
-      text.trim() &&
+      text.trim().length >= 10 &&
       Number(price) > 0 &&
       address.trim() &&
       rows.length > 0
@@ -179,6 +179,13 @@ export default function ActivityForm({
 
   const onChangeText = (value: string) => {
     setText(value);
+  };
+
+  const formatNumber = (value: string) => {
+    if (!value) {
+      return;
+    }
+    return Number(value).toLocaleString();
   };
 
   //draft에 사용자가 선택한 날짜를 담는 함수
@@ -300,7 +307,7 @@ export default function ActivityForm({
               <span className={category ? 'text-gray-900' : 'text-gray-400'}>
                 {category || '카테고리를 선택해 주세요'}
               </span>
-              {/* <ArrowDown /> */}
+              <Icons.ArrowDown />
             </DropdownTrigger>
 
             <DropdownList className='absolute top-full left-0 z-50 mt-2 w-full rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
@@ -323,7 +330,7 @@ export default function ActivityForm({
             value={text}
             onChange={onChangeText}
             variant='default'
-            placeholder='설명을 입력해 주세요'
+            placeholder='설명을 최소 10자 이상 입력해 주세요'
           />
         </div>
 
@@ -331,8 +338,12 @@ export default function ActivityForm({
         <div className='flex flex-col gap-2.5'>
           <Label className='font-lg-bold text-gray-950'>가격</Label>
           <BaseInput
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            value={price ? `${formatNumber(price)} 원` : ''}
+            onChange={(e) => {
+              //문자전체 중 0에서9까지가 아닌 모든 문자는 "" 로 만들어 제거, / /는 정규식, ^는 부정, [0-9]는 0~9까지 ,g는 글로벌 문자전체
+              const onlyNumber = e.target.value.replace(/[^0-9]/g, '');
+              setPrice(onlyNumber);
+            }}
             id='price'
             placeholder='체험 금액을 입력해 주세요'
           />
@@ -378,7 +389,7 @@ export default function ActivityForm({
                 <Dropdown className='relative w-full'>
                   <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
                     <span>{draft.startTime}</span>
-                    {/* <ArrowDown /> */}
+                    <Icons.ArrowDown />
                   </DropdownTrigger>
 
                   <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
@@ -401,7 +412,7 @@ export default function ActivityForm({
                 <Dropdown className='relative w-full'>
                   <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
                     <span>{draft.endTime}</span>
-                    {/* <ArrowDown /> */}
+                    <Icons.ArrowDown />
                   </DropdownTrigger>
 
                   <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
@@ -418,11 +429,11 @@ export default function ActivityForm({
               </div>
 
               <div className='mb-1.5 shrink-0 sm:hidden'>
-                <CircleButton variant='plus' onClick={addScheduleFromDraft} />
+                <CircleButton variant='plus' icon={<Icons.Plus />} onClick={addScheduleFromDraft} />
               </div>
 
               <div className='hidden sm:flex sm:justify-end'>
-                <CircleButton variant='plus' onClick={addScheduleFromDraft} />
+                <CircleButton variant='plus' icon={<Icons.Plus />} onClick={addScheduleFromDraft} />
               </div>
             </div>
           </div>
@@ -463,7 +474,7 @@ export default function ActivityForm({
               <div className='hidden sm:flex sm:justify-end'>
                 <CircleButton
                   variant='minus'
-                  // icon={<Minus />}
+                  icon={<Icons.Minus />}
                   onClick={() => removeRow(row.uiId)}
                 />
               </div>
@@ -471,7 +482,7 @@ export default function ActivityForm({
               <div className='mb-1.5 shrink-0 sm:hidden'>
                 <CircleButton
                   variant='minus'
-                  // icon={<Minus />}
+                  icon={<Icons.Minus />}
                   onClick={() => removeRow(row.uiId)}
                 />
               </div>
