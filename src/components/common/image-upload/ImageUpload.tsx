@@ -1,5 +1,5 @@
+import { Delete, PasswordHidden } from '@/assets/icons';
 import { useEffect, useRef, useState } from 'react';
-import Icons from '@/assets/icons';
 
 type ImageUploadProps = {
   file?: File;
@@ -55,7 +55,7 @@ export default function ImageUpload({
           type='button'
           onClick={handleClick}
           className='flex h-20 w-20 flex-col items-center justify-center gap-0.5 rounded-md border border-gray-100 bg-white px-5 py-1.5 sm:h-32 sm:w-32 sm:gap-2.5 sm:rounded-2xl sm:py-4'>
-          <Icons.PasswordHidden className='h-10 w-10 px-[6.67px] pt-2.5 pb-[6.14px] text-gray-400' />
+          <PasswordHidden className='h-10 w-10 px-[6.67px] pt-2.5 pb-[6.14px] text-gray-400' />
           <div className='font-sm-medium md:font-md-medium text-gray-600'>
             {fileCount}/{maxFiles}
           </div>
@@ -81,7 +81,7 @@ export default function ImageUpload({
         aria-label='삭제'
         onClick={onRemove}
         className='absolute -top-1 -right-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gray-950'>
-        <Icons.Delete className='text-white' />
+        <Delete className='text-white' />
       </button>
     </div>
   );

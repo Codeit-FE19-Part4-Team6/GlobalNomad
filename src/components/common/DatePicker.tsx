@@ -3,8 +3,9 @@ import DropdownTrigger from '@/components/common/dropdown/DropdownTrigger';
 import DropdownList from '@/components/common/dropdown/DropdownList';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import Icons from '@/assets/icons';
+
 import { useDropdown } from '@/hooks/useDropdown';
+import { Calendar, PasswordHidden } from '@/assets/icons';
 
 function formatDate(date?: Date | null) {
   if (!date) {
@@ -25,7 +26,7 @@ function DateInput({ value }: { value?: Date }) {
         className={`font-md-medium md:font-lg-medium ${value ? 'text-gray-950' : 'text-gray-400'}`}>
         {value ? formatDate(value) : 'yy/mm/dd'}
       </span>
-      {value ? <Icons.PasswordHidden className='text-gray-400' /> : <Icons.Calendar />}
+      {value ? <PasswordHidden className='text-gray-400' /> : <Calendar />}
     </div>
   );
 }

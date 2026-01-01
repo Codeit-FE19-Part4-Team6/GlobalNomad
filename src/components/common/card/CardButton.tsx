@@ -1,34 +1,24 @@
+import type { MyReservationsResponse } from '@/apis/type';
 import { ActionButton, PrimaryButton } from '@/components/common/button';
 import { useCardContext } from '@/components/common/card/CardContext';
-import type { ReservationStatus } from '@/types/reservation';
 import { cn } from '@/utils/cn';
 
 interface CardButtonProps {
-  status?: ReservationStatus;
-  reviewSubmitted?: boolean;
+  status?: MyReservationsResponse['reservations'][number]['status'] | 'canceled';
   onReviewClick?: () => void;
   onCancelClick?: () => void;
-  onChangeClick?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
   className?: string;
 }
+
 /**
- * [Card.CardButton] - 카드 타입에 따른 액션 버튼 (후기작성, 예약변경/취소, 수정/삭제)
- *
- * ```tsx
- * // 예약 내역용
- * <Card.CardButton status="confirmed" onCancelClick={handleCancel} />
- * * // 내 체험 관리(List)용
- * <Card.CardButton onEdit={handleEdit} onDelete={handleDelete} />
- * ```
+ * [Card.CardButton] - 카드 타입에 따른 액션 버튼 (후기작성, 취소, 수정/삭제)
  */
 export default function CardButton({
   status,
-  reviewSubmitted,
   onReviewClick,
   onCancelClick,
-  onChangeClick,
   onEdit,
   onDelete,
   className,
@@ -65,7 +55,11 @@ export default function CardButton({
   }
 
   if (variant === 'reservation') {
-    const canWriteReview = status === 'completed' && reviewSubmitted === false;
+    if (!status || status === 'canceled') {
+      return null;
+    }
+
+    const canWriteReview = status === 'completed';
 
     return (
       <div
@@ -87,15 +81,9 @@ export default function CardButton({
         {status === 'confirmed' && (
           <div className='flex w-full gap-2 lg:w-auto'>
             <ActionButton
-              action='neutral'
-              onClick={onChangeClick}
-              className='w-full py-2.5 whitespace-nowrap md:w-58 lg:h-7.25 lg:w-17.75 lg:py-0'>
-              예약 변경
-            </ActionButton>
-            <ActionButton
               action='muted'
               onClick={onCancelClick}
-              className='w-full py-2.5 whitespace-nowrap md:w-58 lg:h-7.25 lg:w-17.75 lg:py-0'>
+              className='w-full py-2.5 whitespace-nowrap lg:h-7.25 lg:w-17.75 lg:py-0'>
               예약 취소
             </ActionButton>
           </div>

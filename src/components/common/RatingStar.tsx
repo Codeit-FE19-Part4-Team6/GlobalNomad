@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { cn } from '@/utils/cn';
-import Icons from '@/assets/icons';
+import { Star, StarOff } from '@/assets/icons';
 
 interface RatingStarProps {
   value: number;
@@ -35,7 +35,7 @@ export default function RatingStar({ value, onChange, className }: RatingStarPro
             onMouseLeave={() => onChange && setHover(null)}
             onClick={() => onChange?.(star)}
             className={onChange ? 'cursor-pointer' : ''}>
-            {filled ? <Icons.Star className='h-7 w-7' /> : <Icons.StarOff className='h-7 w-7' />}
+            {filled ? <Star className='h-7 w-7' /> : <StarOff className='h-7 w-7' />}
           </button>
         );
       })}

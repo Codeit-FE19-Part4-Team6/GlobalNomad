@@ -1,15 +1,16 @@
-import Icons from '@/assets/icons';
+import { Down } from '@/assets/icons';
 
-type BookingStatusPageProps = {
-  setMobileOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+type Props = {
+  setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
-export default function BookingStatusPage({ setMobileOpen }: BookingStatusPageProps) {
+
+export default function BookingStatusPage({ setMobileOpen }: Props) {
   return (
-    <>
-      <Icons.Down
+    <div className='px-4 py-4'>
+      <Down
         className='block rotate-90 cursor-pointer md:hidden'
-        onClick={() => setMobileOpen?.(false)}
+        onClick={() => setMobileOpen(false)}
       />
-    </>
+    </div>
   );
 }

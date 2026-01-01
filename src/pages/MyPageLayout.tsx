@@ -1,35 +1,53 @@
+import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import CardsideBar from '@/components/common/CardsideBar';
 import BookingStatusPage from '@/pages/BookingStatusPage';
 import MyExperiencesPage from '@/pages/MyExperiencesPage';
 import MyProfilePage from '@/pages/MyProfilePage';
 import ReservationPage from '@/pages/ReservationPage';
-import { useState } from 'react';
 
-type ActivePage = 'profile' | 'bookings' | 'experiences' | 'status';
+type ActivePage = 'profile' | 'reservation' | 'experiences' | 'status';
 
-/**
- *  MyPageLayout
- *
- * - 좌측: CardsideBar (mobile / tablet / desktop 반응형)
- * - 우측: 선택된 페이지 컨텐츠 영역
- * - activePage: 현재 선택된 페이지 (profile | bookings | experiences | status)
- * - mobileOpen: 모바일에서 사이드바 -> 컨텐츠 전환 여부
- */
 export default function MyPageLayout() {
-  const [activePage, setActivePage] = useState<ActivePage>('bookings');
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const handleMobileSelect = (page: ActivePage) => {
-    setActivePage(page);
+  // URL 쿼리에서 tab 값 가져오기
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+
+  const activePage: ActivePage =
+    tabParam === 'profile' ||
+    tabParam === 'reservation' ||
+    tabParam === 'experiences' ||
+    tabParam === 'status'
+      ? tabParam
+      : 'reservation';
+
+  // 모바일에서 사이드바가 열려있는지 상태
+  // 초기값: URL에 tab이 있으면 true
+  const [mobileOpen, setMobileOpen] = useState<boolean>(() => {
+    const tab = searchParams.get('tab');
+    return !!tab;
+  });
+  // 페이지 선택 시 호출
+  // URL 쿼리(tab) 업데이트
+  // 모바일에서는 선택한 페이지를 보여주기 위해 mobileOpen true
+  const handleSelect = (page: ActivePage) => {
+    const params = new URLSearchParams(searchParams); // 기존 URL 쿼리 파라미터를 복사해서 새 URLSearchParams 객체 생성
+
+    params.set('tab', page); // 선택한 탭을 tab 쿼리로 설정
+
+    if (page !== 'reservation') {
+      params.delete('status');
+    }
+
+    setSearchParams(params);
     setMobileOpen(true);
   };
 
-  const handleSelect = (page: ActivePage) => {
-    setActivePage(page);
-  };
-
+  // 페이지 컴포넌트 매핑
+  // key: activePage, value: 각 페이지 컴포넌트
   const pageMap: Record<ActivePage, React.ReactNode> = {
     profile: <MyProfilePage setMobileOpen={setMobileOpen} />,
-    bookings: <ReservationPage setMobileOpen={setMobileOpen} />,
+    reservation: <ReservationPage setMobileOpen={setMobileOpen} />,
     experiences: <MyExperiencesPage setMobileOpen={setMobileOpen} />,
     status: <BookingStatusPage setMobileOpen={setMobileOpen} />,
   };
@@ -42,34 +60,38 @@ export default function MyPageLayout() {
           <CardsideBar
             variant='mobile'
             activePage={activePage}
-            onProfileClick={() => handleMobileSelect('profile')}
-            onBookingsClick={() => handleMobileSelect('bookings')}
-            onExperiencesClick={() => handleMobileSelect('experiences')}
-            onBookingStatusClick={() => handleMobileSelect('status')}
+            onProfileClick={() => handleSelect('profile')}
+            onBookingsClick={() => handleSelect('reservation')}
+            onExperiencesClick={() => handleSelect('experiences')}
+            onBookingStatusClick={() => handleSelect('status')}
           />
         </div>
+
         <div className='hidden md:block lg:hidden'>
           <CardsideBar
             variant='tablet'
             activePage={activePage}
             onProfileClick={() => handleSelect('profile')}
-            onBookingsClick={() => handleSelect('bookings')}
+            onBookingsClick={() => handleSelect('reservation')}
             onExperiencesClick={() => handleSelect('experiences')}
             onBookingStatusClick={() => handleSelect('status')}
           />
         </div>
+
         <div className='hidden lg:block'>
           <CardsideBar
             variant='desktop'
             activePage={activePage}
             onProfileClick={() => handleSelect('profile')}
-            onBookingsClick={() => handleSelect('bookings')}
+            onBookingsClick={() => handleSelect('reservation')}
             onExperiencesClick={() => handleSelect('experiences')}
             onBookingStatusClick={() => handleSelect('status')}
           />
         </div>
       </aside>
+
       <main className='min-w-0 flex-1'>
+        {/* 모바일에서만 activePage 보여주기  */}
         {mobileOpen && <div className='block md:hidden'>{pageMap[activePage]}</div>}
         <div className='hidden md:flex md:flex-1'>{pageMap[activePage]}</div>
       </main>

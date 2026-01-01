@@ -1,4 +1,4 @@
-import Icons from '@/assets/icons';
+import { ProfileSm } from '@/assets/icons';
 import { useProfileImageStore } from '@/stores/profileImageStore';
 import { cn } from '@/utils/cn';
 
@@ -23,7 +23,7 @@ export default function Avatar({ className }: AvatarProps) {
       {displayUrl ? (
         <img src={displayUrl} alt='Profile' className='h-full w-full rounded-full object-cover' />
       ) : (
-        <Icons.ProfileSm />
+        <ProfileSm />
       )}
     </div>
   );

@@ -1,8 +1,8 @@
 import BaseModal from '@/components/common/modal/BaseModal';
 import { tv } from 'tailwind-variants';
-import Images from '@/assets/images';
 import { cn } from '@/utils/cn';
 import { SecondaryButton } from '@/components/common/button';
+import { WarningIcon } from '@/assets/images';
 
 interface CancelReservationModalProps {
   isOpen: boolean;
@@ -61,7 +61,7 @@ export default function CancelReservationModal({
       closeOnEsc={!isLoading}
       containerClassName={cn(BaseModalStyles(), className)}>
       <div className='flex flex-col items-center'>
-        <img src={Images.WarningLg} alt='Warning' className='h-[49px] w-[49px] md:h-22 md:w-22' />
+        <img src={WarningIcon} alt='Warning' className='h-[49px] w-[49px] md:h-22 md:w-22' />
         <p className='font-lg-bold md:font-xl-bold text-black'>{children}</p>
       </div>
 

@@ -1,5 +1,6 @@
+import { Star } from '@/assets/icons';
 import { useCardContext } from '@/components/common/card/CardContext';
-import Icons from '@/assets/icons';
+
 /**
  * [Card.Rating] - 별점 점수 및 리뷰 개수를 표시하는 컴포넌트
  *
@@ -15,7 +16,7 @@ export function CardRating({ rating, reviewCount }: { rating: number; reviewCoun
 
   return (
     <div className='font-xs-medium md:font-md-medium flex items-center gap-1 text-gray-500'>
-      <Icons.Star className={iconSize} />
+      <Star className={iconSize} />
       <span className='text-gray-950'>{rating}</span>
       <span className={variant === 'grid' ? 'text-gray-400' : 'text-gray-500'}>
         ({reviewCount})
