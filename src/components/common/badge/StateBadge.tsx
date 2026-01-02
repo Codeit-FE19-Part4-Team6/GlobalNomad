@@ -8,7 +8,7 @@ const statusColor: Record<
   confirmed: 'green', // 예약 완료
   declined: 'red', // 예약 거절
   completed: 'darkblue', // 체험 완료
-  pending: 'cyan', // 예약 승인
+  pending: 'cyan', // 예약 대기
   canceled: 'darkgray', // 예약 취소
 };
 
@@ -16,7 +16,7 @@ const statusLabel: Record<ReservationStatusWithCanceled, string> = {
   confirmed: '예약 완료',
   declined: '예약 거절',
   completed: '체험 완료',
-  pending: '예약 승인',
+  pending: '예약 대기',
   canceled: '예약 취소',
 };
 

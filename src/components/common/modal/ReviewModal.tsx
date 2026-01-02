@@ -79,7 +79,7 @@ export default function ReviewModal({
               {title}
             </Title>
             <p className='font-sm-medium md:font-md-medium flex gap-1 text-gray-500'>
-              {date} /{startTime} - {endTime} ({headCount}명)
+              {date} / {startTime} - {endTime} ({headCount}명)
             </p>
           </div>
 

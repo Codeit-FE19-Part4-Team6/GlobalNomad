@@ -41,6 +41,7 @@ const mockReservations: Reservation[] = [
     status: 'completed',
     totalPrice: 32000,
     headCount: 4,
+    reviewSubmitted: false,
     date: '2025-01-15',
     startTime: '16:00',
     endTime: '18:00',
@@ -58,7 +59,7 @@ const mockReservations: Reservation[] = [
   },
   {
     id: 4,
-    title: '예약 승인 예시',
+    title: '예약 대기 예시',
     bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
     status: 'pending',
     totalPrice: 32000,
@@ -74,6 +75,18 @@ const mockReservations: Reservation[] = [
     status: 'declined',
     totalPrice: 32000,
     headCount: 1,
+    date: '2025-01-15',
+    startTime: '16:00',
+    endTime: '18:00',
+  },
+  {
+    id: 6,
+    title: '체험 완료 예시',
+    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
+    status: 'completed',
+    totalPrice: 32000,
+    headCount: 4,
+    reviewSubmitted: true,
     date: '2025-01-15',
     startTime: '16:00',
     endTime: '18:00',
@@ -138,8 +151,8 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     setSelectedReservationId(null);
   };
   return (
-    <div className='flex flex-col gap-10 px-4 md:px-7.5'>
-      <div className='flex flex-col items-start gap-2.5 py-2.5'>
+    <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
+      <div className='flex flex-col items-start gap-2.5 py-[10px]'>
         <Down
           className='block rotate-90 cursor-pointer md:hidden'
           onClick={() => setMobileOpen(false)}
@@ -165,7 +178,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         </div>
       ) : (
         <>
-          <div className='scrollbar-hide -mr-6 mb-3.25 flex flex-nowrap gap-2 overflow-x-auto md:mb-7.5'>
+          <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
             {['confirmed', 'canceled', 'declined', 'completed', 'pending'].map((s) => (
               <FilterButton
                 key={s}
@@ -179,7 +192,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
                       ? '예약 거절'
                       : s === 'completed'
                         ? '체험 완료'
-                        : '예약 승인'}
+                        : '예약 대기'}
               </FilterButton>
             ))}
           </div>
@@ -188,16 +201,29 @@ export default function ReservationPage({ setMobileOpen }: Props) {
               <Card
                 key={item.id}
                 variant='reservation'
-                className='border-t border-gray-50 pt-5 first:border-t-0 lg:mt-0 lg:mb-3 lg:border-t-0 lg:pt-0'>
+                className='border-t border-gray-50 first:border-t-0 lg:border-t-0 lg:pt-0'>
+                <div className='mt-5 mb-3 ml-2 lg:hidden'>
+                  <Card.Schedule
+                    date={item.date}
+                    startTime={item.startTime}
+                    endTime={item.endTime}
+                    isMobileDate
+                  />
+                </div>
                 <div className='flex flex-row'>
                   <Card.Content>
                     <Card.Badge status={item.status} />
                     <Card.Title title={item.title} />
-                    <Card.Schedule
-                      date={item.date}
-                      startTime={item.startTime}
-                      endTime={item.endTime}
-                    />
+                    <div className='font-sm-medium text-gray-500 lg:hidden'>
+                      {item.startTime} - {item.endTime}
+                    </div>
+                    <div className='hidden lg:block'>
+                      <Card.Schedule
+                        date={item.date}
+                        startTime={item.startTime}
+                        endTime={item.endTime}
+                      />
+                    </div>
                     <div className='flex w-full items-center justify-between'>
                       <Card.Price price={item.totalPrice} headCount={item.headCount} />
                       <div className='hidden lg:flex'>
@@ -205,17 +231,21 @@ export default function ReservationPage({ setMobileOpen }: Props) {
                           status={item.status}
                           onReviewClick={() => handleReviewClick(item)}
                           onCancelClick={() => handleCancelClick(item.id)}
+                          reviewSubmitted={
+                            item.status === 'completed' ? item.reviewSubmitted : undefined
+                          }
                         />
                       </div>
                     </div>
                   </Card.Content>
                   <Card.Image src={item.bannerImageUrl} alt={item.title} />
                 </div>
-                <div className='flex flex-col lg:hidden'>
+                <div className='lg:hidden'>
                   <Card.CardButton
                     status={item.status}
                     onReviewClick={() => handleReviewClick(item)}
                     onCancelClick={() => handleCancelClick(item.id)}
+                    reviewSubmitted={item.status === 'completed' ? item.reviewSubmitted : undefined}
                   />
                 </div>
               </Card>
