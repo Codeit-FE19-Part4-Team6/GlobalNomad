@@ -1,9 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
+import type { CreateActivityRequest } from '@/apis/type';
 import { createActivity } from '@/apis/activity';
-import type { createdActivityRequest } from '@/types/activityRequest';
 
 export const useCreateActivity = () => {
   return useMutation({
-    mutationFn: (payload: createdActivityRequest) => createActivity(payload),
+    //CreateActivityRequest 타입의 payload를 createActivity 함수에 전달해서 실행시킨다.
+    mutationFn: (payload: CreateActivityRequest) => createActivity(payload),
   });
 };

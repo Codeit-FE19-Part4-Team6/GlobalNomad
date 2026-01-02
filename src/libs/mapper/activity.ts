@@ -1,4 +1,4 @@
-import type { scheduleRequest } from '@/types/activityRequest';
+import type { scheduleRequest } from '@/types/scheduleRequest';
 import type { ScheduleRow } from '@/types/ScheduleRow';
 
 export const mapRowsToScheduleRequests = (rows: ScheduleRow[]): scheduleRequest[] => {
