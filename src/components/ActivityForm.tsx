@@ -254,29 +254,49 @@ export default function ActivityForm({
       return;
     }
 
-    let bannerImageUrl = existingBannerUrl;
-    const bannerFile = bannerImages[0];
-    if (bannerFile) {
-      bannerImageUrl = await uploadImage(bannerFile);
+    try {
+      // 1) 이미지 업로드
+      let bannerImageUrl = existingBannerUrl;
+      const bannerFile = bannerImages[0];
+
+      if (bannerFile) {
+        try {
+          bannerImageUrl = await uploadImage(bannerFile);
+        } catch (e) {
+          console.error('배너 업로드 실패:', e); // 토스트나 스낵바로 수정예정
+          alert('배너 이미지 업로드에 실패했어요. 다시 시도해주세요.'); // 토스트나 스낵바로 수정예정
+          return;
+        }
+      }
+
+      let subImageUrls = existingSubImageUrls;
+      if (introImages.length > 0) {
+        try {
+          subImageUrls = await Promise.all(introImages.map(uploadImage));
+        } catch (e) {
+          console.error('소개 이미지 업로드 실패:', e); // 토스트나 스낵바로 수정예정
+          alert('소개 이미지 업로드에 실패했어요. 다시 시도해주세요.'); // 토스트나 스낵바로 수정예정
+          return;
+        }
+      }
+
+      // 2) 최종 제출
+      const payload: CreateActivityRequest = {
+        title,
+        category,
+        description: text,
+        price: Number(price),
+        address,
+        schedules: mapRowsToScheduleRequests(rows),
+        bannerImageUrl,
+        subImageUrls,
+      };
+
+      await onSubmit(payload);
+    } catch (error) {
+      console.error('체험 등록/수정 실패:', error); // 토스트나 스낵바로 수정예정
+      alert('등록/수정에 실패했어요. 잠시 후 다시 시도해주세요.'); // 토스트나 스낵바로 수정예정
     }
-
-    let subImageUrls = existingSubImageUrls;
-    if (introImages.length > 0) {
-      subImageUrls = await Promise.all(introImages.map((file) => uploadImage(file)));
-    }
-
-    const payload: CreateActivityRequest = {
-      title,
-      category,
-      description: text,
-      price: Number(price),
-      address,
-      schedules: mapRowsToScheduleRequests(rows),
-      bannerImageUrl,
-      subImageUrls,
-    };
-
-    await onSubmit(payload);
   };
 
   return (
