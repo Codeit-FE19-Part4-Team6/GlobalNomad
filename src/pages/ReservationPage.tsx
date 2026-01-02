@@ -7,6 +7,7 @@ import Title from '@/components/common/Title';
 import { Down, Earth } from '@/assets/icons';
 import type { MyReservationsResponse } from '@/apis/type';
 import { useSearchParams } from 'react-router-dom';
+import { cancelReservation, getMyReservations } from '@/apis/myReservation';
 
 type Reservation = {
   id: number;
@@ -21,79 +22,7 @@ type Reservation = {
   reviewSubmitted?: boolean;
 };
 
-// mock 데이터
-const mockReservations: Reservation[] = [
-  {
-    id: 1,
-    title: '예약 완료 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
-    status: 'confirmed',
-    totalPrice: 45000,
-    headCount: 2,
-    date: '2025-01-20',
-    startTime: '18:00',
-    endTime: '20:00',
-  },
-  {
-    id: 2,
-    title: '체험 완료 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'completed',
-    totalPrice: 32000,
-    headCount: 4,
-    reviewSubmitted: false,
-    date: '2025-01-15',
-    startTime: '16:00',
-    endTime: '18:00',
-  },
-  {
-    id: 3,
-    title: '예약 취소 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'canceled',
-    totalPrice: 32000,
-    headCount: 1,
-    date: '2025-01-15',
-    startTime: '16:00',
-    endTime: '18:00',
-  },
-  {
-    id: 4,
-    title: '예약 대기 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'pending',
-    totalPrice: 32000,
-    headCount: 1,
-    date: '2025-01-15',
-    startTime: '16:00',
-    endTime: '18:00',
-  },
-  {
-    id: 5,
-    title: '예약 거절 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'declined',
-    totalPrice: 32000,
-    headCount: 1,
-    date: '2025-01-15',
-    startTime: '16:00',
-    endTime: '18:00',
-  },
-  {
-    id: 6,
-    title: '체험 완료 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'completed',
-    totalPrice: 32000,
-    headCount: 4,
-    reviewSubmitted: true,
-    date: '2025-01-15',
-    startTime: '16:00',
-    endTime: '18:00',
-  },
-];
 const STATUS_LIST = ['confirmed', 'canceled', 'declined', 'completed', 'pending'] as const;
-
 type Status = (typeof STATUS_LIST)[number];
 
 type Props = {
@@ -101,12 +30,14 @@ type Props = {
 };
 
 export default function ReservationPage({ setMobileOpen }: Props) {
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false); // 모달 상태
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null); // 선택된 예약 정보
-  const [reservations, setReservations] = useState<Reservation[]>(mockReservations);
-  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null); // 예약 목록 상태
-  const [searchParams, setSearchParams] = useSearchParams(); // 필터 상태
+  const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const rawStatus = searchParams.get('status');
   const statusParam: Status = STATUS_LIST.includes(rawStatus as Status)
     ? (rawStatus as Status)
@@ -117,39 +48,75 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     setSelected(statusParam);
   }, [statusParam]);
 
-  const filteredReservations = reservations.filter((item) => item.status === selected); // 선택된 상태값에 따른 예약 목록 필터링
-  // 리뷰 작성 버튼 클릭
+  // ===================== API 연동 =====================
+  const fetchReservations = async (status: Status) => {
+    setIsLoading(true);
+    try {
+      const data = await getMyReservations(status);
+      const formatted: Reservation[] = data.reservations.map((r) => ({
+        id: r.id,
+        title: r.activity.title,
+        bannerImageUrl: r.activity.bannerImageUrl,
+        status: r.status,
+        totalPrice: r.totalPrice,
+        headCount: r.headCount,
+        date: r.date,
+        startTime: r.startTime,
+        endTime: r.endTime,
+        reviewSubmitted: r.reviewSubmitted,
+      }));
+      setReservations(formatted);
+    } catch (error) {
+      console.error('예약 목록 조회 실패:', error);
+      setReservations([]); // 에러 발생 시 빈 배열로 초기화
+      alert('예약 목록을 불러오는 데 실패했습니다.'); // 사용자에게 알림
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReservations(selected);
+  }, [selected]);
+
+  // ===================== 필터 =====================
+  const handleFilterClick = (status: Reservation['status']) => {
+    setSelected(status);
+    searchParams.set('status', status);
+    setSearchParams(searchParams);
+  };
+
+  // ===================== 리뷰 =====================
   const handleReviewClick = (reservation: Reservation) => {
     setSelectedReservation(reservation);
     setIsReviewModalOpen(true);
   };
-  // 필터 버튼 클릭
-  const handleFilterClick = (status: Reservation['status']) => {
-    setSelected(status);
-    searchParams.set('status', status); // URL 쿼리 파라미터와 상태 동기화
-    setSearchParams(searchParams);
-  };
-  const isReviewModalClose = () => setIsReviewModalOpen(false); // 리뷰 모달 닫기
-  // 예약 취소 버튼 클릭
+  const isReviewModalClose = () => setIsReviewModalOpen(false);
+
+  // ===================== 취소 =====================
   const handleCancelClick = (id: number) => {
     setSelectedReservationId(id);
     setIsCancelModalOpen(true);
   };
-  // 예약 취소 확정
-  const handleConfirmCancel = () => {
+
+  const handleConfirmCancel = async () => {
     if (selectedReservationId === null) {
       return;
     }
-    // 선택된 예약 상태를 canceled로 변경
-    setReservations((prev) =>
-      prev.map((item) =>
-        item.id === selectedReservationId ? { ...item, status: 'canceled' } : item
-      )
-    );
-    setSelected('canceled');
-    setIsCancelModalOpen(false);
-    setSelectedReservationId(null);
+    try {
+      await cancelReservation(selectedReservationId);
+      // 상태 업데이트 후 리스트 새로 조회
+      fetchReservations(selected);
+    } catch (error) {
+      console.error('예약 취소 실패:', error);
+    } finally {
+      setIsCancelModalOpen(false);
+      setSelectedReservationId(null);
+    }
   };
+
+  const filteredReservations = reservations.filter((item) => item.status === selected);
+
   return (
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
       <div className='flex flex-col items-start gap-2.5 py-[10px]'>
@@ -162,7 +129,11 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         </Title>
         <div className='font-md-medium text-gray-500'>예약내역 변경 및 취소할 수 있습니다.</div>
       </div>
-      {reservations.length === 0 ? (
+
+      {/* ===================== 빈 데이터 UI ===================== */}
+      {isLoading ? (
+        <div className='py-20 text-center'>로딩 중...</div>
+      ) : reservations.length === 0 ? (
         <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
           <div className='flex flex-col items-center justify-center'>
             <Earth className='mb-7.5' />
@@ -178,8 +149,9 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         </div>
       ) : (
         <>
+          {/* ===================== 필터 버튼 ===================== */}
           <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
-            {['confirmed', 'canceled', 'declined', 'completed', 'pending'].map((s) => (
+            {STATUS_LIST.map((s) => (
               <FilterButton
                 key={s}
                 selected={selected === s}
@@ -196,6 +168,8 @@ export default function ReservationPage({ setMobileOpen }: Props) {
               </FilterButton>
             ))}
           </div>
+
+          {/* ===================== 예약 카드 ===================== */}
           <div className='flex flex-col gap-7.5 lg:gap-6'>
             {filteredReservations.map((item) => (
               <Card
@@ -253,6 +227,8 @@ export default function ReservationPage({ setMobileOpen }: Props) {
           </div>
         </>
       )}
+
+      {/* ===================== 모달 ===================== */}
       <CancelReservationModal
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
