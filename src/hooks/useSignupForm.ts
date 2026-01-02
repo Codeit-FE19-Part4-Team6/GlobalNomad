@@ -13,6 +13,7 @@ import {
   isValidPassword,
 } from '@/utils/validation.utils';
 import { http } from '@/apis/http';
+import usersApi from '@/apis/users';
 
 export interface SignupFormInputs {
   email: string;
@@ -106,13 +107,8 @@ export const useSignupForm = () => {
     // isFormValid가 true일 때만 호출되므로 중복 체크 재확인 불필요
     setIsSubmitting(true);
     try {
-      const response = await http.post('/users', {
-        email: data.email,
-        nickname: data.nickname,
-        password: data.password,
-      });
-
-      const result = response.data;
+      const response = await usersApi.signup(data);
+      const result = response;
       if (!result) {
         throw new Error('회원가입에 실패했습니다. 다시 시도해주세요.');
       }
