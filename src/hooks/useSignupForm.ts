@@ -1,8 +1,10 @@
 // src/hooks/useSignupForm.ts
 
 import { useForm } from 'react-hook-form';
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSignupMutation } from '@/hooks/queries/useSignupMutation';
+
 import {
   // checkEmailDuplicate,
   // checkNicknameDuplicate,
@@ -12,7 +14,6 @@ import {
   isValidNickname,
   isValidPassword,
 } from '@/utils/validation.utils';
-import usersApi from '@/apis/users';
 
 export interface SignupFormInputs {
   email: string;
@@ -22,7 +23,8 @@ export interface SignupFormInputs {
 }
 
 export const useSignupForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { mutate: signup, isPending } = useSignupMutation();
+
   // const [lastCheckedEmail, setLastCheckedEmail] = useState('');
   // const [lastCheckedNickname, setLastCheckedNickname] = useState('');
 
@@ -102,20 +104,17 @@ export const useSignupForm = () => {
   //   }
   // };
 
-  const onSubmit = async (data: SignupFormInputs) => {
-    // isFormValid가 true일 때만 호출되므로 중복 체크 재확인 불필요
-    setIsSubmitting(true);
-    try {
-      const response = await usersApi.signup(data);
-      console.log('회원가입 성공:', response);
-      navigate('/login');
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : '회원가입에 실패했습니다. 다시 시도해주세요.';
-      setError('root', { message });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const onSubmit = (data: SignupFormInputs) => {
+    signup(data, {
+      onSuccess: () => {
+        navigate('/login');
+      },
+      onError: (error) => {
+        const message =
+          error instanceof Error ? error.message : '회원가입에 실패했습니다. 다시 시도해주세요.';
+        setError('root', { message });
+      },
+    });
   };
 
   const registerOptions = {
@@ -140,7 +139,7 @@ export const useSignupForm = () => {
   return {
     registerOptions,
     errors,
-    isSubmitting,
+    isSubmitting: isPending,
     isFormValid,
     // emailChecked,
     // nicknameChecked,
