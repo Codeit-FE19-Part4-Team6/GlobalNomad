@@ -6,16 +6,8 @@ import { PasswordInput, TextInput } from '@/components/common/input';
 import { useSignupForm } from '@/hooks/useSignupForm';
 
 const SignupPage = () => {
-  const {
-    registerOptions,
-    errors,
-    isSubmitting,
-    isFormValid,
-    handleSubmit,
-    handleEmailCheck,
-    handleNicknameCheck,
-    getErrorMessage,
-  } = useSignupForm();
+  const { registerOptions, errors, isSubmitting, isFormValid, handleSubmit, getErrorMessage } =
+    useSignupForm();
 
   return (
     <form
@@ -37,7 +29,6 @@ const SignupPage = () => {
             {...registerOptions.email}
             error={!!errors.email}
             errorMessage={getErrorMessage(errors.email)}
-            onBlur={(e) => handleEmailCheck(e.target.value)}
           />
 
           {/* 닉네임 */}
@@ -47,7 +38,6 @@ const SignupPage = () => {
             {...registerOptions.nickname}
             error={!!errors.nickname}
             errorMessage={getErrorMessage(errors.nickname)}
-            onBlur={(e) => handleNicknameCheck(e.target.value)}
           />
 
           {/* 비밀번호 */}
