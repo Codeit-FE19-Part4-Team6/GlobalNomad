@@ -107,7 +107,7 @@ export const useSignupForm = () => {
   const onSubmit = (data: SignupFormInputs) => {
     signup(data, {
       onSuccess: () => {
-        navigate('/signup-success');
+        navigate('/login');
       },
       onError: (error) => {
         const message =
