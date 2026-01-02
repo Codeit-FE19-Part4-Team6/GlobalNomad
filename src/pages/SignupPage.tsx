@@ -81,9 +81,9 @@ const SignupPage = () => {
 
         <div className='text-gray-400'>
           회원이신가요?{' '}
-          <a href='/login' className='underline'>
+          <Link to='/login' className='underline'>
             로그인하기
-          </a>
+          </Link>
         </div>
       </div>
     </form>
