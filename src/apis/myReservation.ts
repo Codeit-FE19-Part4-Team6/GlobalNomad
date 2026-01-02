@@ -1,10 +1,10 @@
-import { http } from '@/apis/http';
+import { http } from './http';
 import type { MyReservationsResponse, MyReservationEditRequest } from './type';
 
 // 내 예약 리스트 조회
 export const getMyReservations = async (status?: string) => {
   const res = await http.get<MyReservationsResponse>('/my-reservations', {
-    params: { status }, // status 쿼리 파라미터로 필터링
+    params: { status },
   });
   return res.data;
 };
