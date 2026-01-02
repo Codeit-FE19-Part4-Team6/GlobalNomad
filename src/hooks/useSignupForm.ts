@@ -12,7 +12,6 @@ import {
   isValidNickname,
   isValidPassword,
 } from '@/utils/validation.utils';
-import { http } from '@/apis/http';
 import usersApi from '@/apis/users';
 
 export interface SignupFormInputs {
