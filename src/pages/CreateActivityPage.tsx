@@ -1,25 +1,53 @@
-import ActivityForm from '@/components/ActivityForm';
+import ActivityForm, { type ActivityFormValues } from '@/components/ActivityForm';
 import type { CreateActivityRequest } from '@/apis/type';
 import { useCreateActivity } from '@/hooks/useCreateActivity';
 import { uploadActivityImage } from '@/apis/uploadActivityImage';
+import { mapRowsToScheduleRequests } from '@/libs/mapper/activity';
 // import { isAxiosError } from 'axios'; //등록 후 에러처리용
 // import { useNavigate } from 'react-router-dom'; //등록 후 내 체험관리로 이동
 export default function CreateActivityPage() {
   const { mutate, isPending } = useCreateActivity();
 
-  const handleCreate = (payload: CreateActivityRequest) => {
-    mutate(payload, {
-      onSuccess: () => {
-        // TODO: 성공 후 이동 or 토스트
-        // navigate('/my-activities'); 내 체험관리
-        console.log('체험 등록 성공', payload);
-      },
-      onError: (error) => {
-        console.error('체험 등록 실패', error);
-        // TODO: toast / alert 처리
-        // 등록실패 다시 시도해주세요.
-      },
-    });
+  const handleCreate = async (values: ActivityFormValues) => {
+    try {
+      // 배너 업로드
+      let bannerImageUrl = '';
+      if (values.bannerFile) {
+        bannerImageUrl = await uploadActivityImage(values.bannerFile);
+      }
+
+      const subImageUrls =
+        values.introFiles.length > 0
+          ? await Promise.all(values.introFiles.map(uploadActivityImage))
+          : [];
+
+      // Create payload 생성
+      const payload: CreateActivityRequest = {
+        title: values.title,
+        category: values.category,
+        description: values.description,
+        price: values.price,
+        address: values.address,
+        schedules: mapRowsToScheduleRequests(values.rows),
+        bannerImageUrl,
+        subImageUrls,
+      };
+
+      // 3) 서버 요청
+      mutate(payload, {
+        onSuccess: () => {
+          console.log('체험 등록 성공', payload);
+          // TODO: navigate('/my-activities'), 토스트 등록성공
+        },
+        onError: (error) => {
+          console.error('체험 등록 실패', error);
+          // TODO: toast 등록실패 토스트
+        },
+      });
+    } catch (e) {
+      console.error('이미지 업로드/등록 처리 중 실패:', e);
+      alert('등록에 실패했어요. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -28,7 +56,6 @@ export default function CreateActivityPage() {
       titleText='내 체험 등록'
       submitText='등록하기'
       isPending={isPending}
-      uploadImage={uploadActivityImage}
       onSubmit={handleCreate}
     />
   );

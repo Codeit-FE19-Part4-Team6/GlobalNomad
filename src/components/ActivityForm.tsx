@@ -16,8 +16,7 @@ import { PrimaryButton } from '@/components/common/button';
 import BannerImageSection from '@/components/common/image-upload/BannerImageSection';
 import IntroImageSection from '@/components/common/image-upload/IntroImageSection';
 import type { ScheduleRow } from '@/types/ScheduleRow';
-import { mapRowsToScheduleRequests } from '@/libs/mapper/activity';
-import type { CreateActivityRequest } from '@/apis/type';
+import type { ActivityCategory } from '@/apis/type';
 
 const MAX_BANNER = 1;
 const MAX_INTRO = 4;
@@ -53,7 +52,7 @@ const createDraft = (): ScheduleDraft => ({
 
 export type ActivityFormInitialData = {
   title: string;
-  category: string;
+  category: ActivityCategory;
   description: string;
   price: number;
   address: string;
@@ -62,17 +61,38 @@ export type ActivityFormInitialData = {
   subImageUrls: string[];
 };
 
+/**
+ *  공통 폼이 페이지로 넘겨줄 "폼 값" 타입
+ * - Create 페이지: 이 values로 CreateActivityRequest 만들어서 POST
+ * - Edit 페이지: 이 values + originalDetail 비교해서 MyActivityEditRequest 만들어서 PATCH
+ */
+export type ActivityFormValues = {
+  title: string;
+  category: ActivityCategory;
+  description: string;
+  price: number;
+  address: string;
+  rows: ScheduleRow[];
+
+  // 업로드는 페이지에서 처리하므로 파일/기존값만 넘김
+  bannerFile?: File; // 새로 선택한 배너(없으면 undefined)
+  introFiles: File[]; // 새로 추가한 소개 이미지들
+
+  existingBannerUrl: string; // edit 초기 주입 값
+  existingSubImageUrls: string[]; // edit 초기 주입 값
+};
+
 type ActivityFormProps = {
   mode: 'create' | 'edit';
 
   // edit일 때 초기값 주입
   initialData?: ActivityFormInitialData;
 
-  //부모 페이지에서 등록,수정 구분해서 처리
-  onSubmit: (payload: CreateActivityRequest) => Promise<void> | void;
-
-  //파일을 url스트링으로
-  uploadImage: (file: File) => Promise<string>;
+  /**
+   * ✅ 변경: payload(CreateActivityRequest)가 아니라 "폼 값"을 넘김
+   * 페이지에서 mode에 맞는 payload로 변환해서 API 호출
+   */
+  onSubmit: (values: ActivityFormValues) => Promise<void> | void;
 
   // 페이지에서의 상태를 받아서 버튼 비활성화
   isPending?: boolean;
@@ -88,7 +108,6 @@ export default function ActivityForm({
   mode,
   initialData,
   onSubmit,
-  uploadImage,
   isPending = false,
   submitText,
   titleText,
@@ -106,6 +125,7 @@ export default function ActivityForm({
 
   const [existingBannerUrl, setExistingBannerUrl] = useState<string>('');
   const [existingSubImageUrls, setExistingSubImageUrls] = useState<string[]>([]);
+
   // 수정모드: 초기값 주입
   useEffect(() => {
     if (!initialData) {
@@ -120,11 +140,10 @@ export default function ActivityForm({
     setRows(initialData.rows ?? []);
     setExistingBannerUrl(initialData.bannerImageUrl ?? '');
     setExistingSubImageUrls(initialData.subImageUrls ?? []);
-    // 이미지 File은 서버에서 바로 못 내려오니까(보통 URL임)
+
     // edit에서도 "새로 업로드"부터 작동하게 초기화
     setBannerImages([]);
     setIntroImages([]);
-
     setDraft(createDraft());
   }, [initialData]);
 
@@ -235,7 +254,7 @@ export default function ActivityForm({
       };
       return [...prevRows, newRow];
     });
-    // 입력줄 초기화
+
     setDraft(createDraft());
   };
 
@@ -246,57 +265,32 @@ export default function ActivityForm({
     setRows((prevRows) => prevRows.filter((row) => row.uiId !== uiId));
   };
 
-  //  공통 submit
-  // - 여기서 POST/PATCH 결정하지 않음
-  // - payload 만들고 onSubmit(payload)만 호출
+  /**
+   * ✅ 공통 submit 변경
+   * - 공통폼에서는 업로드/POST/PATCH payload 생성 안 함
+   * - 폼 값만 모아서 페이지로 넘김
+   */
   const handleSubmit = async () => {
     if (!isFormValid || isPending) {
       return;
     }
 
-    try {
-      // 1) 이미지 업로드
-      let bannerImageUrl = existingBannerUrl;
-      const bannerFile = bannerImages[0];
+    const values: ActivityFormValues = {
+      title,
+      category: category as ActivityCategory,
+      description: text,
+      price: Number(price),
+      address,
+      rows,
 
-      if (bannerFile) {
-        try {
-          bannerImageUrl = await uploadImage(bannerFile);
-        } catch (e) {
-          console.error('배너 업로드 실패:', e); // 토스트나 스낵바로 수정예정
-          alert('배너 이미지 업로드에 실패했어요. 다시 시도해주세요.'); // 토스트나 스낵바로 수정예정
-          return;
-        }
-      }
+      bannerFile: bannerImages[0],
+      introFiles: introImages,
 
-      let subImageUrls = existingSubImageUrls;
-      if (introImages.length > 0) {
-        try {
-          subImageUrls = await Promise.all(introImages.map(uploadImage));
-        } catch (e) {
-          console.error('소개 이미지 업로드 실패:', e); // 토스트나 스낵바로 수정예정
-          alert('소개 이미지 업로드에 실패했어요. 다시 시도해주세요.'); // 토스트나 스낵바로 수정예정
-          return;
-        }
-      }
+      existingBannerUrl,
+      existingSubImageUrls,
+    };
 
-      // 2) 최종 제출
-      const payload: CreateActivityRequest = {
-        title,
-        category,
-        description: text,
-        price: Number(price),
-        address,
-        schedules: mapRowsToScheduleRequests(rows),
-        bannerImageUrl,
-        subImageUrls,
-      };
-
-      await onSubmit(payload);
-    } catch (error) {
-      console.error('체험 등록/수정 실패:', error); // 토스트나 스낵바로 수정예정
-      alert('등록/수정에 실패했어요. 잠시 후 다시 시도해주세요.'); // 토스트나 스낵바로 수정예정
-    }
+    await onSubmit(values);
   };
 
   return (
