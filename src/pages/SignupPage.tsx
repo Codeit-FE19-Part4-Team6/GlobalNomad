@@ -4,6 +4,7 @@ import { Logo } from '@/components/common/Logo';
 import { PrimaryButton, SecondaryButton } from '@/components/common/button';
 import { PasswordInput, TextInput } from '@/components/common/input';
 import { useSignupForm } from '@/hooks/useSignupForm';
+import { Link } from 'react-router-dom';
 
 const SignupPage = () => {
   const { registerOptions, errors, isSubmitting, isFormValid, handleSubmit, getErrorMessage } =

@@ -107,11 +107,7 @@ export const useSignupForm = () => {
     setIsSubmitting(true);
     try {
       const response = await usersApi.signup(data);
-      const result = response;
-      if (!result) {
-        throw new Error('회원가입에 실패했습니다. 다시 시도해주세요.');
-      }
-      console.log('회원가입 성공:', result);
+      console.log('회원가입 성공:', response);
       navigate('/login');
     } catch (error) {
       const message =
