@@ -5,8 +5,11 @@ import ReviewModal from '@/components/common/modal/ReviewModal';
 import { FilterButton, PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
 import { Down, Earth } from '@/assets/icons';
-import type { MyReservationsResponse } from '@/apis/type';
+// import { useQuery } from '@tanstack/react-query';
+import type { MyReservationReviewRequest, MyReservationsResponse } from '@/apis/type';
 import { useSearchParams } from 'react-router-dom';
+import { cancelReservation, postReservationReview } from '@/apis/myReservation';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type Reservation = {
   id: number;
@@ -21,7 +24,7 @@ type Reservation = {
   reviewSubmitted?: boolean;
 };
 
-// mock 데이터
+// mock 데이터 추후 삭제 예정
 const mockReservations: Reservation[] = [
   {
     id: 1,
@@ -104,52 +107,98 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false); // 모달 상태
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null); // 선택된 예약 정보
-  const [reservations, setReservations] = useState<Reservation[]>(mockReservations);
+  const [reservations] = useState<Reservation[]>(mockReservations); // 추후 삭제 예정
+  // const [reservations, setReservations] = useState<Reservation[]>([]);
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null); // 예약 목록 상태
   const [searchParams, setSearchParams] = useSearchParams(); // 필터 상태
+  const queryClient = useQueryClient();
   const rawStatus = searchParams.get('status');
   const statusParam: Status = STATUS_LIST.includes(rawStatus as Status)
     ? (rawStatus as Status)
     : 'confirmed';
   const [selected, setSelected] = useState<Status>(statusParam);
+  const filteredReservations = reservations.filter((item) => item.status === selected); // 추후 삭제 예정
+  const isReviewModalClose = () => setIsReviewModalOpen(false); // 리뷰 모달 닫기
 
   useEffect(() => {
     setSelected(statusParam);
   }, [statusParam]);
 
-  const filteredReservations = reservations.filter((item) => item.status === selected); // 선택된 상태값에 따른 예약 목록 필터링
-  // 리뷰 작성 버튼 클릭
-  const handleReviewClick = (reservation: Reservation) => {
-    setSelectedReservation(reservation);
-    setIsReviewModalOpen(true);
-  };
   // 필터 버튼 클릭
   const handleFilterClick = (status: Reservation['status']) => {
     setSelected(status);
     searchParams.set('status', status); // URL 쿼리 파라미터와 상태 동기화
     setSearchParams(searchParams);
   };
-  const isReviewModalClose = () => setIsReviewModalOpen(false); // 리뷰 모달 닫기
+
+  // 예약 내역 조회 (mock 기반)
+  // const { data: reservations = [] } = useQuery({
+  //   queryKey: ['myReservations', selected],
+  //   queryFn: () => getMyReservations(selected),
+  // });
+
+  // 후기 작성 버튼 클릭
+  const handleReviewClick = (reservation: Reservation) => {
+    setSelectedReservation(reservation);
+    setIsReviewModalOpen(true);
+  };
+  // 후기 제출
+  const handleSubmitReview = (data: { rating: number; content: string }) => {
+    if (!selectedReservation) {
+      return;
+    }
+    reviewMutate({
+      reservationId: selectedReservation.id,
+      data,
+    });
+  };
+  // 후기 작성
+  const { mutate: reviewMutate } = useMutation({
+    mutationFn: ({
+      reservationId,
+      data,
+    }: {
+      reservationId: number;
+      data: MyReservationReviewRequest;
+    }) => postReservationReview(reservationId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['myReservations'],
+      });
+      setIsReviewModalOpen(false);
+    },
+    onError: () => {
+      alert('후기 작성에 실패했습니다.');
+    },
+  });
+
   // 예약 취소 버튼 클릭
   const handleCancelClick = (id: number) => {
     setSelectedReservationId(id);
     setIsCancelModalOpen(true);
   };
+  const { mutate: cancelMutate } = useMutation({
+    mutationFn: cancelReservation,
+    onSuccess: () => {
+      // 예약 목록 자동 리패칭
+      queryClient.invalidateQueries({
+        queryKey: ['myReservations'],
+      });
+      setIsCancelModalOpen(false);
+      setSelectedReservationId(null);
+    },
+    onError: () => {
+      alert('예약 취소에 실패했습니다. 다시 시도해주세요.');
+    },
+  });
   // 예약 취소 확정
   const handleConfirmCancel = () => {
-    if (selectedReservationId === null) {
+    if (!selectedReservationId) {
       return;
     }
-    // 선택된 예약 상태를 canceled로 변경
-    setReservations((prev) =>
-      prev.map((item) =>
-        item.id === selectedReservationId ? { ...item, status: 'canceled' } : item
-      )
-    );
-    setSelected('canceled');
-    setIsCancelModalOpen(false);
-    setSelectedReservationId(null);
+    cancelMutate(selectedReservationId);
   };
+
   return (
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
       <div className='flex flex-col items-start gap-2.5 py-[10px]'>
@@ -197,59 +246,65 @@ export default function ReservationPage({ setMobileOpen }: Props) {
             ))}
           </div>
           <div className='flex flex-col gap-7.5 lg:gap-6'>
-            {filteredReservations.map((item) => (
-              <Card
-                key={item.id}
-                variant='reservation'
-                className='border-t border-gray-50 first:border-t-0 lg:border-t-0 lg:pt-0'>
-                <div className='mt-5 mb-3 ml-2 lg:hidden'>
-                  <Card.Schedule
-                    date={item.date}
-                    startTime={item.startTime}
-                    endTime={item.endTime}
-                    isMobileDate
-                  />
-                </div>
-                <div className='flex flex-row'>
-                  <Card.Content>
-                    <Card.Badge status={item.status} />
-                    <Card.Title title={item.title} />
-                    <div className='font-sm-medium text-gray-500 lg:hidden'>
-                      {item.startTime} - {item.endTime}
-                    </div>
-                    <div className='hidden lg:block'>
-                      <Card.Schedule
-                        date={item.date}
-                        startTime={item.startTime}
-                        endTime={item.endTime}
-                      />
-                    </div>
-                    <div className='flex w-full items-center justify-between'>
-                      <Card.Price price={item.totalPrice} headCount={item.headCount} />
-                      <div className='hidden lg:flex'>
-                        <Card.CardButton
-                          status={item.status}
-                          onReviewClick={() => handleReviewClick(item)}
-                          onCancelClick={() => handleCancelClick(item.id)}
-                          reviewSubmitted={
-                            item.status === 'completed' ? item.reviewSubmitted : undefined
-                          }
+            {filteredReservations.map(
+              (
+                item // 추후 교체 filteredReservations->reservations
+              ) => (
+                <Card
+                  key={item.id}
+                  variant='reservation'
+                  className='border-t border-gray-50 first:border-t-0 lg:border-t-0 lg:pt-0'>
+                  <div className='mt-5 mb-3 ml-2 lg:hidden'>
+                    <Card.Schedule
+                      date={item.date}
+                      startTime={item.startTime}
+                      endTime={item.endTime}
+                      isMobileDate
+                    />
+                  </div>
+                  <div className='flex flex-row'>
+                    <Card.Content>
+                      <Card.Badge status={item.status} />
+                      <Card.Title title={item.title} />
+                      <div className='font-sm-medium text-gray-500 lg:hidden'>
+                        {item.startTime} - {item.endTime}
+                      </div>
+                      <div className='hidden lg:block'>
+                        <Card.Schedule
+                          date={item.date}
+                          startTime={item.startTime}
+                          endTime={item.endTime}
                         />
                       </div>
-                    </div>
-                  </Card.Content>
-                  <Card.Image src={item.bannerImageUrl} alt={item.title} />
-                </div>
-                <div className='lg:hidden'>
-                  <Card.CardButton
-                    status={item.status}
-                    onReviewClick={() => handleReviewClick(item)}
-                    onCancelClick={() => handleCancelClick(item.id)}
-                    reviewSubmitted={item.status === 'completed' ? item.reviewSubmitted : undefined}
-                  />
-                </div>
-              </Card>
-            ))}
+                      <div className='flex w-full items-center justify-between'>
+                        <Card.Price price={item.totalPrice} headCount={item.headCount} />
+                        <div className='hidden lg:flex'>
+                          <Card.CardButton
+                            status={item.status}
+                            onReviewClick={() => handleReviewClick(item)}
+                            onCancelClick={() => handleCancelClick(item.id)}
+                            reviewSubmitted={
+                              item.status === 'completed' ? item.reviewSubmitted : undefined
+                            }
+                          />
+                        </div>
+                      </div>
+                    </Card.Content>
+                    <Card.Image src={item.bannerImageUrl} alt={item.title} />
+                  </div>
+                  <div className='lg:hidden'>
+                    <Card.CardButton
+                      status={item.status}
+                      onReviewClick={() => handleReviewClick(item)}
+                      onCancelClick={() => handleCancelClick(item.id)}
+                      reviewSubmitted={
+                        item.status === 'completed' ? item.reviewSubmitted : undefined
+                      }
+                    />
+                  </div>
+                </Card>
+              )
+            )}
           </div>
         </>
       )}
@@ -270,6 +325,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
           startTime={selectedReservation.startTime}
           endTime={selectedReservation.endTime}
           headCount={selectedReservation.headCount}
+          onSubmit={handleSubmitReview}
         />
       )}
     </div>
