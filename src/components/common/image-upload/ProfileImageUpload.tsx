@@ -1,5 +1,4 @@
 import { useRef } from 'react';
-
 import { cn } from '@/utils/cn';
 import { useProfileImageStore } from '@/stores/profileImageStore';
 import { Edit, ProfileLg, ProfileMd } from '@/assets/icons';
@@ -34,29 +33,34 @@ export default function ProfileImageUpload({
   className,
   defaultImageUrl,
 }: ProfileImageUploadProps) {
-  const inputRef = useRef<HTMLInputElement>(null); //inputRef는 숨겨진 파일 input을 직접 클릭하거나 조작
-  const { previewUrl, profileImageUrl, setPreviewUrl, clearPreview } = useProfileImageStore();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const {
+    previewUrl,
+    profileImageUrl,
+    setPreviewUrl,
+    clearPreview,
+    setFile, // 서버 업로드용 파일 상태
+  } = useProfileImageStore();
 
   // 편집 버튼 클릭 시 파일 선택 input 열기
   const handleEditClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 부모 이벤트 버블링 방지
+    e.stopPropagation();
     inputRef.current?.click();
   };
 
-  // 파일 선택 시 previewUrl 상태에 저장
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 파일 선택 시 previewUrl과 서버 업로드용 파일 상태 동시에 업데이트
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
-      clearPreview(); // 선택 취소 시 미리보기 초기화
+      clearPreview(); // 프리뷰 초기화
+      setFile(null); // 업로드용 파일 초기화
       return;
     }
 
-    setPreviewUrl(file);
-
-    // TODO: 서버 업로드 (API 연동 시 구현)
+    setPreviewUrl(file); // 브라우저 미리보기용
   };
 
-  // 배경 이미지 결정: preview > 실제 업로드된 이미지 > 기본 이미지
+  // 이미지 표시 결정: preview > 서버 이미지 > 기본 이미지
   const background = previewUrl ?? profileImageUrl ?? defaultImageUrl ?? null;
 
   return (
@@ -74,7 +78,6 @@ export default function ProfileImageUpload({
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}>
-        {/* 이미지 없으면 기본 아이콘 표시 */}
         {!background && (size === 'medium' ? <ProfileMd /> : <ProfileLg />)}
       </div>
 
@@ -97,7 +100,7 @@ export default function ProfileImageUpload({
         ref={inputRef}
         type='file'
         accept='image/*'
-        onChange={handleFileChange} //사용자가 파일을 선택했을 때 호출되는 함수
+        onChange={handleFileChange}
         className='hidden'
       />
     </div>
