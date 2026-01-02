@@ -17,25 +17,6 @@ export const isValidPassword = (password: string): boolean => {
 };
 
 /**
- * 비밀번호 강도 검사
- * @returns weak | medium | strong
- */
-// export const getPasswordStrength = (password: string): 'weak' | 'medium' | 'strong' => {
-//   if (password.length < 8) return 'weak';
-
-//   const hasLower = /[a-z]/.test(password);
-//   const hasUpper = /[A-Z]/.test(password);
-//   const hasNumber = /[0-9]/.test(password);
-//   const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-//   const strength = [hasLower, hasUpper, hasNumber, hasSpecial].filter(Boolean).length;
-
-//   if (strength >= 4 && password.length >= 12) return 'strong';
-//   if (strength >= 3 && password.length >= 8) return 'medium';
-//   return 'weak';
-// };
-
-/**
  * 닉네임 유효성 검사 (2-10자, 한글/영문/숫자만 허용)
  */
 export const isValidNickname = (nickname: string): boolean => {
@@ -69,14 +50,14 @@ export const getErrorMessage = (error: any): string | undefined => {
 /**
  * 이메일 중복 체크 (API 호출)
  */
-export const checkEmailDuplicate = async (email: string): Promise<boolean> => {
+export const checkEmailDuplicate = async (email: string) => {
   try {
-    // TODO: 실제 API 엔드포인트로 교체
-    const response = await fetch(`/api/auth/check-email?email=${email}`);
-    if (!response.ok) {
+    // TODO: backend endpoint TBD (email availability check)
+    const res = await fetch(`/api/availability/email?email=${email}`);
+    if (!res.ok) {
       throw new Error('이메일 중복 확인 중 오류가 발생했습니다.');
     }
-    const data = await response.json();
+    const data = await res.json();
     return data.isDuplicate;
   } catch (error) {
     console.error('이메일 중복 체크 실패:', error);
@@ -87,15 +68,18 @@ export const checkEmailDuplicate = async (email: string): Promise<boolean> => {
 /**
  * 닉네임 중복 체크 (API 호출)
  */
-export const checkNicknameDuplicate = async (nickname: string): Promise<boolean> => {
+export const checkNicknameDuplicate = async (nickname: string) => {
   try {
-    // TODO: 실제 API 엔드포인트로 교체
-    const response = await fetch(`/api/auth/check-nickname?nickname=${nickname}`);
-    const data = await response.json();
+    // TODO: backend endpoint TBD (email availability check)
+    const res = await fetch(`/api/availability/nickname?nickname=${nickname}`);
+    if (!res.ok) {
+      throw new Error('닉네임 중복 확인 중 오류가 발생했습니다.');
+    }
+    const data = await res.json();
     return data.isDuplicate;
   } catch (error) {
     console.error('닉네임 중복 체크 실패:', error);
-    return false;
+    throw error;
   }
 };
 
