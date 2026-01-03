@@ -1,6 +1,6 @@
 import { Star } from '@/assets/icons';
 import { useCardContext } from '@/components/common/card/CardContext';
-import { cn } from 'tailwind-variants';
+import { cn } from '@/utils/cn';
 
 /**
  * [Card.Rating] - 별점 점수 및 리뷰 개수를 표시하는 컴포넌트

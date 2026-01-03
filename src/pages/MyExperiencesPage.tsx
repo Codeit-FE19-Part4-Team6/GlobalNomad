@@ -6,8 +6,7 @@ import type { Activity } from '@/apis/type';
 import { PrimaryButton } from '@/components/common/button';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
 import { useState } from 'react';
-import { useSnackBar } from '@/providers/SnackBarProvider';
-import { useDeleteMyActivity } from '@/hooks/queries/useDeleteMyActivity';
+
 // import { useMyActivities } from '@/hooks/queries/useMyActivities';
 
 const mockMyActivities: Activity[] = [
@@ -62,12 +61,11 @@ type Props = {
 export default function MyExperiencesPage({ setMobileOpen }: Props) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState<number | null>(null);
-  const { showSnack } = useSnackBar();
+
   const navigate = useNavigate();
 
-  // 현재는 mock 데이터만 사용
-  // TODO: const activities = myActivities로 교체
-  const activities = mockMyActivities;
+  // 현재는 mock 데이터만 사용 TODO: 추후 수정
+  const [activities, setActivities] = useState<Activity[]>(mockMyActivities);
 
   // const { data: myActivities, isLoading, isError } = useMyActivities();
 
@@ -75,29 +73,15 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
     setSelectedActivityId(id);
     setIsCancelModalOpen(true);
   };
-  const { mutate: deleteMutate } = useDeleteMyActivity({
-    onSuccess: () => {
-      setIsCancelModalOpen(false);
-      setSelectedActivityId(null);
-      showSnack('체험이 삭제되었습니다.', 'success');
-    },
-    onError: () => {
-      showSnack('체험 삭제에 실패했습니다. 다시 시도해주세요.', 'error');
-    },
-  });
   const handleConfirmCancel = () => {
     if (!selectedActivityId) {
       return;
     }
-    deleteMutate(selectedActivityId);
+    setActivities((prev) => prev.filter((a) => a.id !== selectedActivityId));
+    setSelectedActivityId(null);
+    setIsCancelModalOpen(false); // 모달 닫기
   };
 
-  // if (isLoading) {
-  //   return <div className='p-4'>로딩 중...</div>;
-  // }
-  // if (isError) {
-  //   return <div className='p-4 text-center text-gray-500'>체험 목록을 불러오지 못했습니다.</div>;
-  // }
   return (
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
       <div className='mb-[30px] flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
