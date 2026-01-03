@@ -10,6 +10,7 @@ import type { MyReservationReviewRequest, MyReservationsResponse } from '@/apis/
 import { useSearchParams } from 'react-router-dom';
 import { cancelReservation, postReservationReview } from '@/apis/myReservation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSnackBar } from '@/providers/SnackBarProvider';
 
 type Reservation = {
   id: number;
@@ -112,6 +113,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null); // 예약 목록 상태
   const [searchParams, setSearchParams] = useSearchParams(); // 필터 상태
   const queryClient = useQueryClient();
+  const { showSnack } = useSnackBar();
   const rawStatus = searchParams.get('status');
   const statusParam: Status = STATUS_LIST.includes(rawStatus as Status)
     ? (rawStatus as Status)
@@ -162,13 +164,14 @@ export default function ReservationPage({ setMobileOpen }: Props) {
       data: MyReservationReviewRequest;
     }) => postReservationReview(reservationId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['myReservations'],
-      });
+      queryClient.invalidateQueries({ queryKey: ['myReservations'] });
       setIsReviewModalOpen(false);
+      showSnack('후기가 등록되었습니다!', 'success', {
+        duration: 2000,
+      });
     },
     onError: () => {
-      alert('후기 작성에 실패했습니다.');
+      showSnack('후기 작성에 실패했습니다.', 'error'); // ✅ alert 대체
     },
   });
 
@@ -179,16 +182,20 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   };
   const { mutate: cancelMutate } = useMutation({
     mutationFn: cancelReservation,
+
     onSuccess: () => {
-      // 예약 목록 자동 리패칭
       queryClient.invalidateQueries({
         queryKey: ['myReservations'],
       });
+
       setIsCancelModalOpen(false);
       setSelectedReservationId(null);
+
+      showSnack('예약이 취소되었습니다.', 'success');
     },
+
     onError: () => {
-      alert('예약 취소에 실패했습니다. 다시 시도해주세요.');
+      showSnack('예약 취소에 실패했습니다. 다시 시도해주세요.', 'error');
     },
   });
   // 예약 취소 확정
