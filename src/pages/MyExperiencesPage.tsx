@@ -3,6 +3,8 @@ import Title from '@/components/common/Title';
 import { Down, Earth } from '@/assets/icons';
 import type { Activity } from '@/apis/type';
 import { PrimaryButton } from '@/components/common/button';
+import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
+import { useState } from 'react';
 
 const mockMyActivities: Activity[] = [
   {
@@ -14,7 +16,7 @@ const mockMyActivities: Activity[] = [
     price: 75000,
     address: '제주특별자치도 제주시',
     bannerImageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
-    rating: 4.8,
+    rating: 3,
     reviewCount: 32,
     createdAt: '2025-01-01T10:00:00Z',
     updatedAt: '2025-01-10T10:00:00Z',
@@ -42,8 +44,8 @@ const mockMyActivities: Activity[] = [
     price: 55000,
     address: '서울특별자치도 영등포구',
     bannerImageUrl: 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff',
-    rating: 0,
-    reviewCount: 0,
+    rating: 5,
+    reviewCount: 876,
     createdAt: '2025-01-15T15:00:00Z',
     updatedAt: '2025-01-15T15:00:00Z',
   },
@@ -55,6 +57,22 @@ type Props = {
 
 export default function MyExperiencesPage({ setMobileOpen }: Props) {
   const activities = mockMyActivities;
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [experiencesId, setexperiencesId] = useState<number | null>(null);
+
+  // 체험 삭제 버튼 클릭
+  const handleDelete = (id: number) => {
+    setexperiencesId(id);
+    setIsCancelModalOpen(true);
+  };
+  // 체험 삭제 확정
+  const handleConfirmCancel = () => {
+    if (experiencesId === null) {
+      return;
+    }
+    setIsCancelModalOpen(false);
+    setexperiencesId(null);
+  };
 
   return (
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
@@ -90,8 +108,12 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
               <div className='flex w-full items-stretch justify-between'>
                 <Card.Content className='flex flex-1 flex-col justify-center self-stretch'>
                   <Card.Title title={activity.title} className='mb-[6px] lg:mb-2' />
-                  <Card.Rating rating={4.8} reviewCount={120} className='mb-[10px] lg:mb-3' />
-                  <Card.Price price={32454} className='mb-[10px] lg:mb-5' />
+                  <Card.Rating
+                    rating={activity.rating}
+                    reviewCount={activity.reviewCount}
+                    className='mb-[10px] lg:mb-3'
+                  />
+                  <Card.Price price={activity.price} className='mb-[10px] lg:mb-5' />
                   <Card.CardButton
                     onEdit={() => handleEdit(activity.id)}
                     onDelete={() => handleDelete(activity.id)}
@@ -103,6 +125,15 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
           ))}
         </div>
       )}
+      <CancelReservationModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirm={handleConfirmCancel}
+        cancelText='아니요'
+        confirmText='체험 삭제'>
+        삭제하시겠습니까?
+      </CancelReservationModal>
+      ;
     </div>
   );
 }
