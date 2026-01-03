@@ -5,15 +5,16 @@ import { getErrorMessage, isValidEmail, isValidPassword } from '@/utils/validati
 import type { LoginRequest } from '@/apis/type';
 import { useLoginMutation } from '@/hooks/queries/useLoginMutation';
 import { useNavigate } from 'react-router-dom';
+import { useSnackBar } from '@/providers/SnackBarProvider';
 
 export const useLoginForm = () => {
   const { mutate: login, isPending } = useLoginMutation();
+  const { showSnack } = useSnackBar();
 
   const {
     register,
     handleSubmit,
     watch,
-    setError,
     formState: { errors, isValid },
   } = useForm<LoginRequest>({
     mode: 'onBlur',
@@ -30,12 +31,17 @@ export const useLoginForm = () => {
   const onSubmit = (data: LoginRequest) => {
     login(data, {
       onSuccess: () => {
-        navigate('/');
+        showSnack('로그인이 완료되었습니다.', 'success', {
+          duration: 1200,
+          onClose: () => navigate('/'),
+        });
       },
       onError: (error) => {
         const message =
           error instanceof Error ? error.message : '로그인에 실패했습니다. 다시 시도해주세요.';
-        setError('root', { message });
+        showSnack(message, 'error', {
+          duration: 3000,
+        });
       },
     });
   };

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSignupMutation } from '@/hooks/queries/useSignupMutation';
+import { useSnackBar } from '@/providers/SnackBarProvider';
 
 import {
   // checkEmailDuplicate,
@@ -24,6 +25,7 @@ export interface SignupFormInputs {
 
 export const useSignupForm = () => {
   const { mutate: signup, isPending } = useSignupMutation();
+  const { showSnack } = useSnackBar();
 
   // const [lastCheckedEmail, setLastCheckedEmail] = useState('');
   // const [lastCheckedNickname, setLastCheckedNickname] = useState('');
@@ -32,8 +34,6 @@ export const useSignupForm = () => {
     register,
     handleSubmit,
     watch,
-    setError,
-    // clearErrors,
     formState: { errors, isValid },
   } = useForm<SignupFormInputs>({
     mode: 'onBlur',
@@ -107,12 +107,17 @@ export const useSignupForm = () => {
   const onSubmit = (data: SignupFormInputs) => {
     signup(data, {
       onSuccess: () => {
-        navigate('/login');
+        showSnack('회원가입이 완료되었습니다.', 'success', {
+          duration: 1200,
+          onClose: () => navigate('/login'),
+        });
       },
       onError: (error) => {
         const message =
           error instanceof Error ? error.message : '회원가입에 실패했습니다. 다시 시도해주세요.';
-        setError('root', { message });
+        showSnack(message, 'error', {
+          duration: 3000,
+        });
       },
     });
   };
