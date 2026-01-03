@@ -5,10 +5,8 @@ export interface SnackBarOptions {
   onClose?: () => void;
 }
 
-export interface Snack {
+export interface Snack extends SnackBarOptions {
   id: number;
   message: string;
   type: SnackBarType;
-  duration?: number;
-  onClose?: () => void;
 }

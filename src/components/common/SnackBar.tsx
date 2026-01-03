@@ -29,12 +29,6 @@ const snackBarStyle = tv({
 
 const messageStyle = tv({
   base: 'responsive-text text-lg-to-xs font-lg-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis',
-  variants: {
-    type: {
-      success: 'text-primary-500',
-      error: 'text-red-400',
-    },
-  },
 });
 
 interface SnackBarProps {
@@ -139,32 +133,38 @@ export default function SnackBar({
   const [isMobile, setIsMobile] = useState(false);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // 모바일 감지 및 자동 닫기 타이머 관리
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  // 모바일 감지 (한 번만 실행)
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= SNACKBAR_CONFIG.MOBILE_BREAKPOINT);
     };
 
-    // 모바일 감지 초기화 및 이벤트 리스너 등록
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    // 자동 닫기 타이머 설정
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  // 자동 닫기 타이머 관리
+  useEffect(() => {
     if (isOpen && duration > 0) {
       closeTimerRef.current = setTimeout(() => {
-        onClose();
+        onCloseRef.current();
       }, duration);
     }
 
-    // cleanup
     return () => {
-      window.removeEventListener('resize', checkMobile);
       if (closeTimerRef.current) {
         clearTimeout(closeTimerRef.current);
         closeTimerRef.current = null;
       }
     };
-  }, [isOpen, duration, onClose]);
+  }, [isOpen, duration]);
 
   if (!isOpen) {
     return null;
@@ -189,7 +189,7 @@ export default function SnackBar({
         aria-atomic='true'
         aria-label={`${type === 'success' ? '성공' : '오류'} 알림: ${message}`}>
         {/* 메시지 */}
-        <div className={clsx(messageStyle({ type }))}>{message}</div>
+        <div className={clsx(messageStyle())}>{message}</div>
       </div>
     </div>
   );

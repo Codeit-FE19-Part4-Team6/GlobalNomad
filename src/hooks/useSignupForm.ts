@@ -112,8 +112,10 @@ export const useSignupForm = () => {
           onClose: () => navigate('/login'),
         });
       },
-      onError: () => {
-        showSnack('회원가입에 실패했습니다.', 'error', {
+      onError: (error) => {
+        const message =
+          error instanceof Error ? error.message : '회원가입에 실패했습니다. 다시 시도해주세요.';
+        showSnack(message, 'error', {
           duration: 3000,
         });
       },
