@@ -1,7 +1,6 @@
 import { http } from './http';
 import type {
   MyReservationsResponse,
-  MyReservationEditRequest,
   MyReservationReviewResponse,
   MyReservationReviewRequest,
 } from './type';
@@ -18,7 +17,7 @@ export const getMyReservations = async (status?: string) => {
 export const cancelReservation = async (reservationId: number) => {
   const res = await http.patch(`/my-reservations/${reservationId}`, {
     status: 'canceled',
-  } as MyReservationEditRequest);
+  });
   return res.data;
 };
 

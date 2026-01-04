@@ -98,7 +98,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
     if (values.newPassword.trim()) {
       payload.newPassword = values.newPassword.trim();
     }
-    editMyInfoMutation.mutate(payload as UserEditRequest);
+    editMyInfoMutation.mutate(payload);
   };
   if (isLoading) {
     return <div className='px-4 py-10'>로딩 중...</div>;
@@ -120,11 +120,11 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
       </div>
 
       <div className='flex flex-col gap-[18px] md:gap-6'>
-        <TextInput label='닉네임' placeholder={myInfo?.nickname} {...register('nickname')} />
+        <TextInput label='닉네임' placeholder={myInfo?.nickname ?? ''} {...register('nickname')} />
         <TextInput
           label='이메일'
           type='email'
-          placeholder={myInfo?.email}
+          placeholder={myInfo?.email ?? ''}
           disabled
           className='cursor-not-allowed bg-gray-50 text-gray-400'
           {...register('email')}
