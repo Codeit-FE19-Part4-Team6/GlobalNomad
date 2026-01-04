@@ -58,8 +58,8 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
         });
 
         setProfileImageUrl(data.profileImageUrl ?? '');
-      } catch (e) {
-        console.error('내 정보 조회 실패', e);
+      } catch {
+        alert('내 정보 조회를 실패했습니다.');
       }
     };
     fetchMyInfo();
@@ -130,8 +130,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
       });
 
       setMyInfo((prev) => (prev ? { ...prev, ...payload } : prev));
-    } catch (e) {
-      console.error('내 정보 수정 실패', e);
+    } catch {
       alert('수정에 실패했습니다.');
     }
   };

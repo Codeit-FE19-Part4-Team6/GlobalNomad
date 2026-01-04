@@ -12,20 +12,29 @@ import { cn } from '@/utils/cn';
  * <Card.Price price={price} headCount={headCount} />
  * ```
  */
-export function CardPrice({ price, headCount }: { price: number; headCount?: number }) {
+
+export function CardPrice({
+  price,
+  headCount,
+  className,
+}: {
+  price: number;
+  headCount?: number;
+  className?: string;
+}) {
   const { variant } = useCardContext();
 
   const priceStyle =
     variant === 'grid' ? 'font-md-bold md:font-xl-bold' : 'font-lg-bold lg:font-xl-bold';
 
   return (
-    <div className={cn('flex items-center', headCount ? 'gap-2' : 'gap-0.5')}>
+    <div className={cn('flex items-center', headCount ? 'gap-2' : 'gap-1', className)}>
       <span className={cn('text-gray-950', priceStyle)}>₩{price.toLocaleString()}</span>
 
       {headCount ? (
         <span className='font-md-medium lg:font-lg-medium text-gray-400'>{headCount}명</span>
       ) : (
-        <span className='font-md-medium lg:font-lg-medium text-gray-400'>/인</span>
+        <span className='font-md-medium lg:font-lg-medium text-gray-400'>/ 인</span>
       )}
     </div>
   );
