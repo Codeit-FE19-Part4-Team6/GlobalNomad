@@ -90,6 +90,14 @@ const DUMMY_ALL_ACTIVITIES = Array.from({ length: 20 }, (_, i) => ({
   imageUrl: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400', // 임시 이미지
 }));
 
+// 슬라이더 설정 상수
+const SLIDER_CONFIG = {
+  CARD_WIDTH: 384, // sm 이상 카드 너비
+  CARD_WIDTH_MOBILE: 280, // 모바일 카드 너비
+  GAP: 24, // sm 이상 gap
+  GAP_MOBILE: 16, // 모바일 gap
+} as const;
+
 const MainPage = () => {
   // 카테고리 필터 상태
   const [selectedCategory, setSelectedCategory] = useState<Category>('전체');
@@ -134,10 +142,6 @@ const MainPage = () => {
     }
 
     const slider = sliderRef.current;
-    const cardWidth = 384; // sm 이상 카드 너비
-    const cardWidthMobile = 280; // 모바일 카드 너비
-    const gap = 24; // sm 이상 gap
-    const gapMobile = 16; // 모바일 gap
 
     // 반응형 슬라이드 거리 계산
     const isMobile = window.innerWidth < 640;
@@ -147,13 +151,13 @@ const MainPage = () => {
 
     if (isMobile) {
       // 모바일: 현재 스크롤 위치 기준으로 자연스럽게 이동
-      slideDistance = cardWidthMobile + gapMobile;
+      slideDistance = SLIDER_CONFIG.CARD_WIDTH_MOBILE + SLIDER_CONFIG.GAP_MOBILE;
     } else if (isTablet) {
       // 태블릿: 2개씩 이동
-      slideDistance = (cardWidth + gap) * 2;
+      slideDistance = (SLIDER_CONFIG.CARD_WIDTH + SLIDER_CONFIG.GAP) * 2;
     } else {
       // 데스크톱: 4개씩 이동
-      slideDistance = (cardWidth + gap) * 4;
+      slideDistance = (SLIDER_CONFIG.CARD_WIDTH + SLIDER_CONFIG.GAP) * 4;
     }
 
     const newScrollLeft =
@@ -251,17 +255,6 @@ const MainPage = () => {
               ))}
             </div>
           </div>
-
-          {/* CSS for hiding scrollbar */}
-          <style>{`
-          .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-          }
-          .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-          }
-        `}</style>
         </section>
 
         {/* 모든 체험 섹션 */}
