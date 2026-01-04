@@ -33,7 +33,7 @@ export default function CardButton({
     }
 
     return (
-      <div className={cn('mt-3 flex gap-2', className)}>
+      <div className={cn('flex gap-2', className)}>
         {onEdit && (
           <ActionButton
             action='neutral'
