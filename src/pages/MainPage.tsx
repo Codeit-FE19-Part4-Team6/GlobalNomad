@@ -4,7 +4,7 @@ import Card from '@/components/common/card';
 import { FilterButton } from '@/components/common/button/FilterButton';
 import Pagination from '@/components/common/pagination';
 import Title from '@/components/common/Title';
-import * as Icons from '@/assets/icons';
+import { Art, Food, Sport, Tour, Bus, Wellbeing, ArrowRight } from '@/assets/icons';
 
 // 카테고리 타입 정의
 type Category = '전체' | '문화 · 예술' | '식음료' | '스포츠' | '투어' | '관광' | '웰빙';
@@ -12,12 +12,12 @@ type Category = '전체' | '문화 · 예술' | '식음료' | '스포츠' | '투
 // 카테고리 아이콘 매핑
 const categoryIcons: Record<Category, React.ReactNode> = {
   전체: null,
-  '문화 · 예술': <Icons.Art />,
-  식음료: <Icons.Food />,
-  스포츠: <Icons.Sport />,
-  투어: <Icons.Tour />,
-  관광: <Icons.Bus />,
-  웰빙: <Icons.Wellbeing />,
+  '문화 · 예술': <Art />,
+  식음료: <Food />,
+  스포츠: <Sport />,
+  투어: <Tour />,
+  관광: <Bus />,
+  웰빙: <Wellbeing />,
 };
 
 // 임시 더미 데이터 (추후 API 연동 시 교체)
@@ -225,7 +225,7 @@ const MainPage = () => {
                 onClick={() => handleSlide('left')}
                 className='absolute top-1/2 left-0 z-10 hidden -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:scale-110 sm:block'
                 aria-label='이전 카드'>
-                <Icons.ArrowRight className='h-6 w-6 rotate-180 text-gray-900' />
+                <ArrowRight className='h-6 w-6 rotate-180 text-gray-900' />
               </button>
             )}
 
@@ -235,7 +235,7 @@ const MainPage = () => {
                 onClick={() => handleSlide('right')}
                 className='absolute top-1/2 right-0 z-10 hidden -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:scale-110 sm:block'
                 aria-label='다음 카드'>
-                <Icons.ArrowRight className='h-6 w-6 text-gray-900' />
+                <ArrowRight className='h-6 w-6 text-gray-900' />
               </button>
             )}
 
