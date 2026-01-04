@@ -1,19 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
-import type { Activity, MyActivitiesResponse } from '@/apis/type';
 import { getMyActivities } from '@/apis/myActivities';
-
+import type { Activity } from '@/apis/type';
 /**
  * 내 체험 목록 조회 훅
  *
- * API 준비 전에는 enabled: false + mock 사용
- * API 연결 시 enabled: true 로 전환
+ * React Query의 useQuery를 사용하여 내 체험 데이터를 가져옵니다.
+ * 반환 타입은 Activity[]이며, 에러 발생 시 Error 타입을 반환합니다.
  */
-export function useMyActivities() {
-  return useQuery<MyActivitiesResponse, Error, Activity[]>({
-    queryKey: ['myExperiences'],
-    queryFn: getMyActivities,
-    select: (data) => data.activities,
-    // API 준비 전에는 false
-    enabled: false,
+export const useMyActivities = () => {
+  return useQuery<Activity[], Error>({
+    queryKey: ['myActivities'],
+    queryFn: async () => {
+      const data = await getMyActivities();
+      return data.activities;
+    },
+    staleTime: 1000 * 60,
   });
-}
+};

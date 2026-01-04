@@ -17,6 +17,7 @@ interface ReviewModalProps {
   startTime: string;
   endTime: string;
   headCount: number;
+  onSubmit?: (data: { rating: number; content: string }) => void;
 }
 
 const MAX_LENGTH = 100;
@@ -30,6 +31,7 @@ export default function ReviewModal({
   onClose,
   title,
   date,
+  onSubmit,
   startTime,
   endTime,
   headCount,
@@ -40,9 +42,14 @@ export default function ReviewModal({
   //임시 코드입니다
   //별점이 0이거나 content가 비어있으면 제출 X, 로딩중에 버튼disabled, 제출 후 onClose
   const handleSubmit = () => {
+    if (isSubmitDisabled) {
+      return;
+    }
     console.log({ rating, content });
     onClose();
+    setRating(0);
     setContent('');
+    onSubmit?.({ rating, content });
   };
 
   const onChangeText = (value: string) => {
@@ -79,7 +86,7 @@ export default function ReviewModal({
               {title}
             </Title>
             <p className='font-sm-medium md:font-md-medium flex gap-1 text-gray-500'>
-              {date} /{startTime} - {endTime} ({headCount}명)
+              {date} / {startTime} - {endTime} ({headCount}명)
             </p>
           </div>
 

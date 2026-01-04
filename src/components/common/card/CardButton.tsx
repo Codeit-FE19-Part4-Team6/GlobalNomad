@@ -10,6 +10,7 @@ interface CardButtonProps {
   onEdit?: () => void;
   onDelete?: () => void;
   className?: string;
+  reviewSubmitted?: boolean;
 }
 
 /**
@@ -18,6 +19,7 @@ interface CardButtonProps {
 export default function CardButton({
   status,
   onReviewClick,
+  reviewSubmitted,
   onCancelClick,
   onEdit,
   onDelete,
@@ -55,11 +57,7 @@ export default function CardButton({
   }
 
   if (variant === 'reservation') {
-    if (!status || status === 'canceled') {
-      return null;
-    }
-
-    const canWriteReview = status === 'completed';
+    const canWriteReview = status === 'completed' && reviewSubmitted === false;
 
     return (
       <div
