@@ -6,7 +6,7 @@ import { FilterButton, PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
 import { Down, Earth } from '@/assets/icons';
 import type { MyReservationsResponse } from '@/apis/type';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMyReservationsQuery } from '@/hooks/queries/useMyReservationsQuery';
 import { useCancelReservationMutation } from '@/hooks/queries/useCancelReservationMutation';
 import { useReviewReservationMutation } from '@/hooks/queries/useReviewReservationMutation';
@@ -26,6 +26,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   const [selectedReservation, setSelectedReservation] = useState<ReservationItem | null>(null);
   const [searchParams, setSearchParams] = useSearchParams(); // 필터 상태
   const rawStatus = searchParams.get('status');
+  const navigate = useNavigate();
   const statusParam: Status = STATUS_LIST.includes(rawStatus as Status)
     ? (rawStatus as Status)
     : 'confirmed';
@@ -107,7 +108,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
           </div>
           <PrimaryButton
             className='font-lg-medium h-[54px] w-[182px] rounded-2xl px-10 py-3.5'
-            onClick={() => console.log('둘러보기 클릭')}>
+            onClick={() => navigate('/')}>
             둘러보기
           </PrimaryButton>
         </div>

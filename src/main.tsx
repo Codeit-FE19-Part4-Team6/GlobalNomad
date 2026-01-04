@@ -10,7 +10,6 @@ import NotFoundPage from '@/pages/NotFoundPage.tsx';
 import MyPageLayout from '@/pages/MyPageLayout.tsx';
 import SignupPage from '@/pages/SignupPage.tsx';
 import { SnackBarProvider } from '@/providers/SnackBarProvider.tsx';
-import { token } from '@/apis/auth/token.ts';
 
 // QueryClient 생성
 const queryClient = new QueryClient({
@@ -46,11 +45,6 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-
-token.setTokens(
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjkxOSwidGVhbUlkIjoiMTktNiIsImlhdCI6MTc2NzU0MTg0OSwiZXhwIjoxNzY3NTQzNjQ5LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.JI762ac81hDubwyF84ji_9_erApkfwuS_Ne2-mLbiVU', // accessToken
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjkxOSwidGVhbUlkIjoiMTktNiIsImlhdCI6MTc2NzU0MTg0OSwiZXhwIjoxNzY4NzUxNDQ5LCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.bJM4ZmImkHgA74sP15uCySnm6UyNdhyampagRiqRAIc' // refreshToken
-);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
