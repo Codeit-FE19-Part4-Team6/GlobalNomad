@@ -11,7 +11,7 @@ export const getMyReservations = async (status?: string) => {
   const res = await http.get<MyReservationsResponse>('/my-reservations', {
     params: { status },
   });
-  return res.data;
+  return res.data.reservations;
 };
 
 // 예약 취소

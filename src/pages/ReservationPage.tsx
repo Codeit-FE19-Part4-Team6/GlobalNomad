@@ -5,121 +5,31 @@ import ReviewModal from '@/components/common/modal/ReviewModal';
 import { FilterButton, PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
 import { Down, Earth } from '@/assets/icons';
-// import { useQuery } from '@tanstack/react-query';
-import type { MyReservationReviewRequest, MyReservationsResponse } from '@/apis/type';
+import type { MyReservationsResponse } from '@/apis/type';
 import { useSearchParams } from 'react-router-dom';
-import { cancelReservation, postReservationReview } from '@/apis/myReservation';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSnackBar } from '@/providers/SnackBarProvider';
+import { useMyReservationsQuery } from '@/hooks/queries/useMyReservationsQuery';
+import { useCancelReservationMutation } from '@/hooks/queries/useCancelReservationMutation';
+import { useReviewReservationMutation } from '@/hooks/queries/useReviewReservationMutation';
 
-type Reservation = {
-  id: number;
-  title: string;
-  bannerImageUrl: string;
-  status: MyReservationsResponse['reservations'][number]['status'] | 'canceled';
-  totalPrice: number;
-  headCount: number;
-  date: string;
-  startTime: string;
-  endTime: string;
-  reviewSubmitted?: boolean;
-};
-
-// mock 데이터 추후 삭제 예정
-const mockReservations: Reservation[] = [
-  {
-    id: 1,
-    title: '예약 완료 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
-    status: 'confirmed',
-    totalPrice: 45000,
-    headCount: 2,
-    date: '2025-01-20',
-    startTime: '18:00',
-    endTime: '20:00',
-  },
-  {
-    id: 2,
-    title: '체험 완료 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'completed',
-    totalPrice: 32000,
-    headCount: 4,
-    reviewSubmitted: false,
-    date: '2025-01-15',
-    startTime: '16:00',
-    endTime: '18:00',
-  },
-  {
-    id: 3,
-    title: '예약 취소 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'canceled',
-    totalPrice: 32000,
-    headCount: 1,
-    date: '2025-01-15',
-    startTime: '16:00',
-    endTime: '18:00',
-  },
-  {
-    id: 4,
-    title: '예약 대기 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'pending',
-    totalPrice: 32000,
-    headCount: 1,
-    date: '2025-01-15',
-    startTime: '16:00',
-    endTime: '18:00',
-  },
-  {
-    id: 5,
-    title: '예약 거절 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'declined',
-    totalPrice: 32000,
-    headCount: 1,
-    date: '2025-01-15',
-    startTime: '16:00',
-    endTime: '18:00',
-  },
-  {
-    id: 6,
-    title: '체험 완료 예시',
-    bannerImageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-    status: 'completed',
-    totalPrice: 32000,
-    headCount: 4,
-    reviewSubmitted: true,
-    date: '2025-01-15',
-    startTime: '16:00',
-    endTime: '18:00',
-  },
-];
 const STATUS_LIST = ['confirmed', 'canceled', 'declined', 'completed', 'pending'] as const;
 
 type Status = (typeof STATUS_LIST)[number];
-
 type Props = {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
+type ReservationItem = MyReservationsResponse['reservations'][number];
 
 export default function ReservationPage({ setMobileOpen }: Props) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false); // 모달 상태
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null); // 선택된 예약 정보
-  const [reservations] = useState<Reservation[]>(mockReservations); // 추후 삭제 예정
-  // const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null); // 예약 목록 상태
+  const [selectedReservation, setSelectedReservation] = useState<ReservationItem | null>(null);
   const [searchParams, setSearchParams] = useSearchParams(); // 필터 상태
-  const queryClient = useQueryClient();
-  const { showSnack } = useSnackBar();
   const rawStatus = searchParams.get('status');
   const statusParam: Status = STATUS_LIST.includes(rawStatus as Status)
     ? (rawStatus as Status)
     : 'confirmed';
   const [selected, setSelected] = useState<Status>(statusParam);
-  const filteredReservations = reservations.filter((item) => item.status === selected); // 추후 삭제 예정
   const isReviewModalClose = () => setIsReviewModalOpen(false); // 리뷰 모달 닫기
 
   useEffect(() => {
@@ -127,20 +37,16 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   }, [statusParam]);
 
   // 필터 버튼 클릭
-  const handleFilterClick = (status: Reservation['status']) => {
+  const handleFilterClick = (status: Status) => {
     setSelected(status);
-    searchParams.set('status', status); // URL 쿼리 파라미터와 상태 동기화
-    setSearchParams(searchParams);
+    setSearchParams({ status });
   };
 
-  // 예약 내역 조회 (mock 기반)
-  // const { data: reservations = [] } = useQuery({
-  //   queryKey: ['myReservations', selected],
-  //   queryFn: () => getMyReservations(selected),
-  // });
+  // 예약 내역 조회
+  const { data: reservations = [], isLoading, isError } = useMyReservationsQuery(selected);
 
   // 후기 작성 버튼 클릭
-  const handleReviewClick = (reservation: Reservation) => {
+  const handleReviewClick = (reservation: ReservationItem) => {
     setSelectedReservation(reservation);
     setIsReviewModalOpen(true);
   };
@@ -155,49 +61,17 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     });
   };
   // 후기 작성
-  const { mutate: reviewMutate } = useMutation({
-    mutationFn: ({
-      reservationId,
-      data,
-    }: {
-      reservationId: number;
-      data: MyReservationReviewRequest;
-    }) => postReservationReview(reservationId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myReservations'] });
-      setIsReviewModalOpen(false);
-      showSnack('후기가 등록되었습니다!', 'success', {
-        duration: 2000,
-      });
-    },
-    onError: () => {
-      showSnack('후기 작성에 실패했습니다.', 'error'); // ✅ alert 대체
-    },
-  });
+  const { mutate: reviewMutate } = useReviewReservationMutation(() => setIsReviewModalOpen(false));
 
   // 예약 취소 버튼 클릭
   const handleCancelClick = (id: number) => {
     setSelectedReservationId(id);
     setIsCancelModalOpen(true);
   };
-  const { mutate: cancelMutate } = useMutation({
-    mutationFn: cancelReservation,
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['myReservations'],
-      });
-
-      setIsCancelModalOpen(false);
-      setSelectedReservationId(null);
-
-      showSnack('예약이 취소되었습니다.', 'success');
-    },
-
-    onError: () => {
-      showSnack('예약 취소에 실패했습니다. 다시 시도해주세요.', 'error');
-    },
-  });
+  const { mutate: cancelMutate } = useCancelReservationMutation(
+    () => setIsCancelModalOpen(false),
+    () => setSelectedReservationId(null)
+  );
   // 예약 취소 확정
   const handleConfirmCancel = () => {
     if (!selectedReservationId) {
@@ -205,7 +79,12 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     }
     cancelMutate(selectedReservationId);
   };
-
+  if (isLoading) {
+    return <div className='px-4 py-10'>로딩 중...</div>;
+  }
+  if (isError) {
+    return <div className='px-4 py-10'>예약 내역을 불러오지 못했어요.</div>;
+  }
   return (
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
       <div className='flex flex-col items-start gap-2.5 py-[10px]'>
@@ -235,11 +114,8 @@ export default function ReservationPage({ setMobileOpen }: Props) {
       ) : (
         <>
           <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
-            {['confirmed', 'canceled', 'declined', 'completed', 'pending'].map((s) => (
-              <FilterButton
-                key={s}
-                selected={selected === s}
-                onClick={() => handleFilterClick(s as Reservation['status'])}>
+            {STATUS_LIST.map((s) => (
+              <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
                 {s === 'confirmed'
                   ? '예약 완료'
                   : s === 'canceled'
@@ -253,65 +129,59 @@ export default function ReservationPage({ setMobileOpen }: Props) {
             ))}
           </div>
           <div className='flex flex-col gap-7.5 lg:gap-6'>
-            {filteredReservations.map(
-              (
-                item // 추후 교체 filteredReservations->reservations
-              ) => (
-                <Card
-                  key={item.id}
-                  variant='reservation'
-                  className='border-t border-gray-50 first:border-t-0 lg:border-t-0 lg:pt-0'>
-                  <div className='mt-5 mb-3 ml-2 lg:hidden'>
-                    <Card.Schedule
-                      date={item.date}
-                      startTime={item.startTime}
-                      endTime={item.endTime}
-                      isMobileDate
-                    />
-                  </div>
-                  <div className='flex flex-row'>
-                    <Card.Content>
-                      <Card.Badge status={item.status} />
-                      <Card.Title title={item.title} />
-                      <div className='font-sm-medium text-gray-500 lg:hidden'>
-                        {item.startTime} - {item.endTime}
-                      </div>
-                      <div className='hidden lg:block'>
-                        <Card.Schedule
-                          date={item.date}
-                          startTime={item.startTime}
-                          endTime={item.endTime}
+            {reservations.map((item) => (
+              <Card
+                key={item.id}
+                variant='reservation'
+                className='border-t border-gray-50 first:border-t-0 lg:border-t-0 lg:pt-0'>
+                <div className='mt-5 mb-3 ml-2 lg:hidden'>
+                  <Card.Schedule
+                    date={item.date}
+                    startTime={item.startTime}
+                    endTime={item.endTime}
+                    isMobileDate
+                  />
+                </div>
+                <div className='flex flex-row'>
+                  <Card.Content>
+                    <Card.Badge status={item.status} />
+                    <Card.Title title={item.activity.title} />
+                    <div className='font-sm-medium text-gray-500 lg:hidden'>
+                      {item.startTime} - {item.endTime}
+                    </div>
+                    <div className='hidden lg:block'>
+                      <Card.Schedule
+                        date={item.date}
+                        startTime={item.startTime}
+                        endTime={item.endTime}
+                      />
+                    </div>
+                    <div className='flex w-full items-center justify-between'>
+                      <Card.Price price={item.totalPrice} headCount={item.headCount} />
+                      <div className='hidden lg:flex'>
+                        <Card.CardButton
+                          status={item.status}
+                          onReviewClick={() => handleReviewClick(item)}
+                          onCancelClick={() => handleCancelClick(item.id)}
+                          reviewSubmitted={
+                            item.status === 'completed' ? item.reviewSubmitted : undefined
+                          }
                         />
                       </div>
-                      <div className='flex w-full items-center justify-between'>
-                        <Card.Price price={item.totalPrice} headCount={item.headCount} />
-                        <div className='hidden lg:flex'>
-                          <Card.CardButton
-                            status={item.status}
-                            onReviewClick={() => handleReviewClick(item)}
-                            onCancelClick={() => handleCancelClick(item.id)}
-                            reviewSubmitted={
-                              item.status === 'completed' ? item.reviewSubmitted : undefined
-                            }
-                          />
-                        </div>
-                      </div>
-                    </Card.Content>
-                    <Card.Image src={item.bannerImageUrl} alt={item.title} />
-                  </div>
-                  <div className='lg:hidden'>
-                    <Card.CardButton
-                      status={item.status}
-                      onReviewClick={() => handleReviewClick(item)}
-                      onCancelClick={() => handleCancelClick(item.id)}
-                      reviewSubmitted={
-                        item.status === 'completed' ? item.reviewSubmitted : undefined
-                      }
-                    />
-                  </div>
-                </Card>
-              )
-            )}
+                    </div>
+                  </Card.Content>
+                  <Card.Image src={item.activity.bannerImageUrl} alt={item.activity.title} />
+                </div>
+                <div className='lg:hidden'>
+                  <Card.CardButton
+                    status={item.status}
+                    onReviewClick={() => handleReviewClick(item)}
+                    onCancelClick={() => handleCancelClick(item.id)}
+                    reviewSubmitted={item.status === 'completed' ? item.reviewSubmitted : undefined}
+                  />
+                </div>
+              </Card>
+            ))}
           </div>
         </>
       )}
@@ -327,7 +197,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         <ReviewModal
           isOpen={isReviewModalOpen}
           onClose={isReviewModalClose}
-          title={selectedReservation.title}
+          title={selectedReservation.activity.title}
           date={selectedReservation.date}
           startTime={selectedReservation.startTime}
           endTime={selectedReservation.endTime}
