@@ -24,7 +24,7 @@ export default function CardContent({
       'relative z-10 flex flex-col',
       'rounded-3xl border border-white bg-white p-5 lg:px-10 lg:py-[26px]',
       'h-34 min-h-38.25 w-full md:w-90 lg:w-121.5 lg:h-45.25 lg:rounded-4xl',
-      'gap-2 lg:gap-3',
+      'gap-[8px] lg:gap-[10px]',
       'shadow-[0_-8px_20px_0_rgba(0,0,0,0.05)]'
     ),
     list: 'flex flex-col flex-1',

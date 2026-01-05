@@ -1,17 +1,20 @@
 import { create } from 'zustand';
 
 type ProfileImageState = {
-  profileImageUrl: string | null;
-  previewUrl: string | null;
-  setPreviewUrl: (file: File) => void; // 미리보기 생성
+  profileImageUrl: string | null; // 서버에 저장된 URL
+  previewUrl: string | null; // 브라우저 미리보기용 URL
+  file: File | null; // 서버 업로드용 파일
+  setPreviewUrl: (file: File) => void; // 프리뷰 생성
   setProfileImageUrl: (url: string) => void; // 서버 업로드 성공 후 URL 저장
-  clearPreview: () => void; // 미리보기 초기화
+  setFile: (file: File | null) => void; // MyProfilePage에서 서버 업로드용 파일 저장
+  clearPreview: () => void;
   reset: () => void;
 };
 
 export const useProfileImageStore = create<ProfileImageState>((set, get) => ({
   profileImageUrl: null,
   previewUrl: null,
+  file: null,
 
   setPreviewUrl: (file) => {
     const prev = get().previewUrl;
@@ -20,7 +23,7 @@ export const useProfileImageStore = create<ProfileImageState>((set, get) => ({
     }
 
     const url = URL.createObjectURL(file);
-    set({ previewUrl: url });
+    set({ previewUrl: url, file });
   },
 
   setProfileImageUrl: (url) => {
@@ -34,6 +37,8 @@ export const useProfileImageStore = create<ProfileImageState>((set, get) => ({
       previewUrl: null,
     });
   },
+
+  setFile: (file) => set({ file }), // 서버 업로드용 파일 저장
 
   clearPreview: () => {
     const prev = get().previewUrl;
@@ -52,6 +57,7 @@ export const useProfileImageStore = create<ProfileImageState>((set, get) => ({
     set({
       previewUrl: null,
       profileImageUrl: null,
+      file: null,
     });
   },
 }));

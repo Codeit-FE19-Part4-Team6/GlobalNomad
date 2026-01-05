@@ -195,15 +195,8 @@ export interface LoginRequest {
 }
 
 // 로그인 응답
-export interface LoginResponse {
-  user: {
-    id: number;
-    email: string;
-    nickname: string;
-    profileImageUrl: string;
-    createdAt: string;
-    updatedAt: string;
-  } & RefreshTokenResponse;
+export interface LoginResponse extends RefreshTokenResponse {
+  user: User;
 }
 
 // 토큰 재발급 응답
