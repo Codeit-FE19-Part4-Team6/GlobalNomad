@@ -310,18 +310,18 @@ export interface UpdateMyActivityReservationStatusResponse {
 }
 
 // 내 체험 수정 요청
-export interface MyActivityEditRequest {
+export type MyActivityEditRequest = {
   title: string;
   category: ActivityCategory;
   description: string;
   price: number;
   address: string;
   bannerImageUrl: string;
-  subImageIdsToRemove: [];
-  subImageUrlsToAdd: [];
-  scheduleIdsToRemove: [];
-  schedulesToAdd: [];
-}
+  subImageIdsToRemove: number[];
+  subImageUrlsToAdd: string[];
+  scheduleIdsToRemove: number[];
+  schedulesToAdd: { date: string; startTime: string; endTime: string }[];
+};
 
 // 내 체험 수정 응답
 export interface MyActivityEditResponse {
