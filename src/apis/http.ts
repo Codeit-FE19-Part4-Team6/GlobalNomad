@@ -18,6 +18,7 @@ function getFreshAccessToken() {
   }
   return refreshPromise;
 }
+
 //액세스토큰이랑 리프레쉬 토큰 변수에 담아서 사용
 //공통 axios
 //사용 예시 => http.get("/activities") = API_BASE_URL + "/activities"
@@ -30,7 +31,6 @@ http.interceptors.request.use((config) => {
   const isFormData = config.data instanceof FormData;
   config.headers = config.headers ?? {};
   //일반 데이터라면 json형식으로 보낸다.
-
   if (!isFormData) {
     config.headers['Content-Type'] = 'application/json';
   }

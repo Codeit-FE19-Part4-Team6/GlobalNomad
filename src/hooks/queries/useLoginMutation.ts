@@ -1,14 +1,20 @@
 // src/hooks/useLoginMutation.ts
 import { useMutation } from '@tanstack/react-query';
-import { token } from '@/apis/auth/token';
-import usersApi from '@/apis/users';
-import type { LoginRequest } from '@/apis/type';
+import type { LoginRequest, LoginResponse } from '@/apis/type';
+import { useAuthStore } from '@/stores/authStore';
+import { http } from '@/apis/http';
 
 export const useLoginMutation = () => {
+  const login = useAuthStore((state) => state.login);
+
   return useMutation({
-    mutationFn: (credentials: LoginRequest) => usersApi.login(credentials),
-    onSuccess: (response) => {
-      token.setTokens(response.accessToken, response.refreshToken);
+    mutationFn: async (data: LoginRequest) => {
+      const response = await http.post<LoginResponse>('/auth/login', data);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      // Zustand store의 login 함수 호출
+      login(data.accessToken, data.refreshToken, data.user);
     },
   });
 };

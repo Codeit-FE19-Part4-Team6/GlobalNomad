@@ -1,38 +1,186 @@
 import { Bell, Delete } from '@/assets/icons';
-import { type Notification } from '@/components/common/Header/types';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import notificationApi from '@/apis/notification';
+import type { MyNotification } from '@/apis/type';
+import NotificationContent from '@/components/common/Header/NotificationContent';
 
 interface Props {
-  notifications: Notification[];
-  isOpen: boolean;
+  isOpen: boolean; /** 알림 드롭다운 열림 여부 */
   onToggle: () => void;
-  onDeleteNotification?: (id: number) => void;
 }
 
-export const HeaderNotification = ({
-  notifications,
-  isOpen,
-  onToggle,
-  onDeleteNotification,
-}: Props) => {
+export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
+  const [notifications, setNotifications] = useState<MyNotification[]>([]);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [cursorId, setCursorId] = useState<number | undefined>(
+    undefined
+  ); /** 다음 페이지를 요청하기 위한 커서 ID */
+  const [hasMore, setHasMore] = useState(true); /** 더 불러올 데이터가 있는지 여부 */
+  const [isLoading, setIsLoading] = useState(false); /** 알림 로딩 중 여부 (중복 호출 방지) */
+  const [totalCount, setTotalCount] = useState(0);
 
-  const handleDelete = (e: React.MouseEvent, id: number) => {
-    e.stopPropagation(); // 클릭 이벤트 버블링 방지
-    onDeleteNotification?.(id);
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // 알림 데이터 로드
+  const loadNotifications = useCallback(async () => {
+    if (isLoading || !hasMore) {
+      return;
+    }
+    try {
+      setIsLoading(true);
+      // 서버에 알림 목록 요청 (cursorId 기준으로 다음 페이지 조회)
+
+      const response = await notificationApi.getNotifications(cursorId, 10);
+      /**
+       * 기존 알림과 새 알림을 병합
+       * - 중복 ID 제거 (Observer가 여러 번 호출될 수 있기 때문)
+       */
+      setNotifications((prev) => {
+        const existingIds = new Set(prev.map((n) => n.id));
+        const newNotifications = response.notifications.filter((n) => !existingIds.has(n.id));
+        const updated = [...prev, ...newNotifications];
+
+        // 로드된 개수 >= 전체 개수면 중단
+        if (updated.length >= response.totalCount) {
+          setHasMore(false);
+        }
+
+        return updated;
+      });
+      /** 전체 알림 개수 업데이트 */
+      setTotalCount(response.totalCount);
+      /** 다음 요청을 위한 커서 ID 저장 */
+      setCursorId(response.cursorId);
+
+      // 더 이상 데이터가 없으면 hasMore를 false로
+      /**
+       * 서버에서 더 이상 내려올 데이터가 없을 경우
+       * → 무한 스크롤 중단
+       */
+      if (response.notifications.length === 0) {
+        setHasMore(false);
+      }
+      // API 응답값으로도 체크
+      const shouldStop =
+        response.notifications.length === 0 ||
+        response.cursorId === null ||
+        response.cursorId === undefined;
+
+      if (shouldStop) {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error('알림 로드 실패:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [cursorId, isLoading, hasMore]);
+
+  /**
+   * IntersectionObserver 설정
+   *
+   * - 드롭다운이 열려 있을 때만 활성화
+   * - observerTarget이 화면에 들어오면 다음 페이지 로드
+   */
+  useEffect(() => {
+    if (!isOpen || isLoading || !hasMore) {
+      return;
+    }
+
+    const options = {
+      root: null,
+      rootMargin: '20px', // 바닥 근처에서 미리 감지
+      threshold: 0.1, // 10%만 보여도 트리거
+    };
+
+    const handleObserver = (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting) {
+        // 타겟이 화면에 들어오면 알림 추가 로드
+        loadNotifications();
+      }
+    };
+
+    observerRef.current = new IntersectionObserver(handleObserver, options);
+
+    if (observerTarget.current) {
+      observerRef.current.observe(observerTarget.current);
+    }
+    // 컴포넌트 언마운트 또는 조건 변경 시 observer 정리
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [isOpen, isLoading, loadNotifications, hasMore]);
+
+  //초기 데이터 로드
+  useEffect(() => {
+    if (notifications.length === 0 && !isLoading && hasMore) {
+      loadNotifications();
+    }
+  }, [loadNotifications, notifications.length, isLoading, hasMore]);
+
+  // 알림 삭제
+  const handleDelete = async (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+
+    try {
+      await notificationApi.deleteNotification(id);
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      setTotalCount((prev) => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('알림 삭제 실패:', error);
+    }
+  };
+
+  // 알림창 닫을 때 상태 초기화
+  /**
+   * 알림 버튼 토글 핸들러
+   *
+   * - 닫을 때 상태를 초기화하여
+   *   다음에 열었을 때 항상 최신 데이터 로드
+   */
+  const handleToggle = () => {
+    onToggle();
+  };
+
+  // 시간 표시 포맷팅 함수
+  const getTimeAgo = (createdAt: string) => {
+    const now = new Date();
+    const created = new Date(createdAt);
+    const diffMs = now.getTime() - created.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) {
+      return '방금 전';
+    }
+    if (diffMins < 60) {
+      return `${diffMins}분 전`;
+    }
+    if (diffHours < 24) {
+      return `${diffHours}시간 전`;
+    }
+    if (diffDays < 7) {
+      return `${diffDays}일 전`;
+    }
+    return created.toLocaleDateString('ko-KR');
   };
 
   return (
     <div className='relative flex items-center gap-5'>
       <button
-        onClick={onToggle}
+        onClick={handleToggle}
         className='relative h-6 w-6 cursor-pointer rounded-full transition-colors'
-        aria-label={`알림 ${notifications.length}개`}
+        aria-label={`알림 ${totalCount}개`}
         aria-expanded={isOpen}
         aria-haspopup='true'>
         <Bell className={isOpen ? 'text-primary-500' : 'text-gray-600 hover:text-gray-900'} />
 
-        {notifications.length > 0 && (
+        {totalCount > 0 && (
           <span
             className='absolute top-1 right-1.5 h-2 w-2 rounded-full border border-white bg-red-500'
             aria-hidden='true'
@@ -49,9 +197,9 @@ export const HeaderNotification = ({
           aria-label='알림 목록'
           aria-modal='true'>
           <div className='flex items-center justify-between border-b border-gray-100 px-4 py-4'>
-            <span className='font-lg-bold'>알림 {notifications.length}개</span>
+            <span className='font-lg-bold'>알림 {totalCount}개</span>
             <button
-              onClick={onToggle}
+              onClick={handleToggle}
               className='cursor-pointer transition-opacity hover:opacity-50'
               aria-label='알림창 닫기'>
               <Delete />
@@ -59,55 +207,52 @@ export const HeaderNotification = ({
           </div>
 
           <div className='max-h-60 overflow-y-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
-            {notifications.length ? (
+            {notifications.length > 0 ? (
               <ul role='list'>
-                {notifications.map((n) => (
+                {notifications.map((notification) => (
                   <li
-                    key={n.id}
-                    onMouseEnter={() => setHoveredId(n.id)}
+                    key={notification.id}
+                    onMouseEnter={() => setHoveredId(notification.id)}
                     onMouseLeave={() => setHoveredId(null)}
                     className='hover:bg-primary-100 cursor-pointer border-b border-gray-50/80 px-4 py-5 transition-colors last:border-b-0'>
                     <div className='flex flex-col gap-2'>
-                      <div className='flex items-start'>
-                        {/* 왼쪽 텍스트 */}
-                        <span className='font-md-bold text-gray-950'>
-                          예약 {n.status === 'approved' ? '승인' : '거절'}
-                        </span>
+                      <div className='flex items-start justify-between'>
+                        {/* 알림 내용 */}
+                        <div className='flex-1'>
+                          <NotificationContent content={notification.content} />
+                        </div>
 
-                        {/* 오른쪽 영역 (time + delete 공간 고정) */}
-                        <div className='relative ml-auto flex w-16 justify-end'>
-                          <span className='font-xs-medium absolute right-4 mt-1 text-gray-400'>
-                            {n.time}
+                        {/* 오른쪽 영역 (시간 + 삭제 버튼) */}
+                        <div className='relative flex flex-col items-end gap-2'>
+                          <span className='font-xs-medium whitespace-nowrap text-gray-400'>
+                            {getTimeAgo(notification.createdAt)}
                           </span>
-                          {onDeleteNotification && (
-                            <button
-                              onClick={(e) => handleDelete(e, n.id)}
-                              className={`hover:text-primary-500 absolute top-[0.6] left-13 cursor-pointer transition-opacity ${hoveredId === n.id ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
-                              aria-label={`알림 삭제: ${n.title}`}>
-                              <Delete className='h-5 w-5' />
-                            </button>
-                          )}
+                          <button
+                            onClick={(e) => handleDelete(e, notification.id)}
+                            className={`hover:text-primary-500 absolute top-5 left-4 cursor-pointer transition-opacity ${
+                              hoveredId === notification.id
+                                ? 'opacity-100'
+                                : 'pointer-events-none opacity-0'
+                            }`}
+                            aria-label='알림 삭제'>
+                            <Delete className='h-5 w-5' />
+                          </button>
                         </div>
                       </div>
-
-                      <p className='font-md-medium leading-[1.2] text-gray-800'>{n.title}</p>
-                      <p className='font-md-medium leading-[1.2] text-gray-800'>
-                        ({n.reservationTime})
-                      </p>
-                      <p className='font-md-medium mt-0.5 leading-[1.2] text-gray-800'>
-                        예약이{' '}
-                        <span
-                          className={n.status === 'approved' ? 'text-primary-500' : 'text-red-500'}>
-                          {n.status === 'approved' ? '승인' : '거절'}
-                        </span>
-                        되었어요.
-                      </p>
                     </div>
                   </li>
                 ))}
+                {/* IntersectionObserver 타겟 */}
+                {hasMore && (
+                  <div ref={observerTarget} className='flex h-16 items-center justify-center'>
+                    {isLoading && <div className='text-sm text-gray-500'></div>}
+                  </div>
+                )}
               </ul>
             ) : (
-              <div className='px-4 py-8 text-center text-sm text-gray-500'>알림이 없습니다</div>
+              <div className='px-4 py-8 text-center text-sm text-gray-500'>
+                {isLoading ? '로딩 중...' : '알림이 없습니다'}
+              </div>
             )}
           </div>
         </div>
