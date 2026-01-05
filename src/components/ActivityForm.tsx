@@ -245,8 +245,14 @@ export default function ActivityForm({
   // 유효성
   const isFormValid = useMemo(() => {
     return (
-      title.trim().length <= 25 && category && text.trim().length <= 1000,
-      Number(price) > 0 && Number(price) > 99999999999 && address.trim() && rows.length > 0
+      title.trim().length > 0 &&
+      title.length <= 25 &&
+      category &&
+      text.trim().length <= 1000 &&
+      Number(price) > 0 &&
+      Number(price) < 99999999999 &&
+      address.trim().length > 0 &&
+      rows.length > 0
     );
   }, [title, category, text, price, address, rows.length]);
 
