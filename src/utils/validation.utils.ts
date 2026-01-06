@@ -9,18 +9,18 @@ export const isValidEmail = (email: string): boolean => {
 };
 
 /**
- * 비밀번호 유효성 검사 (8자 이상, 영문+숫자 포함)
+ * 비밀번호 유효성 검사 (8자 이상 16자 이하, 영문+숫자 포함)
  */
 export const isValidPassword = (password: string): boolean => {
-  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/;
+  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
   return passwordRegex.test(password);
 };
 
 /**
- * 닉네임 유효성 검사 (2-10자, 한글/영문/숫자만 허용)
+ * 닉네임 유효성 검사 (2-8자, 한글/영문/숫자만 허용)
  */
 export const isValidNickname = (nickname: string): boolean => {
-  const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,10}$/;
+  const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,8}$/;
   return nicknameRegex.test(nickname);
 };
 
@@ -61,24 +61,6 @@ export const checkEmailDuplicate = async (email: string) => {
     return data.isDuplicate;
   } catch (error) {
     console.error('이메일 중복 체크 실패:', error);
-    throw error;
-  }
-};
-
-/**
- * 닉네임 중복 체크 (API 호출)
- */
-export const checkNicknameDuplicate = async (nickname: string) => {
-  try {
-    // TODO: backend endpoint TBD (email availability check)
-    const res = await fetch(`/api/availability/nickname?nickname=${nickname}`);
-    if (!res.ok) {
-      throw new Error('닉네임 중복 확인 중 오류가 발생했습니다.');
-    }
-    const data = await res.json();
-    return data.isDuplicate;
-  } catch (error) {
-    console.error('닉네임 중복 체크 실패:', error);
     throw error;
   }
 };
