@@ -3,9 +3,7 @@ import Label from '@/components/common/Label';
 import Title from '@/components/common/Title';
 import { BaseInput } from '@/components/common/input/BaseInput';
 import TextArea from '@/components/common/TextArea';
-import { ArrowDown } from '@/assets/icons/index';
-import { Plus } from '@/assets/icons/index';
-import { Minus } from '@/assets/icons/index';
+import { ArrowDown, Plus, Minus } from '@/assets/icons';
 import Dropdown from '@/components/common/dropdown/Dropdown';
 import DropdownTrigger from '@/components/common/dropdown/DropdownTrigger';
 import DropdownList from '@/components/common/dropdown/DropdownList';
@@ -36,6 +34,7 @@ const TIME_OPTIONS = Array.from({ length: 24 }, (_, i) => {
 //사용자가 draft에 입력하는 상태 값
 //date가 옵셔널이 아니면 date초기값 필수
 //등록 시 에는 date가 필수지만 입력상황에는 필수가 아니여서 옵셔널
+//예약 가능시간 타입
 type ScheduleDraft = {
   date?: Date;
   startTime: string;
@@ -44,12 +43,19 @@ type ScheduleDraft = {
 
 //등록 시 draft를 초기화 하는 함수
 //미리 만들어서 addScheduleFromDraft 함수에 넣어주기만 하면 된다.
+// new Date() 가능하지만 설정하면 비밀번호 안보이는 아이콘 생김
+
+//예약 가능 시간 초기값
 const createDraft = (): ScheduleDraft => ({
   date: undefined,
   startTime: '00:00',
   endTime: '01:00',
 });
 
+//서버로부터 오는 서버이미지 한장의 타입
+type ExistingSubImage = { id: number; imageUrl: string };
+
+//등록,수정 페이지에서 공통으로 쓰는 폼의 초기 타입
 export type ActivityFormInitialData = {
   title: string;
   category: ActivityCategory;
@@ -58,14 +64,10 @@ export type ActivityFormInitialData = {
   address: string;
   rows: ScheduleRow[];
   bannerImageUrl: string;
-  subImageUrls: string[];
+  subImageUrls: { id: number; imageUrl: string }[];
 };
 
-/**
- *  공통 폼이 페이지로 넘겨줄 "폼 값" 타입
- * - Create 페이지: 이 values로 CreateActivityRequest 만들어서 POST
- * - Edit 페이지: 이 values + originalDetail 비교해서 MyActivityEditRequest 만들어서 PATCH
- */
+//사용자가 입력한 값을 공통폼이 페이지로 제출할 타입
 export type ActivityFormValues = {
   title: string;
   category: ActivityCategory;
@@ -73,21 +75,23 @@ export type ActivityFormValues = {
   price: number;
   address: string;
   rows: ScheduleRow[];
+  removedSubImageIds: number[];
 
   // 업로드는 페이지에서 처리하므로 파일/기존값만 넘김
   bannerFile?: File; // 새로 선택한 배너(없으면 undefined)
   introFiles: File[]; // 새로 추가한 소개 이미지들
 
   existingBannerUrl: string; // edit 초기 주입 값
-  existingSubImageUrls: string[]; // edit 초기 주입 값
+  existingSubImageUrls: ExistingSubImage[]; // edit 초기 주입 값
 };
 
+//페이지가 폼을 어떻게 동작시킬지 정하는 타입
 type ActivityFormProps = {
   mode: 'create' | 'edit';
 
   // edit일 때 초기값 주입
   initialData?: ActivityFormInitialData;
-
+  onDirtyChange?: (dirty: boolean) => void;
   /**
    * ✅ 변경: payload(CreateActivityRequest)가 아니라 "폼 값"을 넘김
    * 페이지에서 mode에 맞는 payload로 변환해서 API 호출
@@ -111,6 +115,7 @@ export default function ActivityForm({
   isPending = false,
   submitText,
   titleText,
+  onDirtyChange,
 }: ActivityFormProps) {
   const [category, setCategory] = useState<string>('');
   const [text, setText] = useState<string>('');
@@ -124,7 +129,71 @@ export default function ActivityForm({
   const [introImages, setIntroImages] = useState<File[]>([]);
 
   const [existingBannerUrl, setExistingBannerUrl] = useState<string>('');
-  const [existingSubImageUrls, setExistingSubImageUrls] = useState<string[]>([]);
+  const [existingSubImageUrls, setExistingSubImageUrls] = useState<ExistingSubImage[]>(
+    initialData?.subImageUrls ?? []
+  );
+  const [removedSubImageIds, setRemovedSubImageIds] = useState<number[]>([]);
+  const [initialSnapshot, setInitialSnapshot] = useState<string>(''); //초기값 저장
+
+  //현재 폼 상태
+  const makeSnapshot = () =>
+    JSON.stringify({
+      title,
+      category,
+      text,
+      price,
+      address,
+      rows: rows.map((r) => ({
+        date: r.date ? r.date.toISOString().split('T')[0] : null, //(YYYY-MM-DD) 만 비교 [날짜T,시간Z] 그 중 날짜만
+        startTime: r.startTime,
+        endTime: r.endTime,
+        serverTimeId: (r as any).serverTimeId ?? null, //수정페이지이면 서버에서 보내준 row아이디
+      })),
+      existingBannerUrl, //서버에서 보내준 기존 배너 url, 사진이 변경되면 url이 변경되서 변화 감지
+      existingSubImageUrls, //서버에서 보내준 서브 url, 서브 url중 하나라도 바뀌면 변화 감지
+      removedSubImageIds, // edit 페이지일때 서버에서 준 서브이미지가 삭제되면 해당 id로 변화 감지
+      bannerCount: bannerImages.length, // 배너이미지의 카운트 감지 0 > 1 , 1 > 0 기존과 갯수가 같으면 감지 못함
+      introCount: introImages.length, // 서브이미지의 카운트 감지 기존 갯수와 같으면 감지 못함
+    });
+
+  //마운트 되자마자 상태
+  const makeSnapshotFromInitialData = (data: ActivityFormInitialData) =>
+    JSON.stringify({
+      title: data.title ?? '',
+      category: data.category ?? '',
+      text: data.description ?? '',
+      price: String(data.price ?? ''),
+      address: data.address ?? '',
+      rows: (data.rows ?? []).map((r) => ({
+        date: r.date ? r.date.toISOString().split('T')[0] : null,
+        startTime: r.startTime,
+        endTime: r.endTime,
+        serverTimeId: (r as any).serverTimeId ?? null,
+      })),
+      existingBannerUrl: data.bannerImageUrl ?? '',
+      existingSubImageUrls: data.subImageUrls ?? [],
+      removedSubImageIds: [], // 빈 배열 삭제되서 삭제 아이디가 담기면 변화 감지?
+      bannerCount: 0, //마운트 되자마자 사용자가 새로운 파일을 아직 첨부 안해서 0
+      introCount: 0,
+    });
+
+  //등록페이지 에서 초기 기준점을 잡고 onDirtyChange를 false로 초기화
+  useEffect(() => {
+    if (mode !== 'create') {
+      return;
+    }
+
+    // 이미 잡혀있으면 재설정 방지
+    if (initialSnapshot) {
+      return;
+    }
+
+    const snap = makeSnapshot();
+    setInitialSnapshot(snap);
+    onDirtyChange?.(false);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode]);
 
   // 수정모드: 초기값 주입
   useEffect(() => {
@@ -145,16 +214,44 @@ export default function ActivityForm({
     setBannerImages([]);
     setIntroImages([]);
     setDraft(createDraft());
+
+    const snap = makeSnapshotFromInitialData(initialData);
+    setInitialSnapshot(snap);
+    onDirtyChange?.(false);
   }, [initialData]);
+
+  useEffect(() => {
+    if (!initialSnapshot) {
+      return;
+    }
+    const dirty = makeSnapshot() !== initialSnapshot;
+    onDirtyChange?.(dirty);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    initialSnapshot,
+    title,
+    category,
+    text,
+    price,
+    address,
+    rows,
+    existingBannerUrl,
+    existingSubImageUrls,
+    removedSubImageIds,
+    bannerImages.length,
+    introImages.length,
+  ]);
 
   // 유효성
   const isFormValid = useMemo(() => {
     return (
-      title.trim() &&
+      title.trim().length > 0 &&
+      title.length <= 25 &&
       category &&
-      text.trim().length >= 10 &&
+      text.trim().length <= 1000 &&
       Number(price) > 0 &&
-      address.trim() &&
+      Number(price) < 99999999999 &&
+      address.trim().length > 0 &&
       rows.length > 0
     );
   }, [title, category, text, price, address, rows.length]);
@@ -206,9 +303,7 @@ export default function ActivityForm({
     return Number(value).toLocaleString();
   };
 
-  //draft에 사용자가 선택한 날짜를 담는 함수
-  //세터함수에 이전값을 가져와서 date만 바꿔준다.
-  // 굳이 selectedDate: Date 로 인수로 설정안하고 date로 해도 되지만 역할을 확실히 하기 위해
+  //날짜 바꾸는 함수
   const handleDraftDate = (selectedDate: Date) => {
     setDraft((prev) => ({ ...prev, date: selectedDate }));
   };
@@ -240,21 +335,40 @@ export default function ActivityForm({
   //서버에 post시 아직 서버의 id를 모르기 때문에 랜덤으로 구분하기 위한 아이디값 생성
   //date옆에 ! 는 타입스크립트에게 null, undefinded가 아니라는 확신을 준다.
   //위에 만들어 두었던 초기화 함수 실행
+  //    addScheduleFromDraft
   const addScheduleFromDraft = () => {
+    const toYmd = (d: Date) => d.toISOString().split('T')[0];
+    // 1) 날짜 없으면 끝
     if (!draft.date) {
       return;
     }
 
-    setRows((prevRows) => {
-      const newRow: ScheduleRow = {
-        uiId: crypto.randomUUID(),
-        date: draft.date!,
-        startTime: draft.startTime,
-        endTime: draft.endTime,
-      };
-      return [...prevRows, newRow];
+    const draftDateKey = toYmd(draft.date);
+
+    // 2) rows의 date도 같은 포맷으로 비교
+    const isDuplicate = rows.some((row) => {
+      const rowDateKey = toYmd(row.date);
+      return (
+        rowDateKey === draftDateKey &&
+        row.startTime === draft.startTime &&
+        row.endTime === draft.endTime
+      );
     });
 
+    if (isDuplicate) {
+      alert('겹치는 시간대가 존재합니다.');
+      return;
+    }
+
+    // 3) 타입 맞는 ScheduleRow만 추가 (setRows는 딱 1번)
+    const newRow: ScheduleRow = {
+      uiId: crypto.randomUUID(),
+      date: draft.date,
+      startTime: draft.startTime,
+      endTime: draft.endTime,
+    };
+
+    setRows((prev) => [...prev, newRow]);
     setDraft(createDraft());
   };
 
@@ -263,6 +377,14 @@ export default function ActivityForm({
   //즉 사용자가 선택한 아이디만 삭제
   const removeRow = (uiId: string) => {
     setRows((prevRows) => prevRows.filter((row) => row.uiId !== uiId));
+  };
+
+  const handleRemoveExistingSubImage = (id: number) => {
+    // 1) 화면에서 제거
+    setExistingSubImageUrls((prev) => prev.filter((img) => img.id !== id));
+
+    // 2) 서버 삭제용 id 누적
+    setRemovedSubImageIds((prev) => [...prev, id]);
   };
 
   /**
@@ -282,12 +404,11 @@ export default function ActivityForm({
       price: Number(price),
       address,
       rows,
-
       bannerFile: bannerImages[0],
       introFiles: introImages,
-
       existingBannerUrl,
       existingSubImageUrls,
+      removedSubImageIds,
     };
 
     await onSubmit(values);
@@ -324,7 +445,7 @@ export default function ActivityForm({
             </DropdownTrigger>
 
             <DropdownList className='absolute top-full left-0 z-50 mt-2 w-full rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
-              {['문화·예술', '식음료', '투어', '관광', '웰빙'].map((c) => (
+              {['문화 · 예술', '식음료', '투어', '관광', '웰빙', '스포츠'].map((c) => (
                 <DropdownItem
                   key={c}
                   onClick={() => handleClickCategory(c)}
@@ -343,7 +464,7 @@ export default function ActivityForm({
             value={text}
             onChange={onChangeText}
             variant='default'
-            placeholder='설명을 최소 10자 이상 입력해 주세요'
+            placeholder='설명을 최대 1000자 입니다.'
           />
         </div>
 
@@ -351,7 +472,7 @@ export default function ActivityForm({
         <div className='flex flex-col gap-2.5'>
           <Label className='font-lg-bold text-gray-950'>가격</Label>
           <BaseInput
-            value={price ? `${formatNumber(price)} 원` : ''}
+            value={price ? `${formatNumber(price)}` : ''}
             onChange={(e) => {
               //문자전체 중 0에서9까지가 아닌 모든 문자는 "" 로 만들어 제거, / /는 정규식, ^는 부정, [0-9]는 0~9까지 ,g는 글로벌 문자전체
               const onlyNumber = e.target.value.replace(/[^0-9]/g, '');
@@ -514,6 +635,8 @@ export default function ActivityForm({
           maxFiles={MAX_BANNER}
           onAdd={addBannerImage}
           onRemove={removeBannerImage}
+          onRemoveExisting={() => setExistingBannerUrl('')}
+          existingUrl={existingBannerUrl}
         />
       </div>
 
@@ -527,6 +650,8 @@ export default function ActivityForm({
           maxFiles={MAX_INTRO}
           onAdd={addIntroImage}
           onRemove={removeIntroImage}
+          onRemoveExisting={handleRemoveExistingSubImage}
+          existingUrls={existingSubImageUrls}
         />
       </div>
 

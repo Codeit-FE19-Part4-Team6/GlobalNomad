@@ -8,6 +8,8 @@ import MainPage from './pages/MainPage.tsx';
 import LoginPage from '@/pages/LoginPage.tsx';
 import NotFoundPage from '@/pages/NotFoundPage.tsx';
 import MyPageLayout from '@/pages/MyPageLayout.tsx';
+import CreateActivityPage from '@/pages/CreateActivityPage.tsx';
+import EditActivityPage from '@/pages/EditActivityPage.tsx';
 import SignupPage from '@/pages/SignupPage.tsx';
 import { SnackBarProvider } from '@/providers/SnackBarProvider.tsx';
 
@@ -37,6 +39,8 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <MainPage /> },
           { path: 'mypage', element: <MyPageLayout /> },
+          { path: 'activities/create', element: <CreateActivityPage /> },
+          { path: 'activities/edit/:activityId', element: <EditActivityPage /> },
         ],
       },
       // Layout 없는 인증 페이지들

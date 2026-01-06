@@ -7,6 +7,7 @@ type ImageUploadProps = {
   maxFiles: number;
   onAdd?: (file: File) => void;
   onRemove?: () => void;
+  imageUrl?: string;
 };
 
 export default function ImageUpload({
@@ -15,26 +16,48 @@ export default function ImageUpload({
   maxFiles = 4,
   onAdd,
   onRemove,
+  imageUrl,
 }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
+  // useEffect(() => {
+  //   if (!file) {
+  //     setPreview(null);
+  //     return;
+  //   }
+
+  //   const url = URL.createObjectURL(file);
+  //   setPreview(url);
+
+  //   return () => {
+  //     URL.revokeObjectURL(url);
+  //   };
+  // }, [file]);
+
   useEffect(() => {
-    if (!file) {
-      setPreview(null);
+    // 1️⃣ 새로 선택한 파일이 있으면 (최우선)
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreview(url);
+
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    }
+
+    // 2️⃣ 파일은 없고, 기존 이미지 URL이 있으면
+    if (imageUrl) {
+      setPreview(imageUrl);
       return;
     }
 
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-
-    return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [file]);
+    // 3️⃣ 둘 다 없으면
+    setPreview(null);
+  }, [file, imageUrl]);
 
   const handleClick = () => {
-    if (!file) {
+    if (!preview) {
       inputRef.current?.click();
     }
   };
@@ -48,7 +71,7 @@ export default function ImageUpload({
     onAdd?.(selected);
     e.target.value = '';
   };
-  if (!file) {
+  if (!preview) {
     return (
       <div>
         <button
