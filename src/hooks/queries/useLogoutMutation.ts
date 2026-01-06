@@ -14,9 +14,7 @@ export const useLogoutMutation = () => {
     },
     onSettled: () => {
       delete http.defaults.headers.common.Authorization; // axios 헤더 제거
-
       logout(); //  Zustand 상태 초기화
-
       queryClient.clear(); // React Query 캐시 제거
     },
   });
