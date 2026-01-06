@@ -6,6 +6,7 @@ import CancelReservationModal from '@/components/common/modal/CancelReservationM
 import { useState, useEffect, useRef } from 'react';
 import { useBlocker, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
+import { useSnackBar } from '@/providers/SnackBarProvider';
 
 export default function CreateActivityPage() {
   const { mutate, isPending } = useCreateActivity();
@@ -13,6 +14,7 @@ export default function CreateActivityPage() {
   const navigate = useNavigate();
   const [leaveOpen, setLeaveOpen] = useState(false);
   const ignoreBlockOnceRef = useRef(false);
+  const { showSnack } = useSnackBar();
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
     if (ignoreBlockOnceRef.current) {
       return false;
@@ -89,19 +91,27 @@ export default function CreateActivityPage() {
       // 4) mutate
       mutate(payload, {
         onSuccess: () => {
-          alert('등록에 성공했습니다.');
+          showSnack('체험이 등록되었습니다.', 'success', {
+            duration: 2000,
+          });
+
           ignoreBlockOnceRef.current = true;
           setIsDirty(false);
 
-          if (blocker.state === 'blocked') {
-            blocker.proceed?.();
-          } else {
-            navigate('/mypage?tab=experiences');
-          }
+          setTimeout(() => {
+            if (blocker.state === 'blocked') {
+              blocker.proceed?.();
+            } else {
+              navigate('/mypage?tab=experiences');
+            }
+          }, 1500);
         },
         onError: (error) => {
           if (!isAxiosError(error)) {
-            alert('알 수 없는 오류가 발생했습니다.');
+            showSnack('체험이 등록되었습니다.', 'error', {
+              duration: 2000,
+            });
+
             if (blocker.state === 'blocked') {
               blocker.proceed?.();
             } else {

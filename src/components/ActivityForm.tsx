@@ -15,6 +15,8 @@ import BannerImageSection from '@/components/common/image-upload/BannerImageSect
 import IntroImageSection from '@/components/common/image-upload/IntroImageSection';
 import type { ScheduleRow } from '@/types/ScheduleRow';
 import type { ActivityCategory } from '@/apis/type';
+import { useDaumPostcodePopup } from 'react-daum-postcode';
+import type { Address } from 'react-daum-postcode';
 
 const MAX_BANNER = 1;
 const MAX_INTRO = 4;
@@ -134,6 +136,11 @@ export default function ActivityForm({
   );
   const [removedSubImageIds, setRemovedSubImageIds] = useState<number[]>([]);
   const [initialSnapshot, setInitialSnapshot] = useState<string>(''); //초기값 저장
+  const open = useDaumPostcodePopup();
+
+  const handleComplete = (data: Address) => {
+    setAddress(data.address);
+  };
 
   //현재 폼 상태
   const makeSnapshot = () =>
@@ -487,6 +494,8 @@ export default function ActivityForm({
         <div className='flex flex-col gap-2.5'>
           <Label className='font-lg-bold text-gray-950'>주소</Label>
           <BaseInput
+            readOnly
+            onClick={() => open({ onComplete: handleComplete })}
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             id='address'

@@ -68,7 +68,7 @@ export default function BannerImageSection({
 
   const handleAdd = (file: File) => {
     if (file.size > MAX_IMAGE_SIZE) {
-      alert('이미지 용량은 500KB 이하만 업로드할 수 있어요.');
+      alert('이미지 용량은 2MB 이하만 업로드할 수 있어요.');
       return;
     }
 
