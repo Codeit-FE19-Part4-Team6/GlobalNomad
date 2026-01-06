@@ -17,7 +17,8 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
   const [selectedActivityId, setSelectedActivityId] = useState<number | null>(null);
   const navigate = useNavigate();
   // 무한 스크롤 훅
-  const { data, isLoading, isError, fetchNextPage, hasNextPage } = useMyActivitiesInfinite();
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useMyActivitiesInfinite();
   const activities = data?.pages.flatMap((page) => page.activities) ?? [];
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
@@ -29,7 +30,7 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries[0].isIntersecting && !isFetchingNextPage) {
           fetchNextPage();
         }
       },
@@ -38,7 +39,7 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
 
     observer.observe(bottomRef.current);
     return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   // 삭제 버튼 클릭
   const handleDelete = (id: number) => {
