@@ -89,14 +89,25 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
     if (!myInfo) {
       return;
     }
-    const profileImageUrl = file ? await uploadImageToServer(file) : (myInfo.profileImageUrl ?? ''); // 프로필 이미지 업로드 (변경되었으면 서버로 전송)
-    // 서버로 보낼 payload 구성
-    const payload: Partial<UserEditRequest> = {
-      nickname: values.nickname.trim() || myInfo.nickname,
-      profileImageUrl,
-    };
+
+    const payload: Partial<UserEditRequest> = {};
+
+    // 닉네임: 변경된 경우만
+    const trimmedNickname = values.nickname.trim();
+    if (trimmedNickname && trimmedNickname !== myInfo.nickname) {
+      payload.nickname = trimmedNickname;
+    }
+    // 비밀번호: 입력된 경우만
     if (values.newPassword.trim()) {
       payload.newPassword = values.newPassword.trim();
+    }
+    // 프로필 이미지: 변경된 경우만
+    if (file) {
+      payload.profileImageUrl = await uploadImageToServer(file);
+    }
+    // 아무 것도 안 바뀌었으면 요청 안 보냄
+    if (Object.keys(payload).length === 0) {
+      return;
     }
     editMyInfoMutation.mutate(payload);
   };
@@ -158,14 +169,6 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
           label='비밀번호 확인'
           placeholder='비밀번호를 한 번 더 입력해주세요'
           {...register('newPasswordConfirm', {
-            minLength: {
-              value: 8,
-              message: '비밀번호는 8자 이상이어야 합니다',
-            },
-            maxLength: {
-              value: 16,
-              message: '비밀번호는 16자 이하로 입력해주세요',
-            },
             validate: (value) =>
               !newPassword || value === newPassword || '비밀번호가 일치하지 않습니다',
           })}
