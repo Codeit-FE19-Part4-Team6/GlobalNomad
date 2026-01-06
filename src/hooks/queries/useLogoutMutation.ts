@@ -1,7 +1,6 @@
 // src/hooks/useLogoutMutation.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/authStore';
-import { token } from '@/apis/auth/token';
 import { http } from '@/apis/http';
 
 export const useLogoutMutation = () => {
@@ -14,17 +13,11 @@ export const useLogoutMutation = () => {
       await http.post('/auth/logout');
     },
     onSettled: () => {
-      // ✅ 1. 토큰 제거
-      token.clearTokens();
+      delete http.defaults.headers.common.Authorization; // axios 헤더 제거
 
-      // ✅ 2. axios 헤더 제거
-      delete http.defaults.headers.common.Authorization;
+      logout(); //  Zustand 상태 초기화
 
-      // ✅ 3. Zustand 상태 초기화
-      logout();
-
-      // ✅ 4. React Query 캐시 제거
-      queryClient.clear();
+      queryClient.clear(); // React Query 캐시 제거
     },
   });
 };

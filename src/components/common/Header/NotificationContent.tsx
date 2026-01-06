@@ -33,23 +33,19 @@ const parseNotificationContent = (content: string): ParsedNotification => {
 
 // 상태 텍스트 하이라이팅 컴포넌트 (파싱 역할 분리)
 const HighlightedStatusText = ({ text }: { text: string }) => {
-  if (text.includes('승인')) {
-    const parts = text.split('승인');
-    return (
-      <>
-        {parts[0]}
-        <span className='text-primary-500'>승인</span>
-        {parts[1]}
-      </>
-    );
-  }
+  const statusStyles: { [key: string]: string } = {
+    승인: 'text-primary-500',
+    거절: 'text-red-500',
+  };
 
-  if (text.includes('거절')) {
-    const parts = text.split('거절');
+  const keyword = Object.keys(statusStyles).find((key) => text.includes(key));
+
+  if (keyword) {
+    const parts = text.split(keyword);
     return (
       <>
         {parts[0]}
-        <span className='text-red-500'>거절</span>
+        <span className={statusStyles[keyword]}>{keyword}</span>
         {parts[1]}
       </>
     );

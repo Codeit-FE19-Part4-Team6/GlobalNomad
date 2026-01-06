@@ -26,9 +26,12 @@ export const HeaderUserMenu = ({
   const { mutate: logout, isPending } = useLogoutMutation();
 
   const handleLogout = () => {
-    logout();
-    navigate('/');
-    onClose();
+    logout(undefined, {
+      onSettled: () => {
+        navigate('/');
+        onClose();
+      },
+    });
   };
 
   const handleMyPage = () => {

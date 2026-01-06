@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import notificationApi from '@/apis/notification';
 import type { MyNotification } from '@/apis/type';
 import NotificationContent from '@/components/common/Header/NotificationContent';
+import { getTimeAgo } from '@/utils/timeUtils';
 
 interface Props {
   isOpen: boolean; /** 알림 드롭다운 열림 여부 */
@@ -12,9 +13,8 @@ interface Props {
 export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
   const [notifications, setNotifications] = useState<MyNotification[]>([]);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
-  const [cursorId, setCursorId] = useState<number | undefined>(
-    undefined
-  ); /** 다음 페이지를 요청하기 위한 커서 ID */
+  /** 다음 페이지를 요청하기 위한 커서 ID */
+  const [cursorId, setCursorId] = useState<number | undefined>(undefined);
   const [hasMore, setHasMore] = useState(true); /** 더 불러올 데이터가 있는지 여부 */
   const [isLoading, setIsLoading] = useState(false); /** 알림 로딩 중 여부 (중복 호출 방지) */
   const [totalCount, setTotalCount] = useState(0);
@@ -30,7 +30,6 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
     try {
       setIsLoading(true);
       // 서버에 알림 목록 요청 (cursorId 기준으로 다음 페이지 조회)
-
       const response = await notificationApi.getNotifications(cursorId, 10);
       /**
        * 기존 알림과 새 알림을 병합
@@ -39,29 +38,18 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
       setNotifications((prev) => {
         const existingIds = new Set(prev.map((n) => n.id));
         const newNotifications = response.notifications.filter((n) => !existingIds.has(n.id));
-        const updated = [...prev, ...newNotifications];
-
-        // 로드된 개수 >= 전체 개수면 중단
-        if (updated.length >= response.totalCount) {
-          setHasMore(false);
-        }
-
-        return updated;
+        return [...prev, ...newNotifications];
       });
       /** 전체 알림 개수 업데이트 */
       setTotalCount(response.totalCount);
       /** 다음 요청을 위한 커서 ID 저장 */
       setCursorId(response.cursorId);
 
-      // 더 이상 데이터가 없으면 hasMore를 false로
       /**
        * 서버에서 더 이상 내려올 데이터가 없을 경우
        * → 무한 스크롤 중단
        */
-      if (response.notifications.length === 0) {
-        setHasMore(false);
-      }
-      // API 응답값으로도 체크
+
       const shouldStop =
         response.notifications.length === 0 ||
         response.cursorId === null ||
@@ -75,7 +63,14 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
     } finally {
       setIsLoading(false);
     }
-  }, [cursorId, isLoading, hasMore]);
+  }, [cursorId]);
+
+  //초기 데이터 로드
+  useEffect(() => {
+    if (notifications.length === 0 && !isLoading && hasMore) {
+      loadNotifications();
+    }
+  }, []);
 
   /**
    * IntersectionObserver 설정
@@ -115,13 +110,6 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
     };
   }, [isOpen, isLoading, loadNotifications, hasMore]);
 
-  //초기 데이터 로드
-  useEffect(() => {
-    if (notifications.length === 0 && !isLoading && hasMore) {
-      loadNotifications();
-    }
-  }, [loadNotifications, notifications.length, isLoading, hasMore]);
-
   // 알림 삭제
   const handleDelete = async (e: React.MouseEvent, id: number) => {
     e.stopPropagation();
@@ -135,39 +123,15 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
     }
   };
 
-  // 알림창 닫을 때 상태 초기화
   /**
    * 알림 버튼 토글 핸들러
    *
    * - 닫을 때 상태를 초기화하여
    *   다음에 열었을 때 항상 최신 데이터 로드
    */
+
   const handleToggle = () => {
     onToggle();
-  };
-
-  // 시간 표시 포맷팅 함수
-  const getTimeAgo = (createdAt: string) => {
-    const now = new Date();
-    const created = new Date(createdAt);
-    const diffMs = now.getTime() - created.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffMins < 1) {
-      return '방금 전';
-    }
-    if (diffMins < 60) {
-      return `${diffMins}분 전`;
-    }
-    if (diffHours < 24) {
-      return `${diffHours}시간 전`;
-    }
-    if (diffDays < 7) {
-      return `${diffDays}일 전`;
-    }
-    return created.toLocaleDateString('ko-KR');
   };
 
   return (
@@ -245,7 +209,7 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
                 {/* IntersectionObserver 타겟 */}
                 {hasMore && (
                   <div ref={observerTarget} className='flex h-16 items-center justify-center'>
-                    {isLoading && <div className='text-sm text-gray-500'></div>}
+                    {isLoading && <div className='text-sm text-gray-500'>로딩 중...</div>}
                   </div>
                 )}
               </ul>
