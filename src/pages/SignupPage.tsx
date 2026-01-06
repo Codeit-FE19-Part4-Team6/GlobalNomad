@@ -26,6 +26,7 @@ const SignupPage = () => {
           <TextInput
             label='이메일'
             type='email'
+            autoComplete='email'
             placeholder='이메일을 입력해주세요'
             {...registerOptions.email}
             error={!!errors.email}
@@ -35,6 +36,7 @@ const SignupPage = () => {
           {/* 닉네임 */}
           <TextInput
             label='닉네임'
+            autoComplete='username'
             placeholder='닉네임을 입력해 주세요'
             {...registerOptions.nickname}
             error={!!errors.nickname}
@@ -44,6 +46,7 @@ const SignupPage = () => {
           {/* 비밀번호 */}
           <PasswordInput
             label='비밀번호'
+            autoComplete='new-password'
             placeholder='8자 이상 입력해주세요'
             {...registerOptions.password}
             error={!!errors.password}
@@ -53,6 +56,7 @@ const SignupPage = () => {
           {/* 비밀번호 확인 */}
           <PasswordInput
             label='비밀번호 확인'
+            autoComplete='new-password'
             placeholder='비밀번호를 한 번 더 입력해 주세요'
             {...registerOptions.passwordConfirm}
             error={!!errors.passwordConfirm}
