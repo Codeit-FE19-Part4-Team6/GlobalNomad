@@ -82,7 +82,7 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
                   />
                   <Card.Price price={activity.price} className='mb-[10px] lg:mb-5' />
                   <Card.CardButton
-                    onEdit={() => navigate(`/activities/${activity.id}/edit`)} // 임시
+                    onEdit={() => navigate(`/activities/edit/${activity.id}`)}
                     onDelete={() => handleDelete(activity.id)}
                   />
                 </Card.Content>

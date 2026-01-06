@@ -29,9 +29,9 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
     watch,
     reset,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<FormValues>({
-    mode: 'onBlur',
+    mode: 'onChange',
   });
 
   const { data: myInfo, isLoading } = useMyInfo(); // 내 정보 조회 (React Query)
@@ -120,7 +120,16 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
       </div>
 
       <div className='flex flex-col gap-[18px] md:gap-6'>
-        <TextInput label='닉네임' placeholder={myInfo?.nickname ?? ''} {...register('nickname')} />
+        <TextInput
+          label='닉네임'
+          maxLength={8}
+          {...register('nickname', {
+            maxLength: {
+              value: 8,
+              message: '닉네임은 8자 이내로 입력해주세요',
+            },
+          })}
+        />
         <TextInput
           label='이메일'
           type='email'
@@ -132,7 +141,16 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
         <PasswordInput
           label='비밀번호'
           placeholder='8자 이상 입력해주세요'
-          {...register('newPassword', { minLength: { value: 8, message: '8자 이상 입력하세요' } })}
+          {...register('newPassword', {
+            minLength: {
+              value: 8,
+              message: '비밀번호는 8자 이상이어야 합니다',
+            },
+            maxLength: {
+              value: 16,
+              message: '비밀번호는 16자 이하로 입력해주세요',
+            },
+          })}
           error={!!errors.newPassword}
           errorMessage={errors.newPassword?.message}
         />
@@ -140,6 +158,14 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
           label='비밀번호 확인'
           placeholder='비밀번호를 한 번 더 입력해주세요'
           {...register('newPasswordConfirm', {
+            minLength: {
+              value: 8,
+              message: '비밀번호는 8자 이상이어야 합니다',
+            },
+            maxLength: {
+              value: 16,
+              message: '비밀번호는 16자 이하로 입력해주세요',
+            },
             validate: (value) =>
               !newPassword || value === newPassword || '비밀번호가 일치하지 않습니다',
           })}
@@ -151,7 +177,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
       <div className='flex justify-center'>
         <PrimaryButton
           type='submit'
-          disabled={!isFormChanged}
+          disabled={!isFormChanged || !isValid}
           className='font-lg-bold md:font-md-bold mt-8 mb-3 h-12 w-full rounded-[14px] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 md:mt-6 md:h-[41px] md:w-30 md:rounded-xl lg:w-auto lg:max-w-160'>
           수정하기
         </PrimaryButton>
