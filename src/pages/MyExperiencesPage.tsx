@@ -4,9 +4,9 @@ import { Down, Earth } from '@/assets/icons';
 import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '@/components/common/button';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDeleteActivityMutation } from '@/hooks/queries/useDeleteActivityMutation';
-import { useMyActivities } from '@/hooks/queries/useMyActivities';
+import { useMyActivitiesInfinite } from '@/hooks/queries/useMyActivitiesInfinite';
 
 type Props = {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -14,34 +14,57 @@ type Props = {
 
 export default function MyExperiencesPage({ setMobileOpen }: Props) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const [selectedActivityId, setSelectedActivityId] = useState<number | null>(null); // 선택된 체험 정보
+  const [selectedActivityId, setSelectedActivityId] = useState<number | null>(null);
   const navigate = useNavigate();
+  // 무한 스크롤 훅
+  const { data, isLoading, isError, fetchNextPage, hasNextPage } = useMyActivitiesInfinite();
+  const activities = data?.pages.flatMap((page) => page.activities) ?? [];
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  // React Query를 통해 내 체험 목록 조회
-  const { data: myActivities, isLoading, isError } = useMyActivities();
+  // IntersectionObserver를 이용한 무한 스크롤
+  useEffect(() => {
+    if (!bottomRef.current || !hasNextPage) {
+      return;
+    }
 
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(bottomRef.current);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage]);
+
+  // 삭제 버튼 클릭
   const handleDelete = (id: number) => {
     setSelectedActivityId(id);
     setIsCancelModalOpen(true);
   };
-  // 체험 삭제 뮤테이션 (React Query)
-  // 삭제 성공 시 모달 닫기, 선택 ID 초기화
+
+  // 삭제 뮤테이션
   const { mutate: deleteMutate } = useDeleteActivityMutation(
     () => setIsCancelModalOpen(false),
     () => setSelectedActivityId(null)
   );
-  // 모달에서 삭제 확정 시 호출
+
   const handleConfirmCancel = () => {
     if (selectedActivityId !== null) {
-      deleteMutate(selectedActivityId); // 삭제 뮤테이션 실행
+      deleteMutate(selectedActivityId);
     }
   };
+
   if (isLoading) {
     return <div className='px-4 py-10'>로딩 중...</div>;
   }
   if (isError) {
     return <div className='px-4 py-10'>데이터를 불러오지 못했습니다.</div>;
   }
+
   return (
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
       <div className='mb-[30px] flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
@@ -63,14 +86,14 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
           체험 등록하기
         </PrimaryButton>
       </div>
-      {!myActivities || myActivities.length === 0 ? (
+      {activities.length === 0 ? (
         <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
           <Earth className='mb-7.5' />
           <div className='font-xl-medium text-center text-gray-600'>아직 등록한 체험이 없어요</div>
         </div>
       ) : (
         <div className='mb-3 flex flex-col gap-7.5 lg:gap-6'>
-          {myActivities?.map((activity) => (
+          {activities.map((activity) => (
             <Card key={activity.id} variant='list'>
               <div className='flex w-full items-stretch justify-between'>
                 <Card.Content className='flex flex-1 flex-col justify-center'>
@@ -90,6 +113,7 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
               </div>
             </Card>
           ))}
+          <div ref={bottomRef} className='h-1' />
         </div>
       )}
       <CancelReservationModal

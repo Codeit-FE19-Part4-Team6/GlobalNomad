@@ -103,7 +103,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
           <div className='flex flex-col items-center justify-center'>
             <Earth className='mb-7.5' />
             <div className='font-xl-medium text-center whitespace-nowrap text-gray-600'>
-              아직 등록한 체험이 없어요
+              아직 예약한 체험이 없어요
             </div>
           </div>
           <PrimaryButton
