@@ -12,10 +12,10 @@ const SIZE = 6;
 export const useMyActivitiesInfinite = () => {
   return useInfiniteQuery({
     queryKey: ['myActivitiesInfinite'],
-    initialPageParam: 0,
+    initialPageParam: undefined,
     refetchOnMount: 'always',
     queryFn: ({ pageParam = 0 }) => {
-      const params = pageParam ? { cursorId: pageParam, size: SIZE } : { size: SIZE };
+      const params = { size: SIZE, ...(pageParam && { cursorId: pageParam }) };
       return getMyActivities(params);
     },
     getNextPageParam: (lastPage: MyActivitiesResponse) => {

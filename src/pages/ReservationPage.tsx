@@ -98,7 +98,22 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         </Title>
         <div className='font-md-medium text-gray-500'>예약내역 변경 및 취소할 수 있습니다.</div>
       </div>
-      {reservations.length === 0 ? (
+      <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
+        {STATUS_LIST.map((s) => (
+          <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
+            {s === 'confirmed'
+              ? '예약 완료'
+              : s === 'canceled'
+                ? '예약 취소'
+                : s === 'declined'
+                  ? '예약 거절'
+                  : s === 'completed'
+                    ? '체험 완료'
+                    : '예약 대기'}
+          </FilterButton>
+        ))}
+      </div>
+      {reservations.length === 0 && selected === 'confirmed' ? (
         <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
           <div className='flex flex-col items-center justify-center'>
             <Earth className='mb-7.5' />
@@ -114,21 +129,6 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         </div>
       ) : (
         <>
-          <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
-            {STATUS_LIST.map((s) => (
-              <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
-                {s === 'confirmed'
-                  ? '예약 완료'
-                  : s === 'canceled'
-                    ? '예약 취소'
-                    : s === 'declined'
-                      ? '예약 거절'
-                      : s === 'completed'
-                        ? '체험 완료'
-                        : '예약 대기'}
-              </FilterButton>
-            ))}
-          </div>
           <div className='flex flex-col gap-7.5 lg:gap-6'>
             {reservations.map((item) => (
               <Card
