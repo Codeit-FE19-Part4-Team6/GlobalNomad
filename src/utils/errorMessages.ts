@@ -1,6 +1,11 @@
 // src/utils/errorMessages.ts
+import { isAxiosError } from 'axios';
 
-export const getSignupErrorMessage = (error: any): string => {
+export const getSignupErrorMessage = (error: unknown): string => {
+  if (!isAxiosError<{ message?: string }>(error)) {
+    return '회원가입에 실패했습니다.';
+  }
+
   const status = error.response?.status;
 
   // HTTP 상태 코드로 폴백
@@ -16,7 +21,10 @@ export const getSignupErrorMessage = (error: any): string => {
   }
 };
 
-export const getLoginErrorMessage = (error: any): string => {
+export const getLoginErrorMessage = (error: unknown): string => {
+  if (!isAxiosError<{ message?: string }>(error)) {
+    return '로그인에 실패했습니다.';
+  }
   const status = error.response?.status;
   // HTTP 상태 코드로 폴백
   switch (status) {

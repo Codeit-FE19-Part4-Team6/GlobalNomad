@@ -17,7 +17,7 @@ export const isValidPassword = (password: string): boolean => {
 };
 
 /**
- * 닉네임 유효성 검사 (2-10자, 한글/영문/숫자만 허용)
+ * 닉네임 유효성 검사 (2-8자, 한글/영문/숫자만 허용)
  */
 export const isValidNickname = (nickname: string): boolean => {
   const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,8}$/;
