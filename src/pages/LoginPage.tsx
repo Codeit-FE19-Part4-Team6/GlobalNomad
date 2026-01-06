@@ -27,6 +27,7 @@ const LoginPage = () => {
           <TextInput
             label='이메일'
             type='email'
+            autoComplete='email'
             placeholder='이메일을 입력해주세요'
             {...registerOptions.email}
             error={!!errors.email}
@@ -36,6 +37,7 @@ const LoginPage = () => {
           {/* 비밀번호 */}
           <PasswordInput
             label='비밀번호'
+            autoComplete='current-password'
             placeholder='8자 이상 입력해주세요'
             {...registerOptions.password}
             error={!!errors.password}

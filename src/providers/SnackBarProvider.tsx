@@ -10,7 +10,7 @@ interface SnackBarContextValue {
 const SnackBarContext = createContext<SnackBarContextValue | null>(null);
 
 export function SnackBarProvider({ children }: { children: React.ReactNode }) {
-  const [snacks, setSnacks] = useState<Snack[]>([]);
+  const [snack, setSnack] = useState<Snack | null>(null);
   const idCounterRef = useRef(0);
 
   const showSnack = useCallback(
@@ -20,32 +20,32 @@ export function SnackBarProvider({ children }: { children: React.ReactNode }) {
       options?: { duration?: number; onClose?: () => void }
     ) => {
       const id = ++idCounterRef.current;
-      setSnacks((prev) => [...prev, { id, message, type, ...options }]);
+      setSnack({ id, message, type, ...options });
     },
     []
   );
 
-  const removeSnack = useCallback((id: number) => {
-    setSnacks((prev) => prev.filter((snack) => snack.id !== id));
+  const removeSnack = useCallback(() => {
+    setSnack(null);
   }, []);
 
   return (
     <SnackBarContext.Provider value={{ showSnack }}>
       {children}
-      {snacks.map((snack, index) => (
+      {snack && (
         <SnackBar
           key={snack.id}
           isOpen
           message={snack.message}
           type={snack.type}
           duration={snack.duration}
-          stackIndex={index}
+          stackIndex={0}
           onClose={() => {
             snack.onClose?.();
-            removeSnack(snack.id);
+            removeSnack();
           }}
         />
-      ))}
+      )}
     </SnackBarContext.Provider>
   );
 }
