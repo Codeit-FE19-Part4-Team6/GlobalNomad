@@ -8,7 +8,6 @@ import { useSnackBar } from '@/providers/SnackBarProvider';
 
 import {
   // checkEmailDuplicate,
-  // checkNicknameDuplicate,
   getErrorMessage,
   isPasswordMatch,
   isValidEmail,
@@ -28,7 +27,6 @@ export const useSignupForm = () => {
   const { showSnack } = useSnackBar();
 
   // const [lastCheckedEmail, setLastCheckedEmail] = useState('');
-  // const [lastCheckedNickname, setLastCheckedNickname] = useState('');
 
   const {
     register,
@@ -46,7 +44,6 @@ export const useSignupForm = () => {
   const navigate = useNavigate();
 
   // const emailChecked = lastCheckedEmail === watchEmail && !!watchEmail; // 중복 체크 “유효 여부 유지”
-  // const nicknameChecked = lastCheckedNickname === watchNickname && !!watchNickname; // 중복 체크 “유효 여부 유지”
 
   // 폼 유효성 검사
   const isFormValid = useMemo(() => {
@@ -55,7 +52,7 @@ export const useSignupForm = () => {
       !!watchNickname?.trim() &&
       !!watchPassword?.trim() &&
       !!watchPasswordConfirm?.trim();
-    return allFieldsFilled && isValid; //  && emailChecked && nicknameChecked
+    return allFieldsFilled && isValid; //  && emailChecked
   }, [
     watchEmail,
     watchNickname,
@@ -63,7 +60,6 @@ export const useSignupForm = () => {
     watchPasswordConfirm,
     isValid,
     // emailChecked,
-    // nicknameChecked,
   ]);
 
   // const handleEmailCheck = async (email: string) => {
@@ -81,25 +77,6 @@ export const useSignupForm = () => {
   //   } catch (error) {
   //     const message = error instanceof Error ? error.message : '이메일 중복 확인에 실패했습니다';
   //     setError('email', { message });
-  //     return false;
-  //   }
-  // };
-
-  // const handleNicknameCheck = async (nickname: string) => {
-  //   try {
-  //     const isDuplicate = await checkNicknameDuplicate(nickname);
-  //     console.log('isDuplicate: ', isDuplicate);
-
-  //     if (isDuplicate) {
-  //       setError('nickname', { message: '이미 사용 중인 닉네임입니다' });
-  //       return false;
-  //     }
-  //     clearErrors('nickname');
-  //     setLastCheckedNickname(nickname);
-  //     return true;
-  //   } catch (error) {
-  //     const message = error instanceof Error ? error.message : '닉네임 중복 확인에 실패했습니다';
-  //     setError('nickname', { message });
   //     return false;
   //   }
   // };
@@ -129,11 +106,11 @@ export const useSignupForm = () => {
     }),
     nickname: register('nickname', {
       required: '닉네임을 입력해주세요',
-      validate: (value) => isValidNickname(value) || '2~10자의 한글, 영문, 숫자만 사용 가능합니다',
+      validate: (value) => isValidNickname(value) || '2~8자의 한글, 영문, 숫자만 사용 가능합니다',
     }),
     password: register('password', {
       required: '비밀번호를 입력해주세요',
-      validate: (value) => isValidPassword(value) || '8자 이상, 영문과 숫자를 포함해야 합니다',
+      validate: (value) => isValidPassword(value) || '8~16자의 영문과 숫자를 사용해주세요',
     }),
     passwordConfirm: register('passwordConfirm', {
       required: '비밀번호 확인을 입력해주세요',

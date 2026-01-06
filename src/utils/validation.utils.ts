@@ -9,10 +9,10 @@ export const isValidEmail = (email: string): boolean => {
 };
 
 /**
- * 비밀번호 유효성 검사 (8자 이상, 영문+숫자 포함)
+ * 비밀번호 유효성 검사 (8자 이상 16자 이하, 영문+숫자 포함)
  */
 export const isValidPassword = (password: string): boolean => {
-  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/;
+  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
   return passwordRegex.test(password);
 };
 
@@ -20,7 +20,7 @@ export const isValidPassword = (password: string): boolean => {
  * 닉네임 유효성 검사 (2-10자, 한글/영문/숫자만 허용)
  */
 export const isValidNickname = (nickname: string): boolean => {
-  const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,10}$/;
+  const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,8}$/;
   return nicknameRegex.test(nickname);
 };
 
