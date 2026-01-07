@@ -5,10 +5,11 @@ import { PrimaryButton } from '@/components/common/button';
 import { PasswordInput, TextInput } from '@/components/common/input';
 import Title from '@/components/common/Title';
 import { Down } from '@/assets/icons';
-import { useEditMyInfoMutation } from '@/hooks/queries/useEditMyInfo';
+import { useEditMyInfoMutation } from '@/hooks/queries/useEditMyInfoMutation';
 import { useMyInfo } from '@/hooks/queries/useMyInfo';
 import { uploadImageToServer } from '@/apis/upload';
 import type { User, UserEditRequest } from '@/apis/type';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -35,6 +36,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
   });
 
   const { data: myInfo, isLoading } = useMyInfo(); // 내 정보 조회 (React Query)
+  const navigate = useNavigate();
 
   // myInfo가 로딩되면 폼 초기값과 프로필 이미지 초기화
   useEffect(() => {
@@ -66,6 +68,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
       newPassword: '',
       newPasswordConfirm: '',
     });
+    navigate('/');
   });
   // 폼이 변경되었는지 계산
   const isFormChanged = useMemo(() => {

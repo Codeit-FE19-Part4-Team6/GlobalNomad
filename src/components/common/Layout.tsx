@@ -6,7 +6,6 @@ import { useAuthStore } from '@/stores/authStore';
 
 const Layout = () => {
   const navigate = useNavigate();
-
   const { initialize, isInitialized } = useAuthStore();
 
   useEffect(() => {

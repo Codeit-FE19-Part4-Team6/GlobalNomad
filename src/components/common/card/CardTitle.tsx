@@ -11,7 +11,7 @@ import { cn } from '@/utils/cn';
 export function CardTitle({ title, className }: { title: string; className?: string }) {
   const { variant } = useCardContext();
   const sizeClass =
-    variant === 'grid' ? 'font-md-semibold lg:font-xl-bold' : 'font-lg-bold lg:font-xl-bold';
+    variant === 'grid' ? 'font-md-bold lg:font-xl-bold' : 'font-lg-bold lg:font-xl-bold';
   return (
     <Title as='h4' className={cn(sizeClass, 'truncate text-gray-950', className)}>
       {title}

@@ -26,7 +26,7 @@ const PaginationItem = ({ page }: Props) => {
           'border-b-2',
           // 상태별 스타일
           isActive
-            ? 'border-primary-500 font-semibold text-gray-950'
+            ? 'border-primary-500 font-bold text-gray-950'
             : 'border-transparent text-gray-400'
         )}>
         {page}
