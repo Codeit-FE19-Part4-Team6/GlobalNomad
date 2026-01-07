@@ -13,6 +13,14 @@ import { useReviewReservationMutation } from '@/hooks/queries/useReviewReservati
 
 const STATUS_LIST = ['confirmed', 'canceled', 'declined', 'completed', 'pending'] as const;
 
+const STATUS_TEXT_MAP: Record<Status, string> = {
+  confirmed: '예약 완료',
+  canceled: '예약 취소',
+  declined: '예약 거절',
+  completed: '체험 완료',
+  pending: '예약 대기',
+};
+
 type Status = (typeof STATUS_LIST)[number];
 type SelectedStatus = 'all' | Status;
 type Props = {
@@ -38,20 +46,24 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     setSelected(statusParam);
   }, [statusParam]);
 
-  // 필터 버튼 클릭
-  const handleFilterClick = (status: Status) => {
-    setSelected(status);
+  const updateSearchParams = (status: SelectedStatus) => {
     const params = new URLSearchParams(searchParams);
     params.set('tab', 'reservation');
-    params.set('status', status);
+    if (status === 'all') {
+      params.delete('status');
+    } else {
+      params.set('status', status);
+    }
     setSearchParams(params);
+  };
+
+  const handleFilterClick = (status: Status) => {
+    setSelected(status);
+    updateSearchParams(status);
   };
   const handleAllClick = () => {
     setSelected('all');
-    const params = new URLSearchParams(searchParams);
-    params.set('tab', 'reservation'); // tab은 항상 reservation
-    params.delete('status');
-    setSearchParams(params);
+    updateSearchParams('all');
   };
   // 예약 내역 조회
   const {
@@ -123,15 +135,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
           {STATUS_LIST.map((s) =>
             hasStatusData(s) ? (
               <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
-                {s === 'confirmed'
-                  ? '예약 완료'
-                  : s === 'canceled'
-                    ? '예약 취소'
-                    : s === 'declined'
-                      ? '예약 거절'
-                      : s === 'completed'
-                        ? '체험 완료'
-                        : '예약 대기'}
+                {STATUS_TEXT_MAP[s]}
               </FilterButton>
             ) : null
           )}
