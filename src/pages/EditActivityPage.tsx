@@ -163,15 +163,11 @@ export default function EditActivityPage() {
           });
 
           // ✅ 이번 이동은 모달 무시 (즉시 반영되는 ref 사용)
-          ignoreBlockOnceRef.current = true;
+          //ignoreBlockOnceRef.current = true;
 
           setIsDirty(false);
           setTimeout(() => {
-            if (blocker.state === 'blocked') {
-              blocker.proceed?.();
-            } else {
-              navigate('/mypage?tab=experiences');
-            }
+            navigate('/mypage?tab=experiences');
           }, 1500);
         },
 
@@ -181,12 +177,6 @@ export default function EditActivityPage() {
             showSnack('체험이 수정이 실패했습니다.', 'error', {
               duration: 2000,
             });
-            if (blocker.state === 'blocked') {
-              blocker.proceed?.();
-            } else {
-              // ✅ block 된 이동이 아니라면 그냥 이동
-              navigate('/mypage?tab=experiences');
-            }
             return;
           }
 

@@ -29,9 +29,9 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
     watch,
     reset,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<FormValues>({
-    mode: 'onBlur',
+    mode: 'onChange',
   });
 
   const { data: myInfo, isLoading } = useMyInfo(); // 내 정보 조회 (React Query)
@@ -89,14 +89,25 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
     if (!myInfo) {
       return;
     }
-    const profileImageUrl = file ? await uploadImageToServer(file) : (myInfo.profileImageUrl ?? ''); // 프로필 이미지 업로드 (변경되었으면 서버로 전송)
-    // 서버로 보낼 payload 구성
-    const payload: Partial<UserEditRequest> = {
-      nickname: values.nickname.trim() || myInfo.nickname,
-      profileImageUrl,
-    };
+
+    const payload: Partial<UserEditRequest> = {};
+
+    // 닉네임: 변경된 경우만
+    const trimmedNickname = values.nickname.trim();
+    if (trimmedNickname && trimmedNickname !== myInfo.nickname) {
+      payload.nickname = trimmedNickname;
+    }
+    // 비밀번호: 입력된 경우만
     if (values.newPassword.trim()) {
       payload.newPassword = values.newPassword.trim();
+    }
+    // 프로필 이미지: 변경된 경우만
+    if (file) {
+      payload.profileImageUrl = await uploadImageToServer(file);
+    }
+    // 아무 것도 안 바뀌었으면 요청 안 보냄
+    if (Object.keys(payload).length === 0) {
+      return;
     }
     editMyInfoMutation.mutate(payload);
   };
@@ -120,7 +131,16 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
       </div>
 
       <div className='flex flex-col gap-[18px] md:gap-6'>
-        <TextInput label='닉네임' placeholder={myInfo?.nickname ?? ''} {...register('nickname')} />
+        <TextInput
+          label='닉네임'
+          maxLength={8}
+          {...register('nickname', {
+            maxLength: {
+              value: 8,
+              message: '닉네임은 8자 이내로 입력해주세요',
+            },
+          })}
+        />
         <TextInput
           label='이메일'
           type='email'
@@ -132,7 +152,16 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
         <PasswordInput
           label='비밀번호'
           placeholder='8자 이상 입력해주세요'
-          {...register('newPassword', { minLength: { value: 8, message: '8자 이상 입력하세요' } })}
+          {...register('newPassword', {
+            minLength: {
+              value: 8,
+              message: '비밀번호는 8자 이상이어야 합니다',
+            },
+            maxLength: {
+              value: 16,
+              message: '비밀번호는 16자 이하로 입력해주세요',
+            },
+          })}
           error={!!errors.newPassword}
           errorMessage={errors.newPassword?.message}
         />
@@ -151,7 +180,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
       <div className='flex justify-center'>
         <PrimaryButton
           type='submit'
-          disabled={!isFormChanged}
+          disabled={!isFormChanged || !isValid}
           className='font-lg-bold md:font-md-bold mt-8 mb-3 h-12 w-full rounded-[14px] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 md:mt-6 md:h-[41px] md:w-30 md:rounded-xl lg:w-auto lg:max-w-160'>
           수정하기
         </PrimaryButton>

@@ -18,6 +18,7 @@ import type { ActivityCategory } from '@/apis/type';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
 import type { Address } from 'react-daum-postcode';
 import { useDraftParams } from '@/hooks/useDraftParams';
+import { useSnackBar } from '@/providers/SnackBarProvider';
 const MAX_BANNER = 1;
 const MAX_INTRO = 4;
 
@@ -147,6 +148,7 @@ export default function ActivityForm({
   );
   const [removedSubImageIds, setRemovedSubImageIds] = useState<number[]>([]);
   const [initialSnapshot, setInitialSnapshot] = useState<string>(''); //초기값 저장
+  const { showSnack } = useSnackBar();
   const open = useDaumPostcodePopup();
 
   const handleComplete = (data: Address) => {
@@ -215,7 +217,15 @@ export default function ActivityForm({
       setPrice(d.price ?? '');
       setAddress(d.address ?? '');
       setDraft(d.draft ?? createDraft());
-      setRows(d.rows ?? []);
+      setRows(
+        (d.rows ?? [])
+          .map((row) => {
+            const date = new Date((row as any).date); // string -> Date
+            return { ...row, date };
+          })
+          // ✅ Invalid Date 제거 (date가 없거나 깨진 값이면 여기서 탈락)
+          .filter((row): row is ScheduleRow => !Number.isNaN(row.date.getTime()))
+      );
     },
     delayMs: 400,
   });
@@ -399,7 +409,7 @@ export default function ActivityForm({
     });
 
     if (isDuplicate) {
-      alert('겹치는 시간대가 존재합니다.');
+      showSnack('예약이 겹치는 시간대가 있습니다.', 'error');
       return;
     }
 

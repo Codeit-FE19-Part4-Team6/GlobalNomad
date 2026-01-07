@@ -58,7 +58,7 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
           </div>
         </div>
         <PrimaryButton
-          onClick={() => navigate('/activities/new')} // 임시
+          onClick={() => navigate('/activities/create')}
           className='font-lg-bold md:h-12 md:w-[138px]'>
           체험 등록하기
         </PrimaryButton>
@@ -82,7 +82,7 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
                   />
                   <Card.Price price={activity.price} className='mb-[10px] lg:mb-5' />
                   <Card.CardButton
-                    onEdit={() => navigate(`/activities/${activity.id}/edit`)} // 임시
+                    onEdit={() => navigate(`/activities/edit/${activity.id}`)}
                     onDelete={() => handleDelete(activity.id)}
                   />
                 </Card.Content>

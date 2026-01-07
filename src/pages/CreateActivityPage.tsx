@@ -37,23 +37,31 @@ export default function CreateActivityPage() {
     }
 
     // ✅ 저장 후 이동으로 생긴 block은 모달 띄우지 않음
-    if (ignoreBlockOnceRef.current) {
-      // 1회만 무시하고 바로 원복
-      ignoreBlockOnceRef.current = false;
-      return;
-    }
+    // if (ignoreBlockOnceRef.current) {
+    //   // 1회만 무시하고 바로 원복
+    //   ignoreBlockOnceRef.current = false;
+    //   return;
+    // }
 
     setLeaveOpen(true);
   }, [blocker.state]);
 
   const handleLeaveNo = () => {
     setLeaveOpen(false);
-    blocker.reset?.(); //
+    if (blocker.state === 'blocked') {
+      blocker.reset(); // 여기서는 안전
+    }
   };
 
   const handleLeaveYes = async () => {
     setLeaveOpen(false);
-    blocker.proceed?.(); //
+
+    if (blocker.state !== 'blocked') {
+      return;
+    }
+
+    ignoreBlockOnceRef.current = true;
+    blocker.proceed();
   };
 
   const handleCreate = async (values: ActivityFormValues) => {
@@ -96,29 +104,18 @@ export default function CreateActivityPage() {
             duration: 2000,
           });
           localStorage.removeItem(draftKey);
-          ignoreBlockOnceRef.current = true;
+          //ignoreBlockOnceRef.current = true;
           setIsDirty(false);
 
           setTimeout(() => {
-            if (blocker.state === 'blocked') {
-              blocker.proceed?.();
-            } else {
-              navigate('/mypage?tab=experiences');
-            }
+            navigate('/mypage?tab=experiences');
           }, 1500);
         },
         onError: (error) => {
           if (!isAxiosError(error)) {
-            showSnack('체험이 등록되었습니다.', 'error', {
+            showSnack('체험이 등록이 실패했습니다..', 'error', {
               duration: 2000,
             });
-
-            if (blocker.state === 'blocked') {
-              blocker.proceed?.();
-            } else {
-              // ✅ block 된 이동이 아니라면 그냥 이동
-              navigate('/mypage?tab=experiences');
-            }
             return;
           }
 
@@ -155,7 +152,7 @@ export default function CreateActivityPage() {
       />
 
       <CancelReservationModal
-        isOpen={leaveOpen}
+        isOpen={leaveOpen && blocker.state === 'blocked'}
         onClose={handleLeaveNo}
         onConfirm={handleLeaveYes}
         cancelText='아니오'
