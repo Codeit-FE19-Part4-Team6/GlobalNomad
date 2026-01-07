@@ -6,11 +6,12 @@ import type { LoginRequest } from '@/apis/type';
 import { useLoginMutation } from '@/hooks/queries/useLoginMutation';
 import { useNavigate } from 'react-router-dom';
 import { useSnackBar } from '@/providers/SnackBarProvider';
+import { useProfileImageStore } from '@/stores/profileImageStore';
 
 export const useLoginForm = () => {
   const { mutate: login, isPending } = useLoginMutation();
   const { showSnack } = useSnackBar();
-
+  const setProfileImageUrl = useProfileImageStore((state) => state.setProfileImageUrl);
   const {
     register,
     handleSubmit,
@@ -31,7 +32,10 @@ export const useLoginForm = () => {
 
   const onSubmit = (data: LoginRequest) => {
     login(data, {
-      onSuccess: () => {
+      onSuccess: (res) => {
+        if (res.user.profileImageUrl) {
+          setProfileImageUrl(res.user.profileImageUrl);
+        }
         showSnack('로그인이 완료되었습니다.', 'success', {
           duration: 1200,
           onClose: () => navigate('/'),
@@ -39,7 +43,6 @@ export const useLoginForm = () => {
       },
     });
   };
-
   const registerOptions = {
     email: register('email', {
       required: '이메일을 입력해주세요',
@@ -50,7 +53,6 @@ export const useLoginForm = () => {
       validate: (value) => isValidPassword(value) || '8자 이상, 영문과 숫자를 포함해야 합니다',
     }),
   };
-
   return {
     registerOptions,
     errors,

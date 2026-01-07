@@ -32,7 +32,8 @@ export default function ProfileImageUpload({
   edit = false,
   className,
   defaultImageUrl,
-}: ProfileImageUploadProps) {
+  activePage,
+}: ProfileImageUploadProps & { activePage?: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
     previewUrl,
@@ -81,7 +82,7 @@ export default function ProfileImageUpload({
         {!background && (size === 'medium' ? <ProfileMd /> : <ProfileLg />)}
       </div>
 
-      {edit && (
+      {edit && activePage === 'profile' && (
         <button
           type='button'
           onClick={handleEditClick}

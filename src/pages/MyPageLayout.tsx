@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import CardsideBar from '@/components/common/CardsideBar';
 import BookingStatusPage from '@/pages/BookingStatusPage';
 import MyExperiencesPage from '@/pages/MyExperiencesPage';
 import MyProfilePage from '@/pages/MyProfilePage';
 import ReservationPage from '@/pages/ReservationPage';
+import { useMyInfo } from '@/hooks/queries/useMyInfo';
+import { useProfileImageStore } from '@/stores/profileImageStore';
 
 type ActivePage = 'profile' | 'reservation' | 'experiences' | 'status';
 
@@ -12,6 +14,8 @@ export default function MyPageLayout() {
   // URL 쿼리에서 tab 값 가져오기
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
+  const { data: myInfo } = useMyInfo();
+  const { setProfileImageUrl } = useProfileImageStore();
 
   const activePage: ActivePage =
     tabParam === 'profile' ||
@@ -51,6 +55,12 @@ export default function MyPageLayout() {
     experiences: <MyExperiencesPage setMobileOpen={setMobileOpen} />,
     status: <BookingStatusPage setMobileOpen={setMobileOpen} />,
   };
+
+  useEffect(() => {
+    if (myInfo?.profileImageUrl) {
+      setProfileImageUrl(myInfo.profileImageUrl);
+    }
+  }, [myInfo, setProfileImageUrl]);
 
   return (
     <div className='flex flex-col px-6 md:flex-row md:items-start md:gap-7.5 md:px-7.5 lg:justify-between'>
