@@ -121,10 +121,8 @@ function ActivityDetailPage() {
                 </div>
                 {/* 케밥 메뉴 */}
                 <Dropdown>
-                  <DropdownTrigger>
-                    <button className='p-1'>
-                      <More className='h-6 w-6 text-gray-900' />
-                    </button>
+                  <DropdownTrigger className='p-1'>
+                    <More className='h-6 w-6 text-gray-900' />
                   </DropdownTrigger>
                   <DropdownList>
                     <DropdownItem onClick={handleEdit}>수정하기</DropdownItem>
@@ -330,10 +328,8 @@ function ActivityDetailPage() {
                   </div>
                   {/* 케밥 메뉴 */}
                   <Dropdown>
-                    <DropdownTrigger>
-                      <button className='p-1'>
-                        <More className='h-6 w-6 text-gray-900' />
-                      </button>
+                    <DropdownTrigger className='p-1'>
+                      <More className='h-6 w-6 text-gray-900' />
                     </DropdownTrigger>
                     <DropdownList>
                       <DropdownItem onClick={handleEdit}>수정하기</DropdownItem>
