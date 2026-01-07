@@ -15,8 +15,8 @@ import { SnackBarProvider } from '@/providers/SnackBarProvider.tsx';
 import { token } from '@/apis/auth/token.ts';
 
 token.setTokens(
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mjg2MiwidGVhbUlkIjoiMTktNiIsImlhdCI6MTc2NzY3MDU0MiwiZXhwIjoxNzY3NjcyMzQyLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.1zXFoRgoZwVraQjG9a3vEU9KqtVscfmzKChuiGzd9dk',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mjg2MiwidGVhbUlkIjoiMTktNiIsImlhdCI6MTc2NzY3MDU0MiwiZXhwIjoxNzY4ODgwMTQyLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.sdrj4NZFibIXkCOs_PRngj_F950nZELCnm_VwNOTQPw'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mjg2MiwidGVhbUlkIjoiMTktNiIsImlhdCI6MTc2NzY5NDM2MiwiZXhwIjoxNzY3Njk2MTYyLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.ONHWQ1pmUuI6BSSz6ZrsxtlBnwkNHZIpIjMGeI1LRBQ',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mjg2MiwidGVhbUlkIjoiMTktNiIsImlhdCI6MTc2NzY5NDM2MiwiZXhwIjoxNzY4OTAzOTYyLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.ZPaomfPQvdDgS-KMHIzvTvgSb6XIw9gnd27v7_0uCKg'
 );
 // QueryClient 생성
 const queryClient = new QueryClient({

@@ -15,6 +15,7 @@ export default function CreateActivityPage() {
   const [leaveOpen, setLeaveOpen] = useState(false);
   const ignoreBlockOnceRef = useRef(false);
   const { showSnack } = useSnackBar();
+  const draftKey = 'draft:createActivity';
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
     if (ignoreBlockOnceRef.current) {
       return false;
@@ -94,7 +95,7 @@ export default function CreateActivityPage() {
           showSnack('체험이 등록되었습니다.', 'success', {
             duration: 2000,
           });
-
+          localStorage.removeItem(draftKey);
           ignoreBlockOnceRef.current = true;
           setIsDirty(false);
 
@@ -150,6 +151,7 @@ export default function CreateActivityPage() {
         isPending={isPending}
         onSubmit={handleCreate}
         onDirtyChange={setIsDirty}
+        draftKey={draftKey}
       />
 
       <CancelReservationModal

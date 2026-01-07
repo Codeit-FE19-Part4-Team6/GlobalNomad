@@ -17,7 +17,7 @@ import type { ScheduleRow } from '@/types/ScheduleRow';
 import type { ActivityCategory } from '@/apis/type';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
 import type { Address } from 'react-daum-postcode';
-
+import { useDraftParams } from '@/hooks/useDraftParams';
 const MAX_BANNER = 1;
 const MAX_INTRO = 4;
 
@@ -90,7 +90,7 @@ export type ActivityFormValues = {
 //페이지가 폼을 어떻게 동작시킬지 정하는 타입
 type ActivityFormProps = {
   mode: 'create' | 'edit';
-
+  draftKey: string;
   // edit일 때 초기값 주입
   initialData?: ActivityFormInitialData;
   onDirtyChange?: (dirty: boolean) => void;
@@ -110,6 +110,16 @@ type ActivityFormProps = {
   titleText: string;
 };
 
+type LocalStorageValues = {
+  title: string;
+  category: string;
+  text: string;
+  price: string;
+  address: string;
+  draft: ScheduleDraft;
+  rows: ScheduleRow[];
+};
+
 export default function ActivityForm({
   mode,
   initialData,
@@ -118,6 +128,7 @@ export default function ActivityForm({
   submitText,
   titleText,
   onDirtyChange,
+  draftKey,
 }: ActivityFormProps) {
   const [category, setCategory] = useState<string>('');
   const [text, setText] = useState<string>('');
@@ -140,6 +151,16 @@ export default function ActivityForm({
 
   const handleComplete = (data: Address) => {
     setAddress(data.address);
+  };
+  //로컬스토리지에 저장할 value
+  const values: LocalStorageValues = {
+    title,
+    category,
+    text,
+    price,
+    address,
+    draft,
+    rows,
   };
 
   //현재 폼 상태
@@ -183,6 +204,21 @@ export default function ActivityForm({
       bannerCount: 0, //마운트 되자마자 사용자가 새로운 파일을 아직 첨부 안해서 0
       introCount: 0,
     });
+
+  useDraftParams<LocalStorageValues>({
+    key: draftKey,
+    values,
+    applyDraft: (d) => {
+      setTitle(d.title ?? '');
+      setCategory(d.category ?? '');
+      setText(d.text ?? '');
+      setPrice(d.price ?? '');
+      setAddress(d.address ?? '');
+      setDraft(d.draft ?? createDraft());
+      setRows(d.rows ?? []);
+    },
+    delayMs: 400,
+  });
 
   //등록페이지 에서 초기 기준점을 잡고 onDirtyChange를 false로 초기화
   useEffect(() => {

@@ -1,7 +1,8 @@
 import { Down, User } from '@/assets/icons';
 import Avatar from '@/components/common/Avatar';
-
 import { LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useLogoutMutation } from '@/hooks/queries/useLogoutMutation';
 
 interface Props {
   userName?: string; // optional로 변경
@@ -21,16 +22,20 @@ export const HeaderUserMenu = ({
   onSignUp,
 }: Props) => {
   const isLoggedIn = !!userName; // userName이 있으면 로그인 상태
+  const navigate = useNavigate();
+  const { mutate: logout, isPending } = useLogoutMutation();
 
   const handleLogout = () => {
-    // TODO: 로그아웃 API 호출 및 관련 로직 구현
-    console.log('로그아웃 처리');
-    onClose();
+    logout(undefined, {
+      onSettled: () => {
+        navigate('/');
+        onClose();
+      },
+    });
   };
 
   const handleMyPage = () => {
-    // TODO: 마이페이지로 이동하는 라우팅 로직 구현
-    console.log('마이페이지로 이동');
+    navigate('/mypage');
     onClose();
   };
 
@@ -38,8 +43,6 @@ export const HeaderUserMenu = ({
     if (onLogin) {
       onLogin();
     } else {
-      // onLogin prop이 전달되지 않았을 경우의 처리.
-      // 개발 환경에서만 경고를 표시하거나, 기본 동작을 정의할 수 있습니다.
       console.warn('onLogin prop이 제공되지 않았습니다.');
     }
     onClose();
@@ -48,7 +51,6 @@ export const HeaderUserMenu = ({
     if (onSignUp) {
       onSignUp();
     } else {
-      // onSignUp prop이 전달되지 않았을 경우의 처리.
       console.warn('onSignUp prop이 제공되지 않았습니다.');
     }
     onClose();
@@ -96,9 +98,10 @@ export const HeaderUserMenu = ({
 
           <button
             onClick={handleLogout}
+            disabled={isPending}
             className='hover:bg-primary-100 font-sm-medium flex w-full cursor-pointer items-center space-x-2 border-t border-gray-100 px-4 py-3 text-left'>
             <LogOut className='h-4 w-4' />
-            <span>로그아웃</span>
+            <span>{isPending ? '로그아웃 중...' : '로그아웃'}</span>
           </button>
         </div>
       )}

@@ -21,6 +21,7 @@ export default function EditActivityPage() {
   const [leaveOpen, setLeaveOpen] = useState(false);
   const ignoreBlockOnceRef = useRef(false);
   const { showSnack } = useSnackBar();
+  const draftKey = `draft:editActivity:${activityId}`;
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
     //성공 후 모달띄워지는걸 막기위한 Ref
     if (ignoreBlockOnceRef.current) {
@@ -98,7 +99,7 @@ export default function EditActivityPage() {
     return <div>로딩중...</div>;
   }
   if (isError || !data) {
-    return <NotFoundPage />;
+    return;
   }
 
   /**
@@ -224,6 +225,7 @@ export default function EditActivityPage() {
         initialData={initialData}
         onSubmit={handleEdit}
         onDirtyChange={setIsDirty}
+        draftKey={draftKey}
       />
 
       <CancelReservationModal
