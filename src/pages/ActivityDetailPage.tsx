@@ -11,6 +11,7 @@ import DropdownList from '@/components/common/dropdown/DropdownList';
 import DropdownItem from '@/components/common/dropdown/DropdownItem';
 import { Star, More, Spot } from '@/assets/icons';
 import { DayPicker } from 'react-day-picker';
+import BottomSheet from '@/components/common/modal/BottomSheet';
 
 // 임시 더미 데이터 (API 연동 시 교체)
 const DUMMY_ACTIVITY = {
@@ -50,6 +51,7 @@ function ActivityDetailPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [participantCount, setParticipantCount] = useState(10);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   // 케밥 메뉴 핸들러
   const handleEdit = () => {
@@ -76,9 +78,25 @@ function ActivityDetailPage() {
     }
   };
 
-  // 예약하기 핸들러
+  // 예약하기 핸들러 (데스크톱)
   const handleReservation = () => {
     // TODO: 예약 API 호출
+  };
+
+  // 모바일 예약하기 핸들러 (바텀시트 열기)
+  const handleMobileReservation = () => {
+    setIsBottomSheetOpen(true);
+  };
+
+  // 바텀시트 닫기
+  const handleCloseBottomSheet = () => {
+    setIsBottomSheetOpen(false);
+  };
+
+  // 바텀시트에서 예약하기
+  const handleBottomSheetReservation = () => {
+    // TODO: 예약 API 호출
+    setIsBottomSheetOpen(false);
   };
 
   return (
@@ -92,30 +110,40 @@ function ActivityDetailPage() {
             {/* 체험 타이틀 및 정보 (모바일/태블릿에서 상단 노출) */}
             <div className='mb-6 lg:hidden'>
               {/* 카테고리 및 타이틀 */}
-              <div className='mb-3 flex items-center gap-2'>
-                <BaseBadge color='orange' size='status'>
-                  {DUMMY_ACTIVITY.category}
-                </BaseBadge>
-                <Title as='h1' size='2xl' weight='bold'>
-                  {DUMMY_ACTIVITY.title}
-                </Title>
+              <div className='mb-4 flex items-start justify-between'>
+                <div className='flex-1'>
+                  <BaseBadge color='orange' size='status' className='mb-2'>
+                    {DUMMY_ACTIVITY.category}
+                  </BaseBadge>
+                  <Title as='h1' size='2xl' weight='bold' className='mb-2'>
+                    {DUMMY_ACTIVITY.title}
+                  </Title>
+                </div>
+                {/* 케밥 메뉴 */}
+                <Dropdown>
+                  <DropdownTrigger>
+                    <button className='p-1'>
+                      <More className='h-6 w-6 text-gray-900' />
+                    </button>
+                  </DropdownTrigger>
+                  <DropdownList>
+                    <DropdownItem onClick={handleEdit}>수정하기</DropdownItem>
+                    <DropdownItem onClick={handleDelete}>삭제하기</DropdownItem>
+                  </DropdownList>
+                </Dropdown>
               </div>
 
-              {/* 평점 및 주소 */}
+              {/* 평점 */}
               <div className='mb-2 flex items-center gap-1'>
                 <Star className='h-4 w-4 text-yellow-500' />
                 <span className='font-md-medium text-gray-800'>{DUMMY_ACTIVITY.rating}</span>
                 <span className='font-md-medium text-gray-500'>({DUMMY_ACTIVITY.reviewCount})</span>
               </div>
-              <p className='font-md-regular mb-4 flex items-center gap-1 text-gray-700'>
-                <span>{DUMMY_ACTIVITY.address}</span>
-              </p>
 
-              {/* 가격 */}
-              <div className='mb-4'>
-                <Title as='h3' size='xl' weight='bold'>
-                  ₩ {DUMMY_ACTIVITY.price.toLocaleString()} / 인
-                </Title>
+              {/* 주소 */}
+              <div className='flex items-start gap-1'>
+                <Spot className='mt-0.5 h-4 w-4 flex-shrink-0 text-gray-700' />
+                <span className='font-md-regular text-gray-700'>{DUMMY_ACTIVITY.address}</span>
               </div>
             </div>
 
@@ -436,20 +464,141 @@ function ActivityDetailPage() {
         </div>
 
         {/* 모바일/태블릿 하단 고정 예약 바 */}
-        <div className='fixed inset-x-0 bottom-0 z-50 border-t border-gray-300 bg-white p-4 lg:hidden'>
-          <div className='mx-auto flex max-w-[1200px] items-center justify-between'>
-            <div>
-              <Title as='h4' size='md' weight='bold'>
-                ₩ {DUMMY_ACTIVITY.price.toLocaleString()}
-              </Title>
-              <p className='font-xs-regular text-gray-500'>/ 인</p>
+        <div className='fixed inset-x-0 bottom-0 z-50 bg-white px-6 py-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] sm:px-[30px] lg:hidden'>
+          <div className='mx-auto flex max-w-[1200px] items-center justify-between gap-4'>
+            <button
+              onClick={handleMobileReservation}
+              className='font-md-semibold flex-shrink-0 text-gray-900 underline'>
+              날짜 선택하기
+            </button>
+            <div className='flex items-center gap-3'>
+              <div className='flex items-baseline gap-1'>
+                <Title as='h3' size='xl' weight='bold'>
+                  ₩ {DUMMY_ACTIVITY.price.toLocaleString()}
+                </Title>
+                <span className='font-md-regular text-gray-500'>/ 인</span>
+              </div>
+              <PrimaryButton size='lg' disabled>
+                예약하기
+              </PrimaryButton>
             </div>
-            <PrimaryButton size='md' onClick={handleReservation}>
-              예약하기
-            </PrimaryButton>
           </div>
         </div>
       </div>
+
+      {/* 바텀시트 - 모바일/태블릿 예약 폼 */}
+      <BottomSheet isOpen={isBottomSheetOpen} onClose={handleCloseBottomSheet}>
+        <div className='px-6 py-6 sm:px-[30px]'>
+          {/* 바텀시트 헤더 */}
+          <div className='mb-6 flex items-center justify-between'>
+            <Title as='h3' size='xl' weight='bold'>
+              날짜
+            </Title>
+            <button
+              onClick={handleCloseBottomSheet}
+              className='font-lg-medium text-gray-600 hover:text-gray-900'>
+              ✕
+            </button>
+          </div>
+
+          {/* 날짜 및 시간 선택 영역 */}
+          <div className='mb-6 flex gap-6'>
+            {/* 왼쪽: 날짜 선택 */}
+            <div className='flex-1'>
+              <DayPicker
+                mode='single'
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                className='font-md-medium w-full rounded-xl border border-gray-300 bg-white p-4'
+                modifiersClassNames={{
+                  selected: 'custom-selected',
+                  today: 'custom-today',
+                  disabled: 'text-gray-300 cursor-not-allowed',
+                }}
+                modifiersStyles={{
+                  selected: {
+                    backgroundColor: '#3b82f6',
+                    color: 'white',
+                    fontWeight: 700,
+                    borderRadius: '9999px',
+                  },
+                  today: {
+                    backgroundColor: '#dbeafe',
+                    color: '#3b82f6',
+                    fontWeight: 700,
+                    borderRadius: '9999px',
+                  },
+                }}
+                disabled={[{ before: new Date() }]}
+              />
+            </div>
+
+            {/* 오른쪽: 예약 가능한 시간 (날짜 선택 시에만 보임) */}
+            <div className='flex-1'>
+              {selectedDate ? (
+                <div>
+                  <Title as='h4' size='lg' weight='bold' className='mb-4'>
+                    예약 가능한 시간
+                  </Title>
+                  <div className='space-y-2'>
+                    <TimeSelectButton
+                      onClick={() => setSelectedTimeSlot('14:00~15:00')}
+                      selected={selectedTimeSlot === '14:00~15:00'}
+                      className='w-full'>
+                      14:00~15:00
+                    </TimeSelectButton>
+                    <TimeSelectButton
+                      onClick={() => setSelectedTimeSlot('15:00~16:00')}
+                      selected={selectedTimeSlot === '15:00~16:00'}
+                      className='w-full'>
+                      15:00~16:00
+                    </TimeSelectButton>
+                  </div>
+                </div>
+              ) : (
+                <div className='flex h-full items-center justify-center rounded-xl border border-gray-300 bg-gray-50'>
+                  <p className='font-md-medium text-gray-500'>날짜를 선택해주세요.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 참가 인원 수 */}
+          <div className='mb-6 flex items-center justify-between'>
+            <Title as='h4' size='lg' weight='bold'>
+              참여 인원 수
+            </Title>
+            <div className='flex items-center gap-3 rounded-3xl border border-gray-200 p-0'>
+              <button
+                onClick={handleDecrement}
+                className='flex h-11 w-11 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
+                −
+              </button>
+              <span className='font-lg-regular min-w-[40px] text-center text-gray-900'>
+                {participantCount}
+              </span>
+              <button
+                onClick={handleIncrement}
+                className='flex h-11 w-11 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* 총 금액 및 예약 버튼 */}
+          <div className='space-y-4 border-t border-gray-300 pt-6'>
+            <div className='flex items-center justify-between'>
+              <span className='font-lg-regular text-gray-900'>총 합계</span>
+              <Title as='h3' size='2xl' weight='bold'>
+                ₩ {(DUMMY_ACTIVITY.price * participantCount).toLocaleString()}
+              </Title>
+            </div>
+            <PrimaryButton size='lg' onClick={handleBottomSheetReservation} className='w-full'>
+              확인
+            </PrimaryButton>
+          </div>
+        </div>
+      </BottomSheet>
     </div>
   );
 }
