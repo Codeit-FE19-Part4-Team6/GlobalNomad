@@ -60,6 +60,8 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     isError,
   } = useMyReservationsQuery(selected === 'all' ? undefined : selected);
 
+  const hasStatusData = (status: Status) => reservations.some((r) => r.status === status);
+  const hasAnyData = reservations.length > 0; // 예약 데이터가 한 개라도 있는지 여부 확인
   // 후기 작성 버튼 클릭
   const handleReviewClick = (reservation: ReservationItem) => {
     setSelectedReservation(reservation);
@@ -112,24 +114,29 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         </Title>
         <div className='font-md-medium text-gray-500'>예약내역 변경 및 취소할 수 있습니다.</div>
       </div>
-      <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
-        <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
-          전체
-        </FilterButton>
-        {STATUS_LIST.map((s) => (
-          <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
-            {s === 'confirmed'
-              ? '예약 완료'
-              : s === 'canceled'
-                ? '예약 취소'
-                : s === 'declined'
-                  ? '예약 거절'
-                  : s === 'completed'
-                    ? '체험 완료'
-                    : '예약 대기'}
+      {/* hasAnyData가 true일 때만 필터 버튼 영역 렌더링 */}
+      {hasAnyData && (
+        <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
+          <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
+            전체
           </FilterButton>
-        ))}
-      </div>
+          {STATUS_LIST.map((s) =>
+            hasStatusData(s) ? (
+              <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
+                {s === 'confirmed'
+                  ? '예약 완료'
+                  : s === 'canceled'
+                    ? '예약 취소'
+                    : s === 'declined'
+                      ? '예약 거절'
+                      : s === 'completed'
+                        ? '체험 완료'
+                        : '예약 대기'}
+              </FilterButton>
+            ) : null
+          )}
+        </div>
+      )}
       {reservations.length === 0 ? (
         <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
           <div className='flex flex-col items-center justify-center'>

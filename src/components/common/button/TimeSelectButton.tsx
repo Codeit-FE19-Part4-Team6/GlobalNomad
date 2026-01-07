@@ -34,7 +34,7 @@ export const TimeSelectButton = ({
 
   // Selected 상태별 스타일 (폰트 포함)
   const stateClasses = selected
-    ? 'bg-primary-100 text-primary-500 border-2 border-primary-500 font-md-semibold'
+    ? 'bg-primary-100 text-primary-500 border-2 border-primary-500 font-md-bold'
     : 'bg-white text-gray-950 border border-gray-300 hover:border-gray-600 font-md-medium';
 
   const classes = `${baseClasses} ${stateClasses} ${className}`;
