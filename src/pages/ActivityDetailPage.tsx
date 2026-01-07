@@ -99,6 +99,19 @@ function ActivityDetailPage() {
     setIsBottomSheetOpen(false);
   };
 
+  // 선택한 날짜를 포맷팅하는 함수
+  const formatSelectedDate = () => {
+    if (!selectedDate || !selectedTimeSlot) {
+      return '날짜 선택하기';
+    }
+
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth() + 1;
+    const day = selectedDate.getDate();
+
+    return `${year.toString().slice(2)}/${month}/${day} ${selectedTimeSlot}`;
+  };
+
   return (
     <div className='w-full'>
       {/* 컨텐츠 래퍼 - 반응형 너비 및 패딩 */}
@@ -464,8 +477,8 @@ function ActivityDetailPage() {
           <div className='mx-auto flex max-w-[1200px] items-center justify-between gap-4'>
             <button
               onClick={handleMobileReservation}
-              className='font-md-semibold flex-shrink-0 text-gray-900 underline'>
-              날짜 선택하기
+              className='font-md-semibold text-primary-500 flex-shrink-0 text-gray-900 underline'>
+              {formatSelectedDate()}
             </button>
             <div className='flex items-center gap-3'>
               <div className='flex items-baseline gap-1'>
@@ -498,8 +511,8 @@ function ActivityDetailPage() {
           </div>
 
           {/* 날짜 및 시간 선택 영역 */}
-          <div className='mb-6 flex gap-6'>
-            {/* 왼쪽: 날짜 선택 */}
+          <div className='mb-6 flex flex-col gap-6 sm:flex-row'>
+            {/* 날짜 선택 */}
             <div className='flex-1'>
               <DayPicker
                 mode='single'
@@ -529,7 +542,7 @@ function ActivityDetailPage() {
               />
             </div>
 
-            {/* 오른쪽: 예약 가능한 시간 (날짜 선택 시에만 보임) */}
+            {/* 예약 가능한 시간 (날짜 선택 시에만 보임) */}
             <div className='flex-1'>
               {selectedDate ? (
                 <div>
