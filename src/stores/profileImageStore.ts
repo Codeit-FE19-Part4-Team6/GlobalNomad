@@ -18,31 +18,25 @@ export const useProfileImageStore = create<ProfileImageState>()(
       profileImageUrl: null,
       previewUrl: null,
       file: null,
-
       setPreviewUrl: (file) => {
         const prev = get().previewUrl;
         if (prev) {
           URL.revokeObjectURL(prev);
         }
-
         const url = URL.createObjectURL(file);
         set({ previewUrl: url, file });
       },
-
       setProfileImageUrl: (url) => {
         const prev = get().previewUrl;
         if (prev) {
           URL.revokeObjectURL(prev);
         }
-
         set({
           profileImageUrl: url,
           previewUrl: null,
         });
       },
-
       setFile: (file) => set({ file }), // 서버 업로드용 파일 저장
-
       clearPreview: () => {
         const prev = get().previewUrl;
         if (prev) {
@@ -50,7 +44,6 @@ export const useProfileImageStore = create<ProfileImageState>()(
         }
         set({ previewUrl: null });
       },
-
       reset: () => {
         const { previewUrl } = get();
         if (previewUrl) {

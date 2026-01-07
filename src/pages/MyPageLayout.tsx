@@ -42,7 +42,6 @@ export default function MyPageLayout() {
     if (page !== 'reservation') {
       params.delete('status');
     }
-
     setSearchParams(params);
     setMobileOpen(true);
   };

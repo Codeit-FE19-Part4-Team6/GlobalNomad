@@ -14,6 +14,7 @@ import { useReviewReservationMutation } from '@/hooks/queries/useReviewReservati
 const STATUS_LIST = ['confirmed', 'canceled', 'declined', 'completed', 'pending'] as const;
 
 type Status = (typeof STATUS_LIST)[number];
+type SelectedStatus = 'all' | Status;
 type Props = {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -27,11 +28,11 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   const [searchParams, setSearchParams] = useSearchParams(); // 필터 상태
   const rawStatus = searchParams.get('status');
   const navigate = useNavigate();
-  const statusParam: Status = STATUS_LIST.includes(rawStatus as Status)
-    ? (rawStatus as Status)
-    : 'confirmed';
-  const [selected, setSelected] = useState<Status>(statusParam);
+  const statusParam: SelectedStatus =
+    rawStatus && STATUS_LIST.includes(rawStatus as Status) ? (rawStatus as Status) : 'all';
+
   const isReviewModalClose = () => setIsReviewModalOpen(false); // 리뷰 모달 닫기
+  const [selected, setSelected] = useState<SelectedStatus>(statusParam);
 
   useEffect(() => {
     setSelected(statusParam);
@@ -40,11 +41,24 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   // 필터 버튼 클릭
   const handleFilterClick = (status: Status) => {
     setSelected(status);
-    setSearchParams({ status });
+    const params = new URLSearchParams(searchParams);
+    params.set('tab', 'reservation');
+    params.set('status', status);
+    setSearchParams(params);
   };
-
+  const handleAllClick = () => {
+    setSelected('all');
+    const params = new URLSearchParams(searchParams);
+    params.set('tab', 'reservation'); // tab은 항상 reservation
+    params.delete('status');
+    setSearchParams(params);
+  };
   // 예약 내역 조회
-  const { data: reservations = [], isLoading, isError } = useMyReservationsQuery(selected);
+  const {
+    data: reservations = [],
+    isLoading,
+    isError,
+  } = useMyReservationsQuery(selected === 'all' ? undefined : selected);
 
   // 후기 작성 버튼 클릭
   const handleReviewClick = (reservation: ReservationItem) => {
@@ -99,6 +113,9 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         <div className='font-md-medium text-gray-500'>예약내역 변경 및 취소할 수 있습니다.</div>
       </div>
       <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
+        <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
+          전체
+        </FilterButton>
         {STATUS_LIST.map((s) => (
           <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
             {s === 'confirmed'
@@ -113,7 +130,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
           </FilterButton>
         ))}
       </div>
-      {reservations.length === 0 && selected === 'confirmed' ? (
+      {reservations.length === 0 ? (
         <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
           <div className='flex flex-col items-center justify-center'>
             <Earth className='mb-7.5' />

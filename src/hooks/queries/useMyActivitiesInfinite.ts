@@ -11,7 +11,7 @@ const SIZE = 6;
  */
 export const useMyActivitiesInfinite = () => {
   return useInfiniteQuery({
-    queryKey: ['myActivitiesInfinite'],
+    queryKey: ['myActivitiesInfinite'], // 무한 스크롤용 나의 체험 목록 캐시
     initialPageParam: undefined,
     refetchOnMount: 'always',
     queryFn: ({ pageParam = 0 }) => {
