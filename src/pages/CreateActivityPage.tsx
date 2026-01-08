@@ -15,7 +15,8 @@ export default function CreateActivityPage() {
   const [leaveOpen, setLeaveOpen] = useState(false);
   const ignoreBlockOnceRef = useRef(false);
   const { showSnack } = useSnackBar();
-  const draftKey = 'draft:createActivity';
+  const [draftKey, setDraftKey] = useState('draft:createActivity');
+
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
     if (ignoreBlockOnceRef.current) {
       return false;
@@ -103,8 +104,12 @@ export default function CreateActivityPage() {
           showSnack('체험이 등록되었습니다.', 'success', {
             duration: 2000,
           });
-          localStorage.removeItem(draftKey);
           //ignoreBlockOnceRef.current = true;
+          Object.keys(localStorage)
+            .filter((k) => k.startsWith('draft:createActivity'))
+            .forEach((k) => localStorage.removeItem(k));
+          setDraftKey(`draft:createActivity:${Date.now()}`);
+
           setIsDirty(false);
 
           setTimeout(() => {

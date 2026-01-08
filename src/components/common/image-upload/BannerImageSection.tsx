@@ -45,7 +45,7 @@
 
 import ImageUpload from '@/components/common/image-upload/ImageUpload';
 
-const MAX_IMAGE_SIZE = 500 * 1024;
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
 type BannerImageSectionProps = {
   images: File[];

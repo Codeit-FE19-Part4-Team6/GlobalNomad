@@ -99,7 +99,7 @@ export default function EditActivityPage() {
     return <div>로딩중...</div>;
   }
   if (isError || !data) {
-    return;
+    return <NotFoundPage />;
   }
 
   /**
