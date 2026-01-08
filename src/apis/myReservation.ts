@@ -5,14 +5,19 @@ import type {
   MyReservationReviewRequest,
 } from './type';
 
-// 내 예약 리스트 조회
-export const getMyReservations = async (status?: string) => {
-  const res = await http.get<MyReservationsResponse>('/my-reservations', {
-    params: status && status !== 'all' ? { status } : {},
-  });
-  return res.data.reservations;
+type GetMyReservationsParams = {
+  size: number;
+  status?: string;
+  cursorId?: number;
 };
 
+// 내 예약 리스트 조회
+export const getMyReservations = async (params: GetMyReservationsParams) => {
+  const res = await http.get<MyReservationsResponse>('/my-reservations', {
+    params,
+  });
+  return res.data;
+};
 // 예약 취소
 export const cancelReservation = async (reservationId: number) => {
   const res = await http.patch(`/my-reservations/${reservationId}`, {

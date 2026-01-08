@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Card from '@/components/common/card';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
 import ReviewModal from '@/components/common/modal/ReviewModal';
@@ -7,7 +7,7 @@ import Title from '@/components/common/Title';
 import { Down, Earth } from '@/assets/icons';
 import type { MyReservationsResponse } from '@/apis/type';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useMyReservationsQuery } from '@/hooks/queries/useMyReservationsQuery';
+import { useMyReservationsInfinite } from '@/hooks/queries/useMyReservationsQuery';
 import { useCancelReservationMutation } from '@/hooks/queries/useCancelReservationMutation';
 import { useReviewReservationMutation } from '@/hooks/queries/useReviewReservationMutation';
 
@@ -66,9 +66,30 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     updateSearchParams('all');
   };
   // 예약 내역 조회
-  const { data: reservations = [], isLoading, isError } = useMyReservationsQuery(selected);
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useMyReservationsInfinite(selected);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const reservations: ReservationItem[] = data?.pages.flatMap((page) => page.reservations) ?? [];
+
+  // IntersectionObserver를 이용한 무한 스크롤
+  useEffect(() => {
+    if (!bottomRef.current || !hasNextPage) {
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1 }
+    );
+    observer.observe(bottomRef.current);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const hasAnyData = reservations.length > 0; // 예약 데이터가 한 개라도 있는지 여부 확인
+
   // 후기 작성 버튼 클릭
   const handleReviewClick = (reservation: ReservationItem) => {
     setSelectedReservation(reservation);
@@ -204,6 +225,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
                 </div>
               </Card>
             ))}
+            <div ref={bottomRef} className='h-1' />
           </div>
         </>
       )}
