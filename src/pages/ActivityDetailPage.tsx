@@ -1,5 +1,6 @@
 import 'react-day-picker/dist/style.css';
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Title from '@/components/common/Title';
 import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 import { TimeSelectButton } from '@/components/common/button/TimeSelectButton';
@@ -11,36 +12,15 @@ import ActivityReservationPanel from './ActivityDetail/ActivityReservationPanel'
 import ActivityMobileReservationBar from './ActivityDetail/ActivityMobileReservationBar';
 import ActivityReviews from './ActivityDetail/ActivityReviews';
 import ActivityMap from './ActivityDetail/ActivityMap';
-
-// 임시 더미 데이터 (API 연동 시 교체)
-const DUMMY_ACTIVITY = {
-  id: 1,
-  title: '캠핑 배우면 즐기는 스트릿 댄스',
-  category: '문화 · 예술',
-  rating: 4.9,
-  reviewCount: 293,
-  price: 1000,
-  address: '서울 중구 청계천로 100',
-  shortDescription: '초보자부터 전문가까지 즐추는 즐거움을 함께 느껴보세요.',
-  description: `안녕하세요! 저의 스튜 스트릿 댄스, 저희랑 스트릿 댄스 고고합시다~! 서로 즐기면서 춤도 배우고 스트릿 배틀도 하고 즐겁게 놀아요!
-다양한 장르의 춤을 배우며 그 뼈들을 살펴봐서 그때 이해하고 진중하게 춤추며 연마를 합니다! 서로 배틀도 기획하고 제가 춤을 따라가기 쉽게 스텝별로 세세히 안내하고 있으니 춤을 잘못 추는 초보인 분들도 춤으로 즐기고 놀죠.`,
-  images: [
-    'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400',
-    'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400',
-    'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400',
-  ],
-};
-
-const DUMMY_REVIEWS = Array.from({ length: 12 }, (_, i) => ({
-  id: i + 1,
-  author: '김태민',
-  rating: 4 + Math.random(),
-  createdAt: '2022. 3. 4',
-  content:
-    '스트릿 처음 춰봤는데 너무 재밌었습니다! 어쩌고 저쩌고 후기후기후기후기어쩌고 저쩌고 후기후기후기후기어쩌고 저쩌고 너무 재밌었습니다! 너무 재밌었습니다! 후기후기후기후기~~ 다음에 또 체험해보고싶습니다',
-}));
+import { useActivityDetail } from '@/hooks/queries/useActivityDetail';
 
 function ActivityDetailPage() {
+  // URL에서 activityId 가져오기
+  const { activityId } = useParams<{ activityId: string }>();
+
+  // API 데이터 불러오기
+  const { data: activity, isLoading, isError } = useActivityDetail(Number(activityId));
+
   // 예약 관련 상태
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
@@ -88,6 +68,29 @@ function ActivityDetailPage() {
     setIsBottomSheetOpen(false);
   };
 
+  // 로딩 상태
+  if (isLoading) {
+    return (
+      <div className='flex h-[calc(100vh-200px)] items-center justify-center'>
+        <span className='font-lg-medium text-gray-500'>체험 정보를 불러오는 중...</span>
+      </div>
+    );
+  }
+
+  // 에러 상태
+  if (isError || !activity) {
+    return (
+      <div className='flex h-[calc(100vh-200px)] flex-col items-center justify-center gap-4'>
+        <span className='font-lg-medium text-gray-700'>체험 정보를 불러올 수 없습니다.</span>
+        <span className='font-md-medium text-gray-500'>잠시 후 다시 시도해주세요.</span>
+      </div>
+    );
+  }
+
+  // API 데이터를 컴포넌트에서 사용할 형태로 변환
+  // 체험 상세 페이지에서는 subImages만 사용 (최소 1개, 최대 4개)
+  const images = activity.subImages.map((img) => img.imageUrl);
+
   return (
     <div className='w-full'>
       {/* 컨텐츠 래퍼 - 반응형 너비 및 패딩 */}
@@ -99,12 +102,12 @@ function ActivityDetailPage() {
             {/* 체험 타이틀 및 정보 (모바일/태블릿에서 상단 노출) */}
             <div className='lg:hidden'>
               <ActivityInfo
-                category={DUMMY_ACTIVITY.category}
-                title={DUMMY_ACTIVITY.title}
-                rating={DUMMY_ACTIVITY.rating}
-                reviewCount={DUMMY_ACTIVITY.reviewCount}
-                address={DUMMY_ACTIVITY.address}
-                shortDescription={DUMMY_ACTIVITY.shortDescription}
+                category={activity.category}
+                title={activity.title}
+                rating={activity.rating}
+                reviewCount={activity.reviewCount}
+                address={activity.address}
+                shortDescription={activity.description.slice(0, 100)}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 variant='mobile'
@@ -112,7 +115,7 @@ function ActivityDetailPage() {
             </div>
 
             {/* 체험 이미지 영역 */}
-            <ActivityImageGallery images={DUMMY_ACTIVITY.images} title={DUMMY_ACTIVITY.title} />
+            <ActivityImageGallery images={images} title={activity.title} />
 
             {/* 체험 설명 */}
             <section className='mb-10'>
@@ -120,7 +123,7 @@ function ActivityDetailPage() {
                 체험 설명
               </Title>
               <p className='font-md-medium whitespace-pre-wrap text-gray-800'>
-                {DUMMY_ACTIVITY.description}
+                {activity.description}
               </p>
             </section>
 
@@ -130,17 +133,13 @@ function ActivityDetailPage() {
                 오시는 길
               </Title>
               <p className='font-md-medium mb-4 flex items-center gap-1 text-gray-700'>
-                <span>{DUMMY_ACTIVITY.address}</span>
+                <span>{activity.address}</span>
               </p>
-              <ActivityMap address={DUMMY_ACTIVITY.address} />
+              <ActivityMap address={activity.address} />
             </section>
 
             {/* 후기 영역 */}
-            <ActivityReviews
-              reviews={DUMMY_REVIEWS}
-              rating={DUMMY_ACTIVITY.rating}
-              reviewCount={DUMMY_ACTIVITY.reviewCount}
-            />
+            <ActivityReviews activityId={activity.id} />
           </div>
 
           {/* 우측 영역 - 예약 정보 (데스크톱) */}
@@ -148,12 +147,12 @@ function ActivityDetailPage() {
             <div className='sticky top-6'>
               {/* 상단 정보 영역 */}
               <ActivityInfo
-                category={DUMMY_ACTIVITY.category}
-                title={DUMMY_ACTIVITY.title}
-                rating={DUMMY_ACTIVITY.rating}
-                reviewCount={DUMMY_ACTIVITY.reviewCount}
-                address={DUMMY_ACTIVITY.address}
-                shortDescription={DUMMY_ACTIVITY.shortDescription}
+                category={activity.category}
+                title={activity.title}
+                rating={activity.rating}
+                reviewCount={activity.reviewCount}
+                address={activity.address}
+                shortDescription={activity.description.slice(0, 100)}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 variant='desktop'
@@ -161,7 +160,7 @@ function ActivityDetailPage() {
 
               {/* 예약 정보 박스 */}
               <ActivityReservationPanel
-                price={DUMMY_ACTIVITY.price}
+                price={activity.price}
                 selectedDate={selectedDate}
                 onSelectDate={setSelectedDate}
                 selectedTimeSlot={selectedTimeSlot}
@@ -177,7 +176,7 @@ function ActivityDetailPage() {
 
         {/* 모바일/태블릿 하단 고정 예약 바 */}
         <ActivityMobileReservationBar
-          price={DUMMY_ACTIVITY.price}
+          price={activity.price}
           selectedDate={selectedDate}
           selectedTimeSlot={selectedTimeSlot}
           onOpenBottomSheet={handleMobileReservation}
@@ -288,7 +287,7 @@ function ActivityDetailPage() {
             <div className='flex items-center justify-between'>
               <span className='font-lg-medium text-gray-900'>총 합계</span>
               <Title as='h3' size='2xl' weight='bold'>
-                ₩ {(DUMMY_ACTIVITY.price * participantCount).toLocaleString()}
+                ₩ {(activity.price * participantCount).toLocaleString()}
               </Title>
             </div>
             <PrimaryButton size='lg' onClick={handleBottomSheetReservation} className='w-full'>
