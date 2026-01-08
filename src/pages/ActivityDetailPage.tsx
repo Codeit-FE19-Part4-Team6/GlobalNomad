@@ -396,14 +396,14 @@ function ActivityDetailPage() {
                     }}
                     modifiersStyles={{
                       selected: {
-                        backgroundColor: '#3b82f6',
+                        backgroundColor: 'var(--color-primary-500)',
                         color: 'white',
                         fontWeight: 700,
                         borderRadius: '9999px',
                       },
                       today: {
-                        backgroundColor: '#dbeafe',
-                        color: '#3b82f6',
+                        backgroundColor: 'var(--color-primary-100)',
+                        color: 'var(--color-primary-500)',
                         fontWeight: 700,
                         borderRadius: '9999px',
                       },
@@ -526,14 +526,14 @@ function ActivityDetailPage() {
                 }}
                 modifiersStyles={{
                   selected: {
-                    backgroundColor: '#3b82f6',
+                    backgroundColor: 'var(--color-primary-500)',
                     color: 'white',
                     fontWeight: 700,
                     borderRadius: '9999px',
                   },
                   today: {
-                    backgroundColor: '#dbeafe',
-                    color: '#3b82f6',
+                    backgroundColor: 'var(--color-primary-100)',
+                    color: 'var(--color-primary-500)',
                     fontWeight: 700,
                     borderRadius: '9999px',
                   },
