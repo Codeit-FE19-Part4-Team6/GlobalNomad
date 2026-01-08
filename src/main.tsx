@@ -39,7 +39,7 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
           { index: true, element: <MainPage /> },
-          { path: 'detail', element: <ActivityDetailPage /> },
+          { path: 'activities/:activityId', element: <ActivityDetailPage /> },
           { path: 'mypage', element: <MyPageLayout /> },
           { path: 'activities/create', element: <CreateActivityPage /> },
           { path: 'activities/edit/:activityId', element: <EditActivityPage /> },
