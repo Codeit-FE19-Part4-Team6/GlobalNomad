@@ -12,12 +12,7 @@ import CreateActivityPage from '@/pages/CreateActivityPage.tsx';
 import EditActivityPage from '@/pages/EditActivityPage.tsx';
 import SignupPage from '@/pages/SignupPage.tsx';
 import { SnackBarProvider } from '@/providers/SnackBarProvider.tsx';
-import { token } from '@/apis/auth/token.ts';
 
-token.setTokens(
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mjg2MiwidGVhbUlkIjoiMTktNiIsImlhdCI6MTc2NzY5NDM2MiwiZXhwIjoxNzY3Njk2MTYyLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.ONHWQ1pmUuI6BSSz6ZrsxtlBnwkNHZIpIjMGeI1LRBQ',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mjg2MiwidGVhbUlkIjoiMTktNiIsImlhdCI6MTc2NzY5NDM2MiwiZXhwIjoxNzY4OTAzOTYyLCJpc3MiOiJzcC1nbG9iYWxub21hZCJ9.ZPaomfPQvdDgS-KMHIzvTvgSb6XIw9gnd27v7_0uCKg'
-);
 // QueryClient 생성
 const queryClient = new QueryClient({
   defaultOptions: {
