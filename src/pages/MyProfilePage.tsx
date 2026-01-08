@@ -68,7 +68,9 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
       newPassword: '',
       newPasswordConfirm: '',
     });
-    navigate('/');
+    setTimeout(() => {
+      navigate('/');
+    }, 3000);
   });
   // 폼이 변경되었는지 계산
   const isFormChanged = useMemo(() => {
