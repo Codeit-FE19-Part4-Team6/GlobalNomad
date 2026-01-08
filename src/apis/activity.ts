@@ -1,5 +1,11 @@
 import { http } from '@/apis/http';
-import type { CreateActivityRequest, MyActivityEditRequest, ActivityDetailResponse } from './type';
+import type {
+  CreateActivityRequest,
+  MyActivityEditRequest,
+  ActivityDetailResponse,
+  ActivityReviewParams,
+  ActivityReviewResponse,
+} from './type';
 
 export type CreatedActivityResponse = {
   id: number;
@@ -17,5 +23,16 @@ export const getActivityDetail = async (activityId: number) => {
 
 export const patchActivity = async (activityId: number, payload: MyActivityEditRequest) => {
   const res = await http.patch(`/my-activities/${activityId}`, payload);
+  return res.data;
+};
+
+export const getActivityReviews = async ({
+  activityId,
+  page = 1,
+  size = 3,
+}: ActivityReviewParams) => {
+  const res = await http.get<ActivityReviewResponse>(`/activities/${activityId}/reviews`, {
+    params: { page, size },
+  });
   return res.data;
 };
