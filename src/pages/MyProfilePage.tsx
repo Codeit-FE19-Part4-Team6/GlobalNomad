@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useProfileImageStore } from '@/stores/profileImageStore';
 import { PrimaryButton } from '@/components/common/button';
@@ -24,10 +24,8 @@ type FormValues = {
 
 export default function MyProfilePage({ setMobileOpen }: Props) {
   const { file, setFile, setProfileImageUrl } = useProfileImageStore();
-  const { user: myInfo, initialize } = useAuthStore();
-  const initializedRef = useRef(false);
+  const { user: myInfo } = useAuthStore();
   const navigate = useNavigate();
-
   const {
     register,
     watch,
@@ -36,19 +34,10 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
     formState: { errors, isValid },
   } = useForm<FormValues>({ mode: 'onChange' });
 
-  // AuthStore 초기화
-  useEffect(() => {
-    if (!initializedRef.current) {
-      initialize();
-      initializedRef.current = true;
-    }
-  }, [initialize]);
-
   useEffect(() => {
     if (!myInfo) {
       return;
     }
-
     reset({
       nickname: myInfo.nickname,
       email: myInfo.email,
@@ -61,7 +50,6 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
   const nickname = watch('nickname');
   const newPassword = watch('newPassword');
   const newPasswordConfirm = watch('newPasswordConfirm');
-
   const editMyInfoMutation = useEditMyInfoMutation((data: User) => {
     setProfileImageUrl(data.profileImageUrl ?? '');
     setFile(null);
@@ -73,24 +61,19 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
     });
     setTimeout(() => navigate('/'), 3000);
   });
-
   const isFormChanged = useMemo(() => {
     if (!myInfo) {
       return false;
     }
-
     const isNicknameChanged = nickname?.trim() !== '' && nickname !== myInfo.nickname;
     const isPasswordChanged = newPassword?.trim() !== '' || newPasswordConfirm?.trim() !== '';
     const isImageChanged = !!file;
-
     return isNicknameChanged || isPasswordChanged || isImageChanged;
   }, [nickname, newPassword, newPasswordConfirm, file, myInfo]);
-
   const onSubmit = async (values: FormValues) => {
     if (!myInfo) {
       return;
     }
-
     const payload: Partial<UserEditRequest> = {};
 
     if (values.nickname.trim() && values.nickname !== myInfo.nickname) {
@@ -105,7 +88,6 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
     if (Object.keys(payload).length === 0) {
       return;
     }
-
     editMyInfoMutation.mutate(payload);
   };
 
@@ -123,7 +105,6 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
           닉네임과 비밀번호, 프로필 이미지를 수정하실 수 있습니다.
         </div>
       </div>
-
       <div className='flex flex-col gap-[18px] md:gap-6'>
         <TextInput
           label='닉네임'
@@ -161,7 +142,6 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
           errorMessage={errors.newPasswordConfirm?.message}
         />
       </div>
-
       <div className='flex justify-center'>
         <PrimaryButton
           type='submit'
