@@ -9,7 +9,7 @@ import { isAxiosError } from 'axios';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams, useBlocker } from 'react-router-dom';
-
+import { useSnackBar } from '@/providers/SnackBarProvider';
 export default function EditActivityPage() {
   const navigate = useNavigate();
   const { activityId } = useParams();
@@ -20,6 +20,8 @@ export default function EditActivityPage() {
   const [isDirty, setIsDirty] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const ignoreBlockOnceRef = useRef(false);
+  const { showSnack } = useSnackBar();
+  const draftKey = `draft:editActivity:${activityId}`;
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
     //성공 후 모달띄워지는걸 막기위한 Ref
     if (ignoreBlockOnceRef.current) {
@@ -156,30 +158,25 @@ export default function EditActivityPage() {
       // 5) PATCH
       patchMutate(payload, {
         onSuccess: () => {
-          alert('체험 수정 성공');
+          showSnack('체험이 수정되었습니다.', 'success', {
+            duration: 2000,
+          });
 
           // ✅ 이번 이동은 모달 무시 (즉시 반영되는 ref 사용)
-          ignoreBlockOnceRef.current = true;
+          //ignoreBlockOnceRef.current = true;
 
           setIsDirty(false);
-
-          if (blocker.state === 'blocked') {
-            blocker.proceed?.();
-          } else {
+          setTimeout(() => {
             navigate('/mypage?tab=experiences');
-          }
+          }, 1500);
         },
 
         onError: (e) => {
           // ✅ 여기서부터 "에러 메시지 처리"를 onError 안에 직접 작성
           if (!isAxiosError(e)) {
-            alert('알 수 없는 오류가 발생했습니다.');
-            if (blocker.state === 'blocked') {
-              blocker.proceed?.();
-            } else {
-              // ✅ block 된 이동이 아니라면 그냥 이동
-              navigate('/mypage?tab=experiences');
-            }
+            showSnack('체험이 수정이 실패했습니다.', 'error', {
+              duration: 2000,
+            });
             return;
           }
 
@@ -218,6 +215,7 @@ export default function EditActivityPage() {
         initialData={initialData}
         onSubmit={handleEdit}
         onDirtyChange={setIsDirty}
+        draftKey={draftKey}
       />
 
       <CancelReservationModal

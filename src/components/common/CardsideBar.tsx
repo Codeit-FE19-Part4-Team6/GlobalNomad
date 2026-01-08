@@ -35,6 +35,7 @@ export default function CardsideBar({
         size={variant === 'tablet' ? 'medium' : 'large'}
         edit
         defaultImageUrl={defaultImageUrl}
+        activePage={activePage}
       />
 
       <div className='flex w-full flex-col gap-3.5'>

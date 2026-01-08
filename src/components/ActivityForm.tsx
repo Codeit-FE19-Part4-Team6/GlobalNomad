@@ -15,7 +15,10 @@ import BannerImageSection from '@/components/common/image-upload/BannerImageSect
 import IntroImageSection from '@/components/common/image-upload/IntroImageSection';
 import type { ScheduleRow } from '@/types/ScheduleRow';
 import type { ActivityCategory } from '@/apis/type';
-
+import { useDaumPostcodePopup } from 'react-daum-postcode';
+import type { Address } from 'react-daum-postcode';
+import { useDraftParams } from '@/hooks/useDraftParams';
+import { useSnackBar } from '@/providers/SnackBarProvider';
 const MAX_BANNER = 1;
 const MAX_INTRO = 4;
 
@@ -88,7 +91,7 @@ export type ActivityFormValues = {
 //페이지가 폼을 어떻게 동작시킬지 정하는 타입
 type ActivityFormProps = {
   mode: 'create' | 'edit';
-
+  draftKey: string;
   // edit일 때 초기값 주입
   initialData?: ActivityFormInitialData;
   onDirtyChange?: (dirty: boolean) => void;
@@ -108,6 +111,16 @@ type ActivityFormProps = {
   titleText: string;
 };
 
+type LocalStorageValues = {
+  title: string;
+  category: string;
+  text: string;
+  price: string;
+  address: string;
+  draft: ScheduleDraft;
+  rows: ScheduleRow[];
+};
+
 export default function ActivityForm({
   mode,
   initialData,
@@ -116,6 +129,7 @@ export default function ActivityForm({
   submitText,
   titleText,
   onDirtyChange,
+  draftKey,
 }: ActivityFormProps) {
   const [category, setCategory] = useState<string>('');
   const [text, setText] = useState<string>('');
@@ -134,6 +148,22 @@ export default function ActivityForm({
   );
   const [removedSubImageIds, setRemovedSubImageIds] = useState<number[]>([]);
   const [initialSnapshot, setInitialSnapshot] = useState<string>(''); //초기값 저장
+  const { showSnack } = useSnackBar();
+  const open = useDaumPostcodePopup();
+
+  const handleComplete = (data: Address) => {
+    setAddress(data.address);
+  };
+  //로컬스토리지에 저장할 value
+  const values: LocalStorageValues = {
+    title,
+    category,
+    text,
+    price,
+    address,
+    draft,
+    rows,
+  };
 
   //현재 폼 상태
   const makeSnapshot = () =>
@@ -176,6 +206,29 @@ export default function ActivityForm({
       bannerCount: 0, //마운트 되자마자 사용자가 새로운 파일을 아직 첨부 안해서 0
       introCount: 0,
     });
+
+  useDraftParams<LocalStorageValues>({
+    key: draftKey,
+    values,
+    applyDraft: (d) => {
+      setTitle(d.title ?? '');
+      setCategory(d.category ?? '');
+      setText(d.text ?? '');
+      setPrice(d.price ?? '');
+      setAddress(d.address ?? '');
+      setDraft(d.draft ?? createDraft());
+      setRows(
+        (d.rows ?? [])
+          .map((row) => {
+            const date = new Date((row as any).date); // string -> Date
+            return { ...row, date };
+          })
+          // ✅ Invalid Date 제거 (date가 없거나 깨진 값이면 여기서 탈락)
+          .filter((row): row is ScheduleRow => !Number.isNaN(row.date.getTime()))
+      );
+    },
+    delayMs: 400,
+  });
 
   //등록페이지 에서 초기 기준점을 잡고 onDirtyChange를 false로 초기화
   useEffect(() => {
@@ -356,7 +409,7 @@ export default function ActivityForm({
     });
 
     if (isDuplicate) {
-      alert('겹치는 시간대가 존재합니다.');
+      showSnack('예약이 겹치는 시간대가 있습니다.', 'error');
       return;
     }
 
@@ -487,6 +540,8 @@ export default function ActivityForm({
         <div className='flex flex-col gap-2.5'>
           <Label className='font-lg-bold text-gray-950'>주소</Label>
           <BaseInput
+            readOnly
+            onClick={() => open({ onComplete: handleComplete })}
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             id='address'

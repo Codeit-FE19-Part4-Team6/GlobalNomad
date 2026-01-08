@@ -8,7 +8,7 @@ import type {
 // 내 예약 리스트 조회
 export const getMyReservations = async (status?: string) => {
   const res = await http.get<MyReservationsResponse>('/my-reservations', {
-    params: { status },
+    params: status && status !== 'all' ? { status } : {},
   });
   return res.data.reservations;
 };

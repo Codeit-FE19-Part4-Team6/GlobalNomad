@@ -7,7 +7,6 @@ import { useSignupMutation } from '@/hooks/queries/useSignupMutation';
 import { useSnackBar } from '@/providers/SnackBarProvider';
 
 import {
-  // checkEmailDuplicate,
   getErrorMessage,
   isPasswordMatch,
   isValidEmail,
@@ -43,8 +42,6 @@ export const useSignupForm = () => {
   const watchPasswordConfirm = watch('passwordConfirm');
   const navigate = useNavigate();
 
-  // const emailChecked = lastCheckedEmail === watchEmail && !!watchEmail; // 중복 체크 “유효 여부 유지”
-
   // 폼 유효성 검사
   const isFormValid = useMemo(() => {
     const allFieldsFilled =
@@ -52,34 +49,8 @@ export const useSignupForm = () => {
       !!watchNickname?.trim() &&
       !!watchPassword?.trim() &&
       !!watchPasswordConfirm?.trim();
-    return allFieldsFilled && isValid; //  && emailChecked
-  }, [
-    watchEmail,
-    watchNickname,
-    watchPassword,
-    watchPasswordConfirm,
-    isValid,
-    // emailChecked,
-  ]);
-
-  // const handleEmailCheck = async (email: string) => {
-  //   try {
-  //     const isDuplicate = await checkEmailDuplicate(email);
-  //     console.log('isDuplicate: ', isDuplicate);
-
-  //     if (isDuplicate) {
-  //       setError('email', { message: '이미 사용 중인 이메일입니다' });
-  //       return false;
-  //     }
-  //     clearErrors('email');
-  //     setLastCheckedEmail(email);
-  //     return true;
-  //   } catch (error) {
-  //     const message = error instanceof Error ? error.message : '이메일 중복 확인에 실패했습니다';
-  //     setError('email', { message });
-  //     return false;
-  //   }
-  // };
+    return allFieldsFilled && isValid;
+  }, [watchEmail, watchNickname, watchPassword, watchPasswordConfirm, isValid]);
 
   const onSubmit = (data: SignupFormInputs) => {
     signup(data, {
@@ -116,9 +87,7 @@ export const useSignupForm = () => {
     errors,
     isSubmitting: isPending,
     isFormValid,
-    // emailChecked,
     handleSubmit: handleSubmit(onSubmit),
-    // handleEmailCheck,
     getErrorMessage,
     watchEmail,
     watchNickname,
