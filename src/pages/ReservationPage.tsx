@@ -66,13 +66,8 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     updateSearchParams('all');
   };
   // 예약 내역 조회
-  const {
-    data: reservations = [],
-    isLoading,
-    isError,
-  } = useMyReservationsQuery(selected === 'all' ? undefined : selected);
+  const { data: reservations = [], isLoading, isError } = useMyReservationsQuery(selected);
 
-  const hasStatusData = (status: Status) => reservations.some((r) => r.status === status);
   const hasAnyData = reservations.length > 0; // 예약 데이터가 한 개라도 있는지 여부 확인
   // 후기 작성 버튼 클릭
   const handleReviewClick = (reservation: ReservationItem) => {
@@ -132,13 +127,11 @@ export default function ReservationPage({ setMobileOpen }: Props) {
           <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
             전체
           </FilterButton>
-          {STATUS_LIST.map((s) =>
-            hasStatusData(s) ? (
-              <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
-                {STATUS_TEXT_MAP[s]}
-              </FilterButton>
-            ) : null
-          )}
+          {STATUS_LIST.map((s) => (
+            <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
+              {STATUS_TEXT_MAP[s]}
+            </FilterButton>
+          ))}
         </div>
       )}
       {reservations.length === 0 ? (

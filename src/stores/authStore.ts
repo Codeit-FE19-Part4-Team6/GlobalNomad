@@ -32,6 +32,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
   initialize: async () => {
     const accessToken = token.getAccessToken();
 
+    // 이미 초기화됐다면 바로 종료
+    if (useAuthStore.getState().isInitialized) {
+      return;
+    }
+
     if (!accessToken) {
       set({ isInitialized: true, isLoading: false });
       return;
