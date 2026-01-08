@@ -88,8 +88,6 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const hasAnyData = reservations.length > 0; // 예약 데이터가 한 개라도 있는지 여부 확인
-
   // 후기 작성 버튼 클릭
   const handleReviewClick = (reservation: ReservationItem) => {
     setSelectedReservation(reservation);
@@ -142,19 +140,16 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         </Title>
         <div className='font-md-medium text-gray-500'>예약내역 변경 및 취소할 수 있습니다.</div>
       </div>
-      {/* hasAnyData가 true일 때만 필터 버튼 영역 렌더링 */}
-      {hasAnyData && (
-        <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
-          <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
-            전체
+      <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
+        <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
+          전체
+        </FilterButton>
+        {STATUS_LIST.map((s) => (
+          <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
+            {STATUS_TEXT_MAP[s]}
           </FilterButton>
-          {STATUS_LIST.map((s) => (
-            <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
-              {STATUS_TEXT_MAP[s]}
-            </FilterButton>
-          ))}
-        </div>
-      )}
+        ))}
+      </div>
       {reservations.length === 0 ? (
         <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
           <div className='flex flex-col items-center justify-center'>
