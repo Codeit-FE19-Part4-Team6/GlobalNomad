@@ -4,6 +4,22 @@ import Pagination from '@/components/common/pagination';
 import { Star } from '@/assets/icons';
 import { useActivityReviews } from '@/hooks/queries/useActivityReviews';
 
+const getRatingDescription = (rating: number): string => {
+  if (rating >= 4.5) {
+    return '매우 만족';
+  }
+  if (rating >= 4.0) {
+    return '만족';
+  }
+  if (rating >= 3.0) {
+    return '보통';
+  }
+  if (rating >= 2.0) {
+    return '아쉬움';
+  }
+  return '개선 필요';
+};
+
 interface ActivityReviewsProps {
   activityId: number;
 }
@@ -61,7 +77,9 @@ export default function ActivityReviews({ activityId }: ActivityReviewsProps) {
             {reviewData.averageRating.toFixed(1)}
           </Title>
           <div>
-            <span className='font-lg-bold text-gray-950'>매우 만족</span>
+            <span className='font-lg-bold text-gray-950'>
+              {getRatingDescription(reviewData.averageRating)}
+            </span>
           </div>
           <span className='font-md-medium flex items-center gap-1 text-gray-500'>
             <Star className='h-4 w-4' />

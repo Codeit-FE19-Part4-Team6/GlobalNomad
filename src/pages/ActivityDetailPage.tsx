@@ -14,6 +14,8 @@ import ActivityReviews from './ActivityDetail/ActivityReviews';
 import ActivityMap from './ActivityDetail/ActivityMap';
 import { useActivityDetail } from '@/hooks/queries/useActivityDetail';
 
+const SHORT_DESCRIPTION_MAX_LENGTH = 100;
+
 function ActivityDetailPage() {
   // URL에서 activityId 가져오기
   const { activityId } = useParams<{ activityId: string }>();
@@ -107,7 +109,7 @@ function ActivityDetailPage() {
                 rating={activity.rating}
                 reviewCount={activity.reviewCount}
                 address={activity.address}
-                shortDescription={activity.description.slice(0, 100)}
+                shortDescription={activity.description.slice(0, SHORT_DESCRIPTION_MAX_LENGTH)}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 variant='mobile'
@@ -152,7 +154,7 @@ function ActivityDetailPage() {
                 rating={activity.rating}
                 reviewCount={activity.reviewCount}
                 address={activity.address}
-                shortDescription={activity.description.slice(0, 100)}
+                shortDescription={activity.description.slice(0, SHORT_DESCRIPTION_MAX_LENGTH)}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 variant='desktop'
