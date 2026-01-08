@@ -53,12 +53,12 @@ export default function ActivityInfo({
           <DropdownList
             className={`absolute top-8 right-0 z-10 ${dropdownWidth} overflow-hidden rounded-md border ${dropdownBorder} bg-white shadow-lg`}>
             <DropdownItem
-              onClick={onEdit}
+              onClick={onEdit || (() => {})}
               className='font-md-medium cursor-pointer px-4 py-2.5 text-center text-gray-800 hover:bg-gray-50'>
               수정하기
             </DropdownItem>
             <DropdownItem
-              onClick={onDelete}
+              onClick={onDelete || (() => {})}
               className='font-md-medium cursor-pointer px-4 py-2.5 text-center text-gray-800 hover:bg-gray-50'>
               삭제하기
             </DropdownItem>
