@@ -1,6 +1,6 @@
 import { Delete, PasswordHidden } from '@/assets/icons';
 import { useEffect, useRef, useState } from 'react';
-
+import imageCompression from 'browser-image-compression';
 type ImageUploadProps = {
   file?: File;
   fileCount: number;
@@ -62,14 +62,27 @@ export default function ImageUpload({
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) {
       return;
     }
+    try {
+      const options = {
+        maxSizeMB: 0.75,
+        maxWidthOrHeight: 1024,
+        useWebWorker: true,
+      };
 
-    onAdd?.(selected);
-    e.target.value = '';
+      const compressed = await imageCompression(selected, options);
+
+      onAdd?.(compressed as File); // 타입 좁히기(상황에 따라 필요)
+    } catch (err) {
+      console.error(err);
+      // TODO: toast 같은 거 띄우기
+    } finally {
+      e.target.value = '';
+    }
   };
   if (!preview) {
     return (

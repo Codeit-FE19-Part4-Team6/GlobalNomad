@@ -6,6 +6,7 @@ import CancelReservationModal from '@/components/common/modal/CancelReservationM
 import { useState, useEffect, useRef } from 'react';
 import { useBlocker, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
+import { useSnackBar } from '@/providers/SnackBarProvider';
 
 export default function CreateActivityPage() {
   const { mutate, isPending } = useCreateActivity();
@@ -13,6 +14,9 @@ export default function CreateActivityPage() {
   const navigate = useNavigate();
   const [leaveOpen, setLeaveOpen] = useState(false);
   const ignoreBlockOnceRef = useRef(false);
+  const { showSnack } = useSnackBar();
+  const [draftKey, setDraftKey] = useState('draft:createActivity');
+
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
     if (ignoreBlockOnceRef.current) {
       return false;
@@ -34,23 +38,31 @@ export default function CreateActivityPage() {
     }
 
     // ✅ 저장 후 이동으로 생긴 block은 모달 띄우지 않음
-    if (ignoreBlockOnceRef.current) {
-      // 1회만 무시하고 바로 원복
-      ignoreBlockOnceRef.current = false;
-      return;
-    }
+    // if (ignoreBlockOnceRef.current) {
+    //   // 1회만 무시하고 바로 원복
+    //   ignoreBlockOnceRef.current = false;
+    //   return;
+    // }
 
     setLeaveOpen(true);
   }, [blocker.state]);
 
   const handleLeaveNo = () => {
     setLeaveOpen(false);
-    blocker.reset?.(); //
+    if (blocker.state === 'blocked') {
+      blocker.reset(); // 여기서는 안전
+    }
   };
 
   const handleLeaveYes = async () => {
     setLeaveOpen(false);
-    blocker.proceed?.(); //
+
+    if (blocker.state !== 'blocked') {
+      return;
+    }
+
+    ignoreBlockOnceRef.current = true;
+    blocker.proceed();
   };
 
   const handleCreate = async (values: ActivityFormValues) => {
@@ -89,25 +101,26 @@ export default function CreateActivityPage() {
       // 4) mutate
       mutate(payload, {
         onSuccess: () => {
-          alert('등록에 성공했습니다.');
-          ignoreBlockOnceRef.current = true;
+          showSnack('체험이 등록되었습니다.', 'success', {
+            duration: 2000,
+          });
+          //ignoreBlockOnceRef.current = true;
+          Object.keys(localStorage)
+            .filter((k) => k.startsWith('draft:createActivity'))
+            .forEach((k) => localStorage.removeItem(k));
+          setDraftKey(`draft:createActivity:${Date.now()}`);
+
           setIsDirty(false);
 
-          if (blocker.state === 'blocked') {
-            blocker.proceed?.();
-          } else {
+          setTimeout(() => {
             navigate('/mypage?tab=experiences');
-          }
+          }, 1500);
         },
         onError: (error) => {
           if (!isAxiosError(error)) {
-            alert('알 수 없는 오류가 발생했습니다.');
-            if (blocker.state === 'blocked') {
-              blocker.proceed?.();
-            } else {
-              // ✅ block 된 이동이 아니라면 그냥 이동
-              navigate('/mypage?tab=experiences');
-            }
+            showSnack('체험이 등록이 실패했습니다..', 'error', {
+              duration: 2000,
+            });
             return;
           }
 
@@ -140,10 +153,11 @@ export default function CreateActivityPage() {
         isPending={isPending}
         onSubmit={handleCreate}
         onDirtyChange={setIsDirty}
+        draftKey={draftKey}
       />
 
       <CancelReservationModal
-        isOpen={leaveOpen}
+        isOpen={leaveOpen && blocker.state === 'blocked'}
         onClose={handleLeaveNo}
         onConfirm={handleLeaveYes}
         cancelText='아니오'
