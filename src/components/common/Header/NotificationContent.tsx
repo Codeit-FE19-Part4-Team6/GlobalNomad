@@ -63,7 +63,7 @@ const NotificationContent = ({ content }: { content: string }) => {
 
   return (
     <div className='flex flex-col gap-1'>
-      <p className='font-md-medium mb-2 leading-[1.3] text-gray-900'>{parsed.status}</p>
+      <p className='font-md-bold mb-2 leading-[1.3] text-gray-900'>{parsed.status}</p>
       <p className='font-md-medium whitespace-nowrap text-gray-800'>{parsed.title}</p>
       <p className='font-md-medium whitespace-nowrap text-gray-800'>({parsed.time})</p>
       <p className='font-md-medium text-gray-800'>

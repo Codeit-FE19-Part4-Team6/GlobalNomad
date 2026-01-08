@@ -49,7 +49,6 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
        * 서버에서 더 이상 내려올 데이터가 없을 경우
        * → 무한 스크롤 중단
        */
-
       const shouldStop =
         response.notifications.length === 0 ||
         response.cursorId === null ||
@@ -82,13 +81,11 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
     if (!isOpen || isLoading || !hasMore) {
       return;
     }
-
     const options = {
       root: null,
       rootMargin: '20px', // 바닥 근처에서 미리 감지
       threshold: 0.1, // 10%만 보여도 트리거
     };
-
     const handleObserver = (entries: IntersectionObserverEntry[]) => {
       const target = entries[0];
       if (target.isIntersecting) {
@@ -125,11 +122,7 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
 
   /**
    * 알림 버튼 토글 핸들러
-   *
-   * - 닫을 때 상태를 초기화하여
-   *   다음에 열었을 때 항상 최신 데이터 로드
    */
-
   const handleToggle = () => {
     onToggle();
   };
@@ -156,7 +149,7 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
 
       {isOpen && (
         <div
-          className='absolute top-10 right-0 z-50 mt-2 w-80 rounded-lg bg-white shadow-[0_0_8px_rgba(0,0,0,0.1)] max-[744px]:right-auto max-[744px]:left-1/2 max-[744px]:-translate-x-1/2 sm:w-60'
+          className='absolute top-10 right-0 z-50 mt-2 w-80 overflow-hidden rounded-lg bg-white shadow-[0_0_8px_rgba(0,0,0,0.1)] max-[744px]:right-auto max-[744px]:left-1/2 max-[744px]:-translate-x-1/2 sm:w-60'
           role='dialog'
           aria-label='알림 목록'
           aria-modal='true'>
@@ -178,7 +171,7 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
                     key={notification.id}
                     onMouseEnter={() => setHoveredId(notification.id)}
                     onMouseLeave={() => setHoveredId(null)}
-                    className='hover:bg-primary-100 cursor-pointer border-b border-gray-50/80 px-4 py-5 transition-colors last:border-b-0'>
+                    className='hover:bg-primary-100 cursor-pointer border-b border-gray-50/80 px-4 py-5 transition-colors last:border-b-0 last:hover:rounded-b-lg'>
                     <div className='flex flex-col gap-2'>
                       <div className='flex items-start justify-between'>
                         {/* 알림 내용 */}

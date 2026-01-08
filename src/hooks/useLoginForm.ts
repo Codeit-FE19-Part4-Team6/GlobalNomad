@@ -31,6 +31,9 @@ export const useLoginForm = () => {
   }, [watchEmail, watchPassword, isValid]);
 
   const onSubmit = (data: LoginRequest) => {
+    if (!isFormValid) {
+      return;
+    }
     login(data, {
       onSuccess: (res) => {
         if (res.user.profileImageUrl) {

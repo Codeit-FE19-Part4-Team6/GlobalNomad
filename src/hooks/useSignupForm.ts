@@ -25,8 +25,6 @@ export const useSignupForm = () => {
   const { mutate: signup, isPending } = useSignupMutation();
   const { showSnack } = useSnackBar();
 
-  // const [lastCheckedEmail, setLastCheckedEmail] = useState('');
-
   const {
     register,
     handleSubmit,
@@ -53,6 +51,9 @@ export const useSignupForm = () => {
   }, [watchEmail, watchNickname, watchPassword, watchPasswordConfirm, isValid]);
 
   const onSubmit = (data: SignupFormInputs) => {
+    if (!isFormValid) {
+      return;
+    }
     signup(data, {
       onSuccess: () => {
         showSnack('회원가입이 완료되었습니다.', 'success', {

@@ -105,9 +105,10 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
           닉네임과 비밀번호, 프로필 이미지를 수정하실 수 있습니다.
         </div>
       </div>
-      <div className='flex flex-col gap-[18px] md:gap-6'>
+      <div className='flex flex-col gap-4.5 md:gap-6'>
         <TextInput
           label='닉네임'
+          autoComplete='username'
           maxLength={8}
           {...register('nickname', {
             maxLength: { value: 8, message: '닉네임은 8자 이내로 입력해주세요' },
@@ -116,6 +117,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
         <TextInput
           label='이메일'
           type='email'
+          autoComplete='username'
           placeholder={myInfo?.email ?? ''}
           disabled
           className='cursor-not-allowed bg-gray-50 text-gray-400'
@@ -124,6 +126,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
         <PasswordInput
           label='비밀번호'
           placeholder='8자 이상 입력해주세요'
+          autoComplete='new-password'
           {...register('newPassword', {
             minLength: { value: 8, message: '비밀번호는 8자 이상이어야 합니다' },
             maxLength: { value: 16, message: '비밀번호는 16자 이하로 입력해주세요' },
@@ -134,6 +137,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
         <PasswordInput
           label='비밀번호 확인'
           placeholder='비밀번호를 한 번 더 입력해주세요'
+          autoComplete='new-password'
           {...register('newPasswordConfirm', {
             validate: (value) =>
               !newPassword || value === newPassword || '비밀번호가 일치하지 않습니다',
