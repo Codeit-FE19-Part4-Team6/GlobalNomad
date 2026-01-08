@@ -22,29 +22,24 @@ const DUMMY_ACTIVITY = {
   reviewCount: 293,
   price: 1000,
   address: '서울 중구 창경궁로 100 10F',
+  shortDescription: '초보자부터 전문가까지 즐추는 즐거움을 함께 느껴보세요.',
   description: `안녕하세요! 저의 스튜 스트릿 댄스, 저희랑 스트릿 댄스 고고합시다~! 서로 즐기면서 춤도 배우고 스트릿 배틀도 하고 즐겁게 놀아요!
 다양한 장르의 춤을 배우며 그 뼈들을 살펴봐서 그때 이해하고 진중하게 춤추며 연마를 합니다! 서로 배틀도 기획하고 제가 춤을 따라가기 쉽게 스텝별로 세세히 안내하고 있으니 춤을 잘못 추는 초보인 분들도 춤으로 즐기고 놀죠.`,
   images: [
     'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400',
+    'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400',
     'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400',
   ],
 };
 
 const DUMMY_REVIEWS = Array.from({ length: 12 }, (_, i) => ({
   id: i + 1,
-  author: '김**민',
+  author: '김태민',
   rating: 4 + Math.random(),
   createdAt: '2022. 3. 4',
   content:
-    '스트릿 처음 춰봤는데 너무 재밌었습니다! 어쩌고 저쩌고 후기후기후기후기~~ 다음에 또 체험해보고싶습니다',
+    '스트릿 처음 춰봤는데 너무 재밌었습니다! 어쩌고 저쩌고 후기후기후기후기어쩌고 저쩌고 후기후기후기후기어쩌고 저쩌고 너무 재밌었습니다! 너무 재밌었습니다! 후기후기후기후기~~ 다음에 또 체험해보고싶습니다',
 }));
-
-// 달력, 예약 관련 타입 정의
-type SelectedDate = {
-  year: number;
-  month: number;
-  date: number;
-};
 
 function ActivityDetailPage() {
   // 예약 관련 상태
@@ -133,13 +128,21 @@ function ActivityDetailPage() {
                   </Title>
                 </div>
                 {/* 케밥 메뉴 */}
-                <Dropdown>
+                <Dropdown className='relative'>
                   <DropdownTrigger className='p-1'>
                     <More className='h-6 w-6 text-gray-900' />
                   </DropdownTrigger>
-                  <DropdownList>
-                    <DropdownItem onClick={handleEdit}>수정하기</DropdownItem>
-                    <DropdownItem onClick={handleDelete}>삭제하기</DropdownItem>
+                  <DropdownList className='absolute top-8 right-0 z-10 w-[100px] overflow-hidden rounded-md border border-gray-300 bg-white shadow-lg'>
+                    <DropdownItem
+                      onClick={handleEdit}
+                      className='font-md-medium cursor-pointer px-4 py-2.5 text-center text-gray-800 hover:bg-gray-50'>
+                      수정하기
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={handleDelete}
+                      className='font-md-medium cursor-pointer px-4 py-2.5 text-center text-gray-800 hover:bg-gray-50'>
+                      삭제하기
+                    </DropdownItem>
                   </DropdownList>
                 </Dropdown>
               </div>
@@ -152,14 +155,17 @@ function ActivityDetailPage() {
               </div>
 
               {/* 주소 */}
-              <div className='flex items-start gap-1'>
+              <div className='mb-2 flex items-start gap-1'>
                 <Spot className='mt-0.5 h-4 w-4 flex-shrink-0 text-gray-700' />
-                <span className='font-md-regular text-gray-700'>{DUMMY_ACTIVITY.address}</span>
+                <span className='font-md-medium text-gray-700'>{DUMMY_ACTIVITY.address}</span>
               </div>
+
+              {/* 간단한 설명 */}
+              <p className='font-md-medium text-gray-700'>{DUMMY_ACTIVITY.shortDescription}</p>
             </div>
 
             {/* 체험 이미지 영역 */}
-            <section className='mb-6'>
+            <section className='mb-8'>
               {DUMMY_ACTIVITY.images.length === 1 ? (
                 // 이미지 1개: 전체 영역
                 <div className='h-[400px] overflow-hidden rounded-3xl'>
@@ -174,14 +180,14 @@ function ActivityDetailPage() {
                 <div className='grid h-[400px] grid-cols-2 gap-3 overflow-hidden rounded-3xl'>
                   {/* 왼쪽 이미지 2개 */}
                   <div className='grid h-full grid-rows-2 gap-3'>
-                    <div className='h-full w-full overflow-hidden'>
+                    <div className='h-50 w-full overflow-hidden'>
                       <img
                         src={DUMMY_ACTIVITY.images[0]}
                         alt={DUMMY_ACTIVITY.title}
                         className='h-full w-full object-cover'
                       />
                     </div>
-                    <div className='h-full w-full overflow-hidden'>
+                    <div className='h-50 w-full overflow-hidden'>
                       <img
                         src={DUMMY_ACTIVITY.images[1]}
                         alt={`${DUMMY_ACTIVITY.title} 2`}
@@ -191,14 +197,14 @@ function ActivityDetailPage() {
                   </div>
                   {/* 오른쪽 이미지 2개 */}
                   <div className='grid h-full grid-rows-2 gap-3'>
-                    <div className='h-full w-full overflow-hidden'>
+                    <div className='h-50 w-full overflow-hidden'>
                       <img
                         src={DUMMY_ACTIVITY.images[2]}
                         alt={`${DUMMY_ACTIVITY.title} 3`}
                         className='h-full w-full object-cover'
                       />
                     </div>
-                    <div className='h-full w-full overflow-hidden'>
+                    <div className='h-50 w-full overflow-hidden'>
                       <img
                         src={DUMMY_ACTIVITY.images[3]}
                         alt={`${DUMMY_ACTIVITY.title} 4`}
@@ -207,8 +213,32 @@ function ActivityDetailPage() {
                     </div>
                   </div>
                 </div>
+              ) : DUMMY_ACTIVITY.images.length === 2 ? (
+                // 이미지 2개: 왼쪽 1개 + 오른쪽 1개
+                <div className='grid h-[400px] grid-cols-2 gap-3 overflow-hidden rounded-3xl'>
+                  {/* 왼쪽 이미지 1개 */}
+                  <div className='grid h-full grid-rows-2 gap-3'>
+                    <div className='h-full w-full overflow-hidden'>
+                      <img
+                        src={DUMMY_ACTIVITY.images[0]}
+                        alt={DUMMY_ACTIVITY.title}
+                        className='h-full w-full object-cover'
+                      />
+                    </div>
+                  </div>
+                  {/* 오른쪽 이미지 1개 */}
+                  <div className='grid h-full grid-rows-2 gap-3'>
+                    <div className='h-full w-full overflow-hidden'>
+                      <img
+                        src={DUMMY_ACTIVITY.images[1]}
+                        alt={`${DUMMY_ACTIVITY.title} 4`}
+                        className='h-full w-full object-cover'
+                      />
+                    </div>
+                  </div>
+                </div>
               ) : (
-                // 이미지 2-3개: 왼쪽 큰 이미지 1개 + 오른쪽 작은 이미지들
+                // 이미지 3개: 왼쪽 큰 이미지 1개 + 오른쪽 작은 이미지들
                 <div className='grid h-[400px] grid-cols-2 gap-3 overflow-hidden rounded-3xl'>
                   {/* 왼쪽 큰 이미지 */}
                   <div className='h-full w-full overflow-hidden'>
@@ -224,7 +254,7 @@ function ActivityDetailPage() {
                       DUMMY_ACTIVITY.images.length === 2 ? 'grid-rows-1' : 'grid-rows-2'
                     }`}>
                     {DUMMY_ACTIVITY.images.slice(1).map((image, index) => (
-                      <div key={index} className='h-full w-full overflow-hidden'>
+                      <div key={index} className='h-50 w-full overflow-hidden'>
                         <img
                           src={image}
                           alt={`${DUMMY_ACTIVITY.title} ${index + 2}`}
@@ -242,17 +272,17 @@ function ActivityDetailPage() {
               <Title as='h3' size='xl' weight='bold' className='mb-4'>
                 체험 설명
               </Title>
-              <p className='font-md-regular whitespace-pre-wrap text-gray-800'>
+              <p className='font-md-medium whitespace-pre-wrap text-gray-800'>
                 {DUMMY_ACTIVITY.description}
               </p>
             </section>
 
             {/* 오시는 길 */}
-            <section className='mb-10'>
+            <section className='mb-10 border-t border-gray-100 pt-10'>
               <Title as='h3' size='xl' weight='bold' className='mb-4'>
                 오시는 길
               </Title>
-              <p className='font-md-regular mb-4 flex items-center gap-1 text-gray-700'>
+              <p className='font-md-medium mb-4 flex items-center gap-1 text-gray-700'>
                 <span>{DUMMY_ACTIVITY.address}</span>
               </p>
               {/* TODO: 지도 라이브러리 연동 */}
@@ -265,24 +295,27 @@ function ActivityDetailPage() {
             </section>
 
             {/* 후기 영역 */}
-            <section className='mb-10'>
-              <div className='mb-6 flex items-center gap-4'>
-                <Title as='h3' size='xl' weight='bold'>
-                  후기
-                </Title>
+            <section className='mb-10 border-t border-gray-100 pt-10'>
+              <div className='mb-6'>
                 <div className='flex items-center gap-2'>
+                  <Title as='h3' size='xl' weight='bold'>
+                    체험 후기
+                  </Title>
+                  <span className='font-md-medium text-gray-500'>
+                    {DUMMY_ACTIVITY.reviewCount.toLocaleString()}개
+                  </span>
+                </div>
+                <div className='flex flex-col items-center gap-2'>
                   <Title as='h2' size='3xl' weight='bold'>
                     {DUMMY_ACTIVITY.rating.toFixed(1)}
                   </Title>
-                  <div className='flex flex-col'>
-                    <div className='flex items-center gap-1'>
-                      <Star className='h-4 w-4' />
-                      <span className='font-md-medium text-gray-500'>매우 만족</span>
-                    </div>
-                    <span className='font-md-medium text-gray-500'>
-                      {DUMMY_ACTIVITY.reviewCount.toLocaleString()}개 후기
-                    </span>
+                  <div>
+                    <span className='font-lg-bold text-gray-950'>매우 만족</span>
                   </div>
+                  <span className='font-md-medium flex items-center gap-1 text-gray-500'>
+                    <Star className='h-4 w-4' />
+                    {DUMMY_ACTIVITY.reviewCount.toLocaleString()}개 후기
+                  </span>
                 </div>
               </div>
 
@@ -292,11 +325,12 @@ function ActivityDetailPage() {
                   (currentReviewPage - 1) * reviewsPerPage,
                   currentReviewPage * reviewsPerPage
                 ).map((review) => (
-                  <div key={review.id} className='border-b border-gray-300 pb-6 last:border-b-0'>
+                  <div
+                    key={review.id}
+                    className='rounded-3xl p-6 shadow-[0_0_20px_rgba(0,0,0,0.08)] last:border-b-0'>
                     <div className='mb-2 flex items-center gap-3'>
-                      <span className='font-md-semibold text-gray-900'>{review.author}</span>
-                      <span className='text-gray-400'>|</span>
-                      <span className='font-md-regular text-gray-500'>{review.createdAt}</span>
+                      <span className='font-md-bold text-gray-900'>{review.author}</span>
+                      <span className='font-md-medium text-gray-500'>{review.createdAt}</span>
                     </div>
                     <div className='mb-2 flex items-center gap-1'>
                       {Array.from({ length: 5 }).map((_, i) => (
@@ -306,7 +340,7 @@ function ActivityDetailPage() {
                         />
                       ))}
                     </div>
-                    <p className='font-md-regular text-gray-800'>{review.content}</p>
+                    <p className='font-md-medium text-gray-800'>{review.content}</p>
                   </div>
                 ))}
               </div>
@@ -329,53 +363,64 @@ function ActivityDetailPage() {
           <aside className='hidden lg:block lg:w-[384px]'>
             <div className='sticky top-6'>
               {/* 상단 정보 영역 */}
-              <div className='mb-4'>
+              <div className='mb-14'>
                 <div className='mb-4 flex items-start justify-between'>
                   <div className='flex-1'>
                     <BaseBadge color='orange' size='status' className='mb-2'>
                       {DUMMY_ACTIVITY.category}
                     </BaseBadge>
-                    <Title as='h2' size='xl' weight='bold' className='mb-2'>
+                    <Title as='h2' size='3xl' weight='bold'>
                       {DUMMY_ACTIVITY.title}
                     </Title>
                   </div>
                   {/* 케밥 메뉴 */}
-                  <Dropdown>
+                  <Dropdown className='relative'>
                     <DropdownTrigger className='p-1'>
                       <More className='h-6 w-6 text-gray-900' />
                     </DropdownTrigger>
-                    <DropdownList>
-                      <DropdownItem onClick={handleEdit}>수정하기</DropdownItem>
-                      <DropdownItem onClick={handleDelete}>삭제하기</DropdownItem>
+                    <DropdownList className='absolute top-8 right-0 z-10 w-[95px] overflow-hidden rounded-md border border-gray-100 bg-white'>
+                      <DropdownItem
+                        onClick={handleEdit}
+                        className='font-md-medium cursor-pointer px-4 py-2.5 text-center text-gray-800 hover:bg-gray-50'>
+                        수정하기
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={handleDelete}
+                        className='font-md-medium cursor-pointer px-4 py-2.5 text-center text-gray-800 hover:bg-gray-50'>
+                        삭제하기
+                      </DropdownItem>
                     </DropdownList>
                   </Dropdown>
                 </div>
 
                 {/* 평점 */}
-                <div className='mb-2 flex items-center gap-1'>
+                <div className='mb-3 flex items-center gap-1'>
                   <Star className='h-4 w-4 text-yellow-500' />
-                  <span className='font-md-medium text-gray-800'>{DUMMY_ACTIVITY.rating}</span>
+                  <span className='font-md-medium text-gray-900'>{DUMMY_ACTIVITY.rating}</span>
                   <span className='font-md-medium text-gray-500'>
                     ({DUMMY_ACTIVITY.reviewCount})
                   </span>
                 </div>
 
                 {/* 주소 */}
-                <div className='flex items-start gap-1'>
+                <div className='mb-6 flex items-start gap-1'>
                   <Spot className='mt-0.5 h-4 w-4 flex-shrink-0 text-gray-700' />
-                  <span className='font-md-regular text-gray-700'>{DUMMY_ACTIVITY.address}</span>
+                  <span className='font-md-medium text-gray-700'>{DUMMY_ACTIVITY.address}</span>
                 </div>
+
+                {/* 간단한 설명 */}
+                <p className='font-md-medium text-gray-700'>{DUMMY_ACTIVITY.shortDescription}</p>
               </div>
 
               {/* 예약 정보 박스 */}
-              <div className='rounded-3xl border border-gray-200 p-6 shadow-[0_0_20px_rgba(0,0,0,0.08)]'>
+              <div className='rounded-3xl border border-gray-50 p-6 shadow-[0_0_20px_rgba(0,0,0,0.08)]'>
                 {/* 가격 */}
-                <div className='mb-6 border-b border-gray-300 pb-6'>
+                <div className='pb-6'>
                   <div className='flex items-center gap-1'>
                     <Title as='h3' size='2xl' weight='bold'>
                       ₩ {DUMMY_ACTIVITY.price.toLocaleString()}
                     </Title>
-                    <span className='font-lg-regular text-gray-700'>/ 인</span>
+                    <span className='font-lg-medium text-gray-700'>/ 인</span>
                   </div>
                 </div>
 
@@ -388,7 +433,7 @@ function ActivityDetailPage() {
                     mode='single'
                     selected={selectedDate}
                     onSelect={setSelectedDate}
-                    className='font-md-medium w-full rounded-xl border border-gray-300 bg-white p-4'
+                    className='font-md-medium w-full rounded-xl bg-white p-4'
                     modifiersClassNames={{
                       selected: 'custom-selected',
                       today: 'custom-today',
@@ -417,18 +462,18 @@ function ActivityDetailPage() {
                   <Title as='h4' size='lg' weight='bold'>
                     참여 인원 수
                   </Title>
-                  <div className='flex items-center gap-3 rounded-3xl border border-gray-200 p-0'>
+                  <div className='flex items-center gap-1 rounded-3xl border border-gray-100 p-0'>
                     <button
                       onClick={handleDecrement}
-                      className='flex h-11 w-11 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
+                      className='flex h-10 w-10 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
                       −
                     </button>
-                    <span className='font-lg-regular min-w-[40px] text-center text-gray-900'>
+                    <span className='font-lg-medium min-w-[40px] text-center text-gray-900'>
                       {participantCount}
                     </span>
                     <button
                       onClick={handleIncrement}
-                      className='flex h-11 w-11 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
+                      className='flex h-10 w-10 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
                       +
                     </button>
                   </div>
@@ -456,14 +501,14 @@ function ActivityDetailPage() {
                 </div>
 
                 {/* 총 금액 및 예약 버튼 */}
-                <div className='space-y-4 border-t border-gray-300 pt-6'>
-                  <div className='flex items-center justify-between'>
-                    <span className='font-lg-regular text-gray-900'>총 합계</span>
+                <div className='flex justify-between border-t border-gray-100 pt-6'>
+                  <div className='flex items-center justify-between gap-2'>
+                    <span className='font-lg-medium text-gray-900'>총 합계</span>
                     <Title as='h3' size='2xl' weight='bold'>
                       ₩ {(DUMMY_ACTIVITY.price * participantCount).toLocaleString()}
                     </Title>
                   </div>
-                  <PrimaryButton size='lg' onClick={handleReservation} className='w-full'>
+                  <PrimaryButton size='lg' onClick={handleReservation} className='w-30'>
                     예약하기
                   </PrimaryButton>
                 </div>
@@ -477,7 +522,7 @@ function ActivityDetailPage() {
           <div className='mx-auto flex max-w-[1200px] items-center justify-between gap-4'>
             <button
               onClick={handleMobileReservation}
-              className='font-md-semibold text-primary-500 flex-shrink-0 text-gray-900 underline'>
+              className='font-md-bold text-primary-500 flex-shrink-0 text-gray-900 underline'>
               {formatSelectedDate()}
             </button>
             <div className='flex items-center gap-3'>
@@ -485,7 +530,7 @@ function ActivityDetailPage() {
                 <Title as='h3' size='xl' weight='bold'>
                   ₩ {DUMMY_ACTIVITY.price.toLocaleString()}
                 </Title>
-                <span className='font-md-regular text-gray-500'>/ 인</span>
+                <span className='font-md-medium text-gray-500'>/ 인</span>
               </div>
               <PrimaryButton size='lg' disabled>
                 예약하기
@@ -518,7 +563,7 @@ function ActivityDetailPage() {
                 mode='single'
                 selected={selectedDate}
                 onSelect={setSelectedDate}
-                className='font-md-medium w-full rounded-xl border border-gray-300 bg-white p-4'
+                className='font-md-medium w-full rounded-xl bg-white p-4'
                 modifiersClassNames={{
                   selected: 'custom-selected',
                   today: 'custom-today',
@@ -583,7 +628,7 @@ function ActivityDetailPage() {
                 className='flex h-11 w-11 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
                 −
               </button>
-              <span className='font-lg-regular min-w-[40px] text-center text-gray-900'>
+              <span className='font-lg-medium min-w-[40px] text-center text-gray-900'>
                 {participantCount}
               </span>
               <button
@@ -597,7 +642,7 @@ function ActivityDetailPage() {
           {/* 총 금액 및 예약 버튼 */}
           <div className='space-y-4 border-t border-gray-300 pt-6'>
             <div className='flex items-center justify-between'>
-              <span className='font-lg-regular text-gray-900'>총 합계</span>
+              <span className='font-lg-medium text-gray-900'>총 합계</span>
               <Title as='h3' size='2xl' weight='bold'>
                 ₩ {(DUMMY_ACTIVITY.price * participantCount).toLocaleString()}
               </Title>
