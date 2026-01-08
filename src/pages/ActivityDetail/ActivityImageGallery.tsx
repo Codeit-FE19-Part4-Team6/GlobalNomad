@@ -51,18 +51,12 @@ export default function ActivityImageGallery({ images, title }: ActivityImageGal
     // 이미지 2개: 왼쪽 1개 + 오른쪽 1개
     return (
       <section className='mb-8'>
-        <div className='grid h-[400px] grid-cols-2 gap-3 overflow-hidden rounded-3xl'>
-          {/* 왼쪽 이미지 1개 */}
-          <div className='grid h-full grid-rows-2 gap-3'>
-            <div className='h-full w-full overflow-hidden'>
-              <img src={images[0]} alt={title} className='h-full w-full object-cover' />
-            </div>
+        <div className='grid h-[400px] grid-cols-2 gap-3'>
+          <div className='h-full w-full overflow-hidden rounded-3xl'>
+            <img src={images[0]} alt={title} className='h-full w-full object-cover' />
           </div>
-          {/* 오른쪽 이미지 1개 */}
-          <div className='grid h-full grid-rows-2 gap-3'>
-            <div className='h-full w-full overflow-hidden'>
-              <img src={images[1]} alt={`${title} 4`} className='h-full w-full object-cover' />
-            </div>
+          <div className='h-full w-full overflow-hidden rounded-3xl'>
+            <img src={images[1]} alt={`${title} 2`} className='h-full w-full object-cover' />
           </div>
         </div>
       </section>
