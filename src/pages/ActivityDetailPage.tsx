@@ -10,6 +10,7 @@ import ActivityImageGallery from './ActivityDetail/ActivityImageGallery';
 import ActivityReservationPanel from './ActivityDetail/ActivityReservationPanel';
 import ActivityMobileReservationBar from './ActivityDetail/ActivityMobileReservationBar';
 import ActivityReviews from './ActivityDetail/ActivityReviews';
+import ActivityMap from './ActivityDetail/ActivityMap';
 
 // 임시 더미 데이터 (API 연동 시 교체)
 const DUMMY_ACTIVITY = {
@@ -19,7 +20,7 @@ const DUMMY_ACTIVITY = {
   rating: 4.9,
   reviewCount: 293,
   price: 1000,
-  address: '서울 중구 창경궁로 100 10F',
+  address: '서울 중구 청계천로 100',
   shortDescription: '초보자부터 전문가까지 즐추는 즐거움을 함께 느껴보세요.',
   description: `안녕하세요! 저의 스튜 스트릿 댄스, 저희랑 스트릿 댄스 고고합시다~! 서로 즐기면서 춤도 배우고 스트릿 배틀도 하고 즐겁게 놀아요!
 다양한 장르의 춤을 배우며 그 뼈들을 살펴봐서 그때 이해하고 진중하게 춤추며 연마를 합니다! 서로 배틀도 기획하고 제가 춤을 따라가기 쉽게 스텝별로 세세히 안내하고 있으니 춤을 잘못 추는 초보인 분들도 춤으로 즐기고 놀죠.`,
@@ -131,13 +132,7 @@ function ActivityDetailPage() {
               <p className='font-md-medium mb-4 flex items-center gap-1 text-gray-700'>
                 <span>{DUMMY_ACTIVITY.address}</span>
               </p>
-              {/* TODO: 지도 라이브러리 연동 */}
-              <div className='h-[476px] w-full rounded-xl bg-gray-200'>
-                {/* 지도 영역 (외부 라이브러리 연결 예정) */}
-                <div className='flex h-full items-center justify-center text-gray-500'>
-                  지도 영역 (라이브러리 연동 예정)
-                </div>
-              </div>
+              <ActivityMap address={DUMMY_ACTIVITY.address} />
             </section>
 
             {/* 후기 영역 */}
