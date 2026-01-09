@@ -70,7 +70,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     useMyReservationsInfinite(selected);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const reservations: ReservationItem[] = data?.pages.flatMap((page) => page.reservations) ?? [];
-
+  const hasAnyReservation = reservations.length > 0;
   // IntersectionObserver를 이용한 무한 스크롤
   useEffect(() => {
     if (!bottomRef.current || !hasNextPage) {
@@ -140,16 +140,18 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         </Title>
         <div className='font-md-medium text-gray-500'>예약내역 변경 및 취소할 수 있습니다.</div>
       </div>
-      <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
-        <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
-          전체
-        </FilterButton>
-        {STATUS_LIST.map((s) => (
-          <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
-            {STATUS_TEXT_MAP[s]}
+      {hasAnyReservation && (
+        <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
+          <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
+            전체
           </FilterButton>
-        ))}
-      </div>
+          {STATUS_LIST.map((s) => (
+            <FilterButton key={s} selected={selected === s} onClick={() => handleFilterClick(s)}>
+              {STATUS_TEXT_MAP[s]}
+            </FilterButton>
+          ))}
+        </div>
+      )}
       {reservations.length === 0 ? (
         <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
           <div className='flex flex-col items-center justify-center'>
