@@ -21,7 +21,7 @@ interface Props {
  */
 export default function CardContainer({ variant, children, className }: Props) {
   const baseLayout = {
-    grid: 'flex flex-col lg:w-65.5',
+    grid: 'flex flex-col lg:w-65.5 shadow-[0_0_20px_rgba(0,0,0,0.08)] rounded-3xl overflow-hidden',
     list: 'flex justify-between items-center bg-white rounded-3xl p-6 md:w-119 lg:w-160 shadow-[0_4px_24px_0_rgba(156,180,202,0.20)]',
     reservation: 'flex w-full flex-col lg:flex-row ',
   }[variant];
