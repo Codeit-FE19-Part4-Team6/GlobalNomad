@@ -117,7 +117,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
         <TextInput
           label='이메일'
           type='email'
-          autoComplete='username'
+          autoComplete='email'
           placeholder={myInfo?.email ?? ''}
           disabled
           className='cursor-not-allowed bg-gray-50 text-gray-400'
