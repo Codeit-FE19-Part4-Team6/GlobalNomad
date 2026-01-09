@@ -69,8 +69,30 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useMyReservationsInfinite(selected);
   const bottomRef = useRef<HTMLDivElement | null>(null);
-  const reservations: ReservationItem[] = data?.pages.flatMap((page) => page.reservations) ?? [];
-  const hasAnyReservation = reservations.length > 0;
+  // const reservations: ReservationItem[] = data?.pages.flatMap((page) => page.reservations) ?? [];
+
+  const allFetchedReservations = data?.pages.flatMap((page) => page.reservations) ?? [];
+
+  const rawReservations = allFetchedReservations.map((res) => {
+    const now = new Date();
+    const endDateTime = new Date(`${res.date}T${res.endTime}`);
+
+    if (res.status === 'confirmed' && now > endDateTime) {
+      return { ...res, status: 'completed' as const };
+    }
+    return res;
+  });
+
+  const reservations = rawReservations.filter((res) => {
+    if (selected === 'all') {
+      return true;
+    }
+    return res.status === selected;
+  });
+
+  // 전체 예약 데이터가 하나라도 있는지 여부 (탭 메뉴 노출 결정)
+  const hasAnyReservation = allFetchedReservations.length > 0;
+
   // IntersectionObserver를 이용한 무한 스크롤
   useEffect(() => {
     if (!bottomRef.current || !hasNextPage) {
