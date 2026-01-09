@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { PrimaryButton } from '@/components/common/button';
 import { BaseInput } from '@/components/common/input/BaseInput';
 import type { BaseInputProps } from '@/components/common/input/types';
@@ -13,6 +13,10 @@ export interface SearchInputProps extends Omit<BaseInputProps, 'type'> {
   minLength?: number;
   /** 빈 검색어 시도 시 콜백 */
   onEmptySearch?: () => void;
+  /** 디바운스 지연 시간 (ms, 기본값: 0 - 디바운스 비활성화) */
+  debounceMs?: number;
+  /** 실시간 검색 활성화 (타이핑하면 자동 검색, 기본값: false) */
+  enableRealtimeSearch?: boolean;
 }
 
 /**
@@ -63,6 +67,8 @@ export const SearchInput = ({
   className = '',
   minLength = 1,
   onEmptySearch,
+  debounceMs = 0,
+  enableRealtimeSearch = false,
   value: controlledValue,
   defaultValue,
   onChange,
@@ -77,6 +83,32 @@ export const SearchInput = ({
 
   // 실제 사용할 값 (Controlled이면 외부 값, 아니면 내부 값)
   const value = isControlled ? controlledValue : internalValue;
+
+  // 디바운스 처리 (실시간 검색 활성화 시)
+  useEffect(() => {
+    if (!enableRealtimeSearch || debounceMs === 0) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      const trimmedValue = String(value).trim();
+
+      // 빈 검색어일 때
+      if (!trimmedValue) {
+        onSearch?.(''); // 빈 문자열로 검색 실행 (전체보기)
+        return;
+      }
+
+      // 최소 길이 체크
+      if (trimmedValue.length < minLength) {
+        return;
+      }
+
+      onSearch?.(trimmedValue);
+    }, debounceMs);
+
+    return () => clearTimeout(timer);
+  }, [value, enableRealtimeSearch, debounceMs, minLength, onSearch]);
 
   const handleSearch = useCallback(() => {
     const trimmedValue = String(value).trim();
@@ -137,7 +169,7 @@ export const SearchInput = ({
           error={error}
           className={`h-[50px] w-full rounded-2xl border pl-14 sm:h-[70px] sm:rounded-3xl ${
             showButton ? 'pr-38' : 'pr-5'
-          } caret-primary-500 sm:placeholder:font-xl-medium placeholder:font-md-medium transition-all duration-200 outline-none placeholder:text-gray-400 focus:ring-2 ${className}`}
+          } caret-primary-500 sm:placeholder:font-xl-medium placeholder:font-md-medium shadow-[0_0_20px_rgba(0,0,0,0.08)] transition-all duration-200 outline-none placeholder:text-gray-400 focus:ring-2 ${className}`}
           {...props}
         />
 

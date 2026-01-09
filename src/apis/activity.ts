@@ -5,6 +5,8 @@ import type {
   ActivityDetailResponse,
   ActivityReviewParams,
   ActivityReviewResponse,
+  ActivityRequest,
+  ActivityResponse,
 } from './type';
 
 export type CreatedActivityResponse = {
@@ -34,5 +36,10 @@ export const getActivityReviews = async ({
   const res = await http.get<ActivityReviewResponse>(`/activities/${activityId}/reviews`, {
     params: { page, size },
   });
+  return res.data;
+};
+
+export const getActivities = async (params: ActivityRequest) => {
+  const res = await http.get<ActivityResponse>('/activities', { params });
   return res.data;
 };
