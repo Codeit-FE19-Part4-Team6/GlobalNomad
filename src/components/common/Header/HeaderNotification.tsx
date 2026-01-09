@@ -27,42 +27,28 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
     if (isLoading || !hasMore) {
       return;
     }
+
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      // 서버에 알림 목록 요청 (cursorId 기준으로 다음 페이지 조회)
       const response = await notificationApi.getNotifications(cursorId, 10);
-      /**
-       * 기존 알림과 새 알림을 병합
-       * - 중복 ID 제거 (Observer가 여러 번 호출될 수 있기 때문)
-       */
+
       setNotifications((prev) => {
-        const existingIds = new Set(prev.map((n) => n.id));
-        const newNotifications = response.notifications.filter((n) => !existingIds.has(n.id));
-        return [...prev, ...newNotifications];
+        const ids = new Set(prev.map((n) => n.id));
+        return [...prev, ...response.notifications.filter((n) => !ids.has(n.id))];
       });
-      /** 전체 알림 개수 업데이트 */
+
       setTotalCount(response.totalCount);
-      /** 다음 요청을 위한 커서 ID 저장 */
       setCursorId(response.cursorId);
 
-      /**
-       * 서버에서 더 이상 내려올 데이터가 없을 경우
-       * → 무한 스크롤 중단
-       */
-      const shouldStop =
-        response.notifications.length === 0 ||
-        response.cursorId === null ||
-        response.cursorId === undefined;
-
-      if (shouldStop) {
+      if (!response.cursorId || response.notifications.length === 0) {
         setHasMore(false);
       }
-    } catch (error) {
-      console.error('알림 로드 실패:', error);
+    } catch (e) {
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
-  }, [cursorId]);
+  }, [cursorId, isLoading, hasMore]);
 
   //초기 데이터 로드
   useEffect(() => {
@@ -71,41 +57,47 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
     }
   }, []);
 
+  useEffect(() => {
+    const id = setInterval(() => {
+      loadNotifications();
+    }, 10000);
+
+    return () => clearInterval(id);
+  }, [loadNotifications]);
+
   /**
    * IntersectionObserver 설정
    *
    * - 드롭다운이 열려 있을 때만 활성화
    * - observerTarget이 화면에 들어오면 다음 페이지 로드
    */
+
+  const options = {
+    root: null,
+    rootMargin: '20px', // 바닥 근처에서 미리 감지
+    threshold: 0.1, // 10%만 보여도 트리거
+  };
+  const handleObserver = (entries: IntersectionObserverEntry[]) => {
+    const target = entries[0];
+    if (target.isIntersecting) {
+      // 타겟이 화면에 들어오면 알림 추가 로드
+      loadNotifications();
+    }
+  };
+
   useEffect(() => {
-    if (!isOpen || isLoading || !hasMore) {
+    if (!isOpen || !hasMore) {
       return;
     }
-    const options = {
-      root: null,
-      rootMargin: '20px', // 바닥 근처에서 미리 감지
-      threshold: 0.1, // 10%만 보여도 트리거
-    };
-    const handleObserver = (entries: IntersectionObserverEntry[]) => {
-      const target = entries[0];
-      if (target.isIntersecting) {
-        // 타겟이 화면에 들어오면 알림 추가 로드
-        loadNotifications();
-      }
-    };
-
     observerRef.current = new IntersectionObserver(handleObserver, options);
 
-    if (observerTarget.current) {
-      observerRef.current.observe(observerTarget.current);
+    const target = observerTarget.current;
+    if (target) {
+      observerRef.current.observe(target);
     }
-    // 컴포넌트 언마운트 또는 조건 변경 시 observer 정리
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [isOpen, isLoading, loadNotifications, hasMore]);
+
+    return () => observerRef.current?.disconnect();
+  }, [isOpen, hasMore, loadNotifications]);
 
   // 알림 삭제
   const handleDelete = async (e: React.MouseEvent, id: number) => {
