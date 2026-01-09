@@ -171,7 +171,7 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
                     key={notification.id}
                     onMouseEnter={() => setHoveredId(notification.id)}
                     onMouseLeave={() => setHoveredId(null)}
-                    className='hover:bg-primary-100 cursor-pointer border-b border-gray-50/80 px-4 py-5 transition-colors last:border-b-0 last:hover:rounded-b-lg'>
+                    className='hover:bg-primary-100 cursor-pointer border-b border-gray-50/80 px-4 py-5 transition-colors last:border-b-0'>
                     <div className='flex flex-col gap-2'>
                       <div className='flex items-start justify-between'>
                         {/* 알림 내용 */}
