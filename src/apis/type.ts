@@ -64,6 +64,7 @@ export interface ActivityRequest {
   method: 'cursor' | 'offset';
   cursorId?: number;
   category?: ActivityCategory;
+  keyword?: string;
   sort?: 'most_reviewed' | 'price_asc' | 'price_desc' | 'latest';
   page?: number;
   size?: number;

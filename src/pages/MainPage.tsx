@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SearchInput } from '@/components/SearchInput';
 import Card from '@/components/common/card';
@@ -75,53 +75,25 @@ const MainPage = () => {
     sort: 'most_reviewed',
   });
 
-  // 모든 체험 API (카테고리 필터링 + 페이지네이션 + 정렬)
+  // 모든 체험 API (카테고리 필터링 + 페이지네이션 + 정렬 + 검색)
   const { data: allActivitiesData, isLoading } = useActivities({
     method: 'offset',
     page: currentPage,
     size: pageSize,
     category: selectedCategory === '전체' ? undefined : selectedCategory,
+    keyword: searchKeyword.trim() || undefined, // 검색어를 API로 전달
     sort: priceSort || 'latest', // 가격 정렬이 있으면 가격 정렬, 없으면 최신순
   });
 
-  // 검색어로 필터링된 체험 목록
-  const filteredActivities = useMemo(() => {
-    if (!allActivitiesData?.activities) {
-      return [];
-    }
-    if (!searchKeyword.trim()) {
-      return allActivitiesData.activities;
-    }
-
-    return allActivitiesData.activities.filter((activity) =>
-      activity.title.toLowerCase().includes(searchKeyword.toLowerCase())
-    );
-  }, [allActivitiesData?.activities, searchKeyword]);
-
-  // 필터링 후 페이지네이션 계산
-  const totalPages = searchKeyword.trim()
-    ? Math.ceil(filteredActivities.length / pageSize)
-    : allActivitiesData
-      ? Math.ceil(allActivitiesData.totalCount / pageSize)
-      : 1;
-
-  // 검색 시 현재 페이지에 맞는 체험만 표시
-  const displayedActivities = searchKeyword.trim()
-    ? filteredActivities.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-    : filteredActivities;
+  // 페이지네이션 계산 (API에서 검색된 결과의 totalCount 사용)
+  const totalPages = allActivitiesData ? Math.ceil(allActivitiesData.totalCount / pageSize) : 1;
 
   // 검색 핸들러 (SearchInput의 onSearch에서 호출됨)
   const handleSearch = (value: string) => {
     setSearchKeyword(value);
-    // 검색어가 비어있으면 필터 초기화
-    if (!value.trim()) {
-      setSelectedCategory('전체');
-      setPriceSort(null);
-    } else {
-      // 검색어가 있으면 필터 초기화
-      setSelectedCategory('전체');
-      setPriceSort(null);
-    }
+    // 검색 시 필터 초기화
+    setSelectedCategory('전체');
+    setPriceSort(null);
     setCurrentPage(1);
   };
 
@@ -297,7 +269,7 @@ const MainPage = () => {
                   />
                 </svg>
               </DropdownTrigger>
-              <DropdownList className='absolute top-full right-0 z-10 mt-2 min-w-[140px] rounded-lg border border-gray-200 bg-white shadow-lg'>
+              <DropdownList className='absolute top-full right-0 z-10 mt-2 min-w-35 rounded-lg border border-gray-200 bg-white shadow-lg'>
                 {priceSortOptions.map((option) => (
                   <DropdownItem
                     key={option.value}
@@ -329,9 +301,9 @@ const MainPage = () => {
             <div className='flex h-100 items-center justify-center'>
               <span className='font-lg-medium text-gray-500'>체험을 불러오는 중...</span>
             </div>
-          ) : displayedActivities.length > 0 ? (
+          ) : allActivitiesData && allActivitiesData.activities.length > 0 ? (
             <div className='mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-              {displayedActivities.map((activity) => (
+              {allActivitiesData.activities.map((activity) => (
                 <div
                   key={activity.id}
                   onClick={() => navigate(`/activities/${activity.id}`)}
