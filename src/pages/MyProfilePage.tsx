@@ -108,7 +108,7 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
       <div className='flex flex-col gap-4.5 md:gap-6'>
         <TextInput
           label='닉네임'
-          autoComplete='username'
+          autoComplete='nickname'
           maxLength={8}
           {...register('nickname', {
             maxLength: { value: 8, message: '닉네임은 8자 이내로 입력해주세요' },
