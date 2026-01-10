@@ -112,7 +112,7 @@ export default function ReservationInfoModal({
       <div className='flex min-h-[233px] flex-col px-5 pt-4 pb-6 sm:flex-row sm:gap-5 lg:flex-col'>
         {/* 예약 시간 */}
         <section className='mb-4 flex flex-col gap-3 sm:w-[50%] lg:w-full'>
-          <Label className='font-xl-bold mb-2 text-black'>예약 시간</Label>
+          <Label className='font-xl-bold mb-2 text-start text-black'>예약 시간</Label>
 
           <div className='flex h-12 items-center rounded-xl border border-gray-50 px-5 lg:h-[54px]'>
             <Dropdown className='relative w-full'>
@@ -141,7 +141,7 @@ export default function ReservationInfoModal({
         </section>
 
         <section className='flex flex-col gap-3 sm:w-[50%] lg:w-full'>
-          <Label className='font-xl-bold text-black-50 mb-2'>예약 내역</Label>
+          <Label className='font-xl-bold text-black-50 mb-2 text-start'>예약 내역</Label>
 
           <div className='scrollbar-hide max-h-[235px] space-y-3 overflow-y-auto'>
             {visibleList.length === 0 ? (

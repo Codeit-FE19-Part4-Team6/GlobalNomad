@@ -62,7 +62,7 @@ export default function MyPageLayout() {
   }, [myInfo, setProfileImageUrl]);
 
   return (
-    <div className='mx-auto flex w-full max-w-[1200px] flex-col justify-center px-6 md:flex-row md:items-start md:gap-7.5 md:px-7.5 lg:justify-between'>
+    <div className='mx-auto flex w-full max-w-[980px] flex-col justify-center px-6 md:flex-row md:items-start md:gap-7.5 md:px-7.5 lg:justify-between'>
       <aside
         className={`md:sticky md:top-30 md:w-auto md:shrink-0 ${mobileOpen ? 'hidden md:block' : 'block'}`}>
         <div className='mb-3 block md:hidden'>
