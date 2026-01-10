@@ -3,6 +3,7 @@ import type {
   MyReservationsResponse,
   MyReservationReviewResponse,
   MyReservationReviewRequest,
+  UpdateMyActivityReservationStatusRequest,
 } from './type';
 
 type GetMyReservationsParams = {
@@ -36,4 +37,11 @@ export const postReservationReview = async (
     reviewData
   );
   return res.data;
+};
+
+export const patchReservationStatus = (
+  reservationId: number,
+  data: UpdateMyActivityReservationStatusRequest
+) => {
+  return http.patch(`/my-reservations/${reservationId}/status`, data);
 };

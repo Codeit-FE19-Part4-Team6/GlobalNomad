@@ -70,28 +70,26 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     useMyReservationsInfinite(selected);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const allFetchedReservations = data?.pages.flatMap((page) => page.reservations) ?? [];
-  const [hasAnyReservation, setHasAnyReservation] = useState(false);
+  const { data: allData } = useMyReservationsInfinite('all');
+  const hasAnyReservation = allData?.pages.some((page) => page.reservations.length > 0) ?? false;
+
+  // 클라이언트에서 체험 완료로 자동 변환
   const rawReservations = allFetchedReservations.map((res) => {
     const now = new Date();
     const endDateTime = new Date(`${res.date}T${res.endTime}`);
-
     if (res.status === 'confirmed' && now > endDateTime) {
       return { ...res, status: 'completed' as const };
     }
     return res;
   });
 
+  // 선택된 상태 필터 적용
   const reservations = rawReservations.filter((res) => {
     if (selected === 'all') {
       return true;
     }
     return res.status === selected;
   });
-  useEffect(() => {
-    if (selected === 'all' && allFetchedReservations.length > 0) {
-      setHasAnyReservation(true);
-    }
-  }, [selected, allFetchedReservations.length]);
 
   // IntersectionObserver를 이용한 무한 스크롤
   useEffect(() => {
