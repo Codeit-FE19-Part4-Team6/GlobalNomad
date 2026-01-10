@@ -25,13 +25,11 @@ export const useReviewReservationMutation = (onSuccessClose?: () => void) => {
       reservationId: number;
       data: MyReservationReviewRequest;
     }) => postReservationReview(reservationId, data),
-
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myReservations'] });
+      queryClient.invalidateQueries({ queryKey: ['myReservationsInfinite'] });
       onSuccessClose?.();
       showSnack('후기가 등록되었습니다!', 'success', { duration: 2000 });
     },
-
     onError: () => {
       showSnack('후기 작성에 실패했습니다.', 'error');
     },

@@ -18,7 +18,9 @@ export const useCancelReservationMutation = (onClose?: () => void, onResetId?: (
   return useMutation({
     mutationFn: cancelReservation,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myReservations'] });
+      queryClient.invalidateQueries({
+        queryKey: ['myReservationsInfinite'],
+      });
       onClose?.();
       onResetId?.();
       showSnack('예약이 취소되었습니다.', 'success');

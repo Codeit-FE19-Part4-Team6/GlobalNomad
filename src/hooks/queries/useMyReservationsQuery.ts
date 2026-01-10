@@ -1,16 +1,32 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, type InfiniteData } from '@tanstack/react-query';
 import { getMyReservations } from '@/apis/myReservation';
 import type { MyReservationsResponse } from '@/apis/type';
 
-type Status = 'confirmed' | 'canceled' | 'declined' | 'completed' | 'pending';
+const SIZE = 6;
+type Status = 'confirmed' | 'canceled' | 'declined' | 'completed' | 'pending' | 'all';
+type QueryKey = ['myReservationsInfinite', Status];
 
-/**
- * 내 예약 조회 훅
- * 특정 상태(status)의 예약 목록을 가져오는 커스텀 훅
- */
-export const useMyReservationsQuery = (status?: Status | 'all') => {
-  return useQuery<MyReservationsResponse['reservations']>({
-    queryKey: ['myReservations', status],
-    queryFn: () => getMyReservations(status),
+export const useMyReservationsInfinite = (status: Status) => {
+  return useInfiniteQuery<
+    MyReservationsResponse,
+    Error,
+    InfiniteData<MyReservationsResponse>,
+    QueryKey,
+    number | undefined
+  >({
+    queryKey: ['myReservationsInfinite', status],
+    initialPageParam: undefined,
+    queryFn: ({ pageParam }) =>
+      getMyReservations({
+        size: SIZE,
+        status: status !== 'all' ? status : undefined,
+        cursorId: pageParam,
+      }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.reservations.length < SIZE) {
+        return undefined;
+      }
+      return lastPage.reservations.at(-1)?.id;
+    },
   });
 };
