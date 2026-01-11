@@ -7,6 +7,7 @@ import Layout from './components/common/Layout.tsx';
 import MainPage from './pages/MainPage.tsx';
 import LoginPage from '@/pages/LoginPage.tsx';
 import NotFoundPage from '@/pages/NotFoundPage.tsx';
+import ActivityDetailPage from '@/pages/ActivityDetailPage.tsx';
 import MyPageLayout from '@/pages/MyPageLayout.tsx';
 import CreateActivityPage from '@/pages/CreateActivityPage.tsx';
 import EditActivityPage from '@/pages/EditActivityPage.tsx';
@@ -38,6 +39,7 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
           { index: true, element: <MainPage /> },
+          { path: 'activities/:activityId', element: <ActivityDetailPage /> },
           { path: 'mypage', element: <MyPageLayout /> },
           { path: 'activities/create', element: <CreateActivityPage /> },
           { path: 'activities/edit/:activityId', element: <EditActivityPage /> },

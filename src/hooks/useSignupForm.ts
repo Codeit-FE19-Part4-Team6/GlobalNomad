@@ -25,8 +25,6 @@ export const useSignupForm = () => {
   const { mutate: signup, isPending } = useSignupMutation();
   const { showSnack } = useSnackBar();
 
-  // const [lastCheckedEmail, setLastCheckedEmail] = useState('');
-
   const {
     register,
     handleSubmit,

@@ -15,7 +15,7 @@ import { useMyActivitySchedules } from '@/hooks/useMyActivitySchedules';
 import { eventType, EventBadge } from '@/components/common/badge/EventBadge';
 import type { MyActivitySchedulesResponse } from '@/apis/type';
 import ReservationInfoModal from '@/components/common/modal/ReservationCard/ReservationInfoModal';
-
+import { useReservedSchedule } from '@/hooks/useReservedSchedule';
 type Props = {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -64,6 +64,16 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
     setIsReservationModalOpen(false);
     setSelectBadge(null);
   };
+
+  // ✅ selectBadge는 string | null 이라서, 훅에 넘길 때 undefined로 바꿔줌
+  const reservedDate = selectBadge ?? undefined;
+
+  // ✅ 모달이 열렸을 때만 + activityId/date 있을 때만 호출됨(enabled 조건)
+  const { data: reservedSchedules = [] } = useReservedSchedule(
+    selectedActivityId,
+    reservedDate,
+    isReservationModalOpen
+  );
 
   // ✅ year/month
   const year = String(monthDate.getFullYear());
@@ -221,7 +231,9 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
                                 isOpen={isReservationModalOpen}
                                 onClose={closeReservationModal}
                                 dateText={ymdToKorean(selectBadge)}
-                                reservations={[]} // 나중에 API 붙이기
+                                activityId={selectedActivityId!}
+                                dateYmd={selectBadge!}
+                                reservedSchedules={reservedSchedules}
                               />
                             </div>
                           )}
@@ -246,7 +258,9 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
               isOpen={isReservationModalOpen}
               onClose={closeReservationModal}
               dateText={ymdToKorean(selectBadge)}
-              reservations={[]} // 나중에 API 붙이기
+              activityId={selectedActivityId!}
+              dateYmd={selectBadge!}
+              reservedSchedules={reservedSchedules}
             />
           </div>
         </div>

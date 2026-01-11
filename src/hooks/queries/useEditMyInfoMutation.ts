@@ -2,20 +2,22 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { editMyInfo } from '@/apis/user';
 import type { UserEditRequest, User } from '@/apis/type';
 import { useSnackBar } from '@/providers/SnackBarProvider';
-/**
- * 내 정보 수정 뮤테이션 훅
- * - 사용자가 닉네임, 비밀번호, 프로필 이미지를 변경했을 때 호출
- * - 성공/실패 시 스낵바 알림 표시
- * - 성공 시 React Query 캐시 업데이트
- */
+import { useAuthStore } from '@/stores/authStore';
+
 export const useEditMyInfoMutation = (onSuccessCallback?: (data: User) => void) => {
   const queryClient = useQueryClient();
   const { showSnack } = useSnackBar();
+  const refreshUser = useAuthStore((state) => state.refreshUser);
 
   return useMutation({
     mutationFn: (payload: Partial<UserEditRequest>) => editMyInfo(payload),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      // ✅ React Query 캐시 업데이트
       queryClient.setQueryData(['myInfo'], data);
+
+      // ✅ Zustand authStore도 서버에서 최신 데이터로 갱신
+      await refreshUser();
+
       showSnack('내 정보가 수정되었습니다.', 'success');
       onSuccessCallback?.(data);
     },
