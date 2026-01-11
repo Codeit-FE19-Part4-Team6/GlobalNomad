@@ -6,6 +6,7 @@ import { http } from '@/apis/http';
 import { KAKAO_REDIRECT_URI } from '@/libs/config';
 import { isAxiosError } from 'axios';
 import { useSnackBar } from '@/providers/SnackBarProvider';
+import { generateKakaoNickname } from '@/utils/generateKakaoNickname';
 
 const KakaoCallbackPage = () => {
   const navigate = useNavigate();
@@ -36,15 +37,6 @@ const KakaoCallbackPage = () => {
         console.log('1. 인가 코드:', code);
         console.log('2. 모드:', isKakaoSignUpMode ? '회원가입' : '로그인');
 
-        // 카카오 토큰 받기
-        //// ✅ 1. 인가 코드 사용 --> 토큰 받기 ///
-        // const kakaoTokenData = await kakaoApi.getKakaoToken(code);
-        // console.log('3. 카카오 토큰:', kakaoTokenData);
-
-        // // 카카오 사용자 정보 가져오기
-        // const kakaoUserInfo = await kakaoApi.getKakaoUserInfo(kakaoTokenData.access_token);
-        // console.log('4. 카카오 사용자 정보:', kakaoUserInfo);
-
         const requestData = {
           token: code,
           redirectUri: KAKAO_REDIRECT_URI,
@@ -54,9 +46,18 @@ const KakaoCallbackPage = () => {
           // 회원가입 모드
           console.log('5. 회원가입 시도');
 
-          // 카카오 닉네임 사용
+          // 카카오 토큰 받기
+          // ✅ 1. 인가 코드 사용 --> 토큰 받기 ///
+          //   const kakaoTokenData = await kakaoApi.getKakaoToken(code);
+          //   console.log('3. 카카오 토큰:', kakaoTokenData);
+
+          //   // 카카오 사용자 정보 가져오기
+          //   const kakaoUserInfo = await kakaoApi.getKakaoUserInfo(kakaoTokenData.access_token);
+          //   console.log('4. 카카오 사용자 정보:', kakaoUserInfo);
+
+          //   // 카카오 닉네임 사용
           //   const kakaoNickname = kakaoUserInfo.kakao_account?.profile?.nickname || 'KakaoUser';
-          const kakaoNickname = 'KakaoUser';
+          const kakaoNickname = generateKakaoNickname();
 
           //// ✅ 2-1. 인가 코드 사용 --> 회원가입 리퀘스트 바디로 ///
           const signUpResponse = await http.post('/oauth/sign-up/kakao', {
@@ -71,12 +72,17 @@ const KakaoCallbackPage = () => {
           sessionStorage.removeItem('isKakaoSignUpMode');
 
           token.setTokens(signUpResponse.data.accessToken, signUpResponse.data.refreshToken);
-          showSnack(`${kakaoNickname}님, 환영합니다!`, 'success', {
-            onClose: () => navigate('/'),
-          });
+          showSnack(
+            `${kakaoNickname}님, 환영합니다! 닉네임은 언제든 수정할 수 있어요.`,
+            'success',
+            {
+              onClose: () => navigate('/'),
+            }
+          );
         } else {
           // 로그인 모드
           console.log('5. 로그인 시도');
+
           //// ✅ 2-2. 인가 코드 사용 --> 로그인 리퀘스트 바디로 ///
           const response = await http.post('/oauth/sign-in/kakao', requestData);
           console.log('6. 로그인 성공:', response.data);
