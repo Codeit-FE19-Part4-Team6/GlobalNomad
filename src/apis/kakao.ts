@@ -29,12 +29,12 @@ export const kakaoApi = {
   // 카카오 로그인 URL 생성
   // 인가코드 요청
   // kakaoApi.ts
-  getKakaoAuthUrl(mode: 'sign-in' | 'sign-up') {
+  getKakaoAuthUrl(state: string) {
     const params = new URLSearchParams({
       client_id: KAKAO_REST_API_KEY,
       redirect_uri: KAKAO_REDIRECT_URI,
       response_type: 'code',
-      state: mode,
+      state: state,
     });
 
     return `${KAKAO_AUTH_URL}/oauth/authorize?${params.toString()}`;
