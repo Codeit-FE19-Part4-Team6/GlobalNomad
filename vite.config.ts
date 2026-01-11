@@ -9,6 +9,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), tsconfigPaths(), svgr({ include: '**/*.svg' })],
 
   server: {
+    port: 3000,
     proxy: {
       '/api': {
         target: 'https://sp-globalnomad-api.vercel.app/19-6',
