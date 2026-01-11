@@ -4,15 +4,21 @@ import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 interface ActivityMobileReservationBarProps {
   price: number;
   selectedDate: Date | undefined;
-  selectedTimeSlot: string | null;
+  selectedTimeSlot: number | null; // scheduleId
+  selectedTimeSlotDisplay?: string; // 표시용 시간 문자열
   onOpenBottomSheet: () => void;
+  onReservation?: () => void;
+  isReservationEnabled?: boolean;
 }
 
 export default function ActivityMobileReservationBar({
   price,
   selectedDate,
   selectedTimeSlot,
+  selectedTimeSlotDisplay,
   onOpenBottomSheet,
+  onReservation,
+  isReservationEnabled = false,
 }: ActivityMobileReservationBarProps) {
   const formatSelectedDate = () => {
     if (!selectedDate || !selectedTimeSlot) {
@@ -23,7 +29,7 @@ export default function ActivityMobileReservationBar({
     const month = selectedDate.getMonth() + 1;
     const day = selectedDate.getDate();
 
-    return `${year.toString().slice(2)}/${month}/${day} ${selectedTimeSlot}`;
+    return `${year.toString().slice(2)}/${month}/${day} ${selectedTimeSlotDisplay || ''}`;
   };
 
   return (
@@ -41,7 +47,7 @@ export default function ActivityMobileReservationBar({
             </Title>
             <span className='font-md-medium text-gray-500'>/ 인</span>
           </div>
-          <PrimaryButton size='lg' disabled={!selectedDate || !selectedTimeSlot}>
+          <PrimaryButton size='lg' disabled={!isReservationEnabled} onClick={onReservation}>
             예약하기
           </PrimaryButton>
         </div>

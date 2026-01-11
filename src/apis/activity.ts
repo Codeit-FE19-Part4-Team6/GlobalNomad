@@ -7,6 +7,9 @@ import type {
   ActivityReviewResponse,
   ActivityRequest,
   ActivityResponse,
+  ActivityScheduleParams,
+  ActivityScheduleResponse,
+  ActivityReservationRequest,
 } from './type';
 
 export type CreatedActivityResponse = {
@@ -41,5 +44,23 @@ export const getActivityReviews = async ({
 
 export const getActivities = async (params: ActivityRequest) => {
   const res = await http.get<ActivityResponse>('/activities', { params });
+  return res.data;
+};
+
+// 체험 예약 가능일 조회
+export const getActivitySchedules = async ({ activityId, year, month }: ActivityScheduleParams) => {
+  const res = await http.get<ActivityScheduleResponse[]>(
+    `/activities/${activityId}/available-schedule`,
+    { params: { year, month: String(month).padStart(2, '0') } }
+  );
+  return res.data;
+};
+
+// 체험 예약 신청
+export const createActivityReservation = async (
+  activityId: number,
+  payload: ActivityReservationRequest
+) => {
+  const res = await http.post(`/activities/${activityId}/reservations`, payload);
   return res.data;
 };
