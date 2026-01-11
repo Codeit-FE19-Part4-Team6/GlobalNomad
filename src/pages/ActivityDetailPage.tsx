@@ -1,4 +1,5 @@
 import 'react-day-picker/dist/style.css';
+import '@/styles/day-picker.css';
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Title from '@/components/common/Title';
@@ -50,21 +51,12 @@ function ActivityDetailPage() {
   // 예약 가능일 조회
   const { data: schedules, isFetched: isScheduleLoaded } = useQuery({
     queryKey: ['activitySchedules', activityId, currentYear, currentMonth],
-    queryFn: async () => {
-      const result = await getActivitySchedules({
+    queryFn: () =>
+      getActivitySchedules({
         activityId: Number(activityId),
         year: currentYear,
         month: currentMonth,
-      });
-      console.log('예약 가능일 API 응답:', { year: currentYear, month: currentMonth, result });
-      console.log(
-        'times가 있는 날짜:',
-        result
-          .filter((s: ActivityScheduleResponse) => s.times && s.times.length > 0)
-          .map((s: ActivityScheduleResponse) => s.date)
-      );
-      return result;
-    },
+      }),
     enabled: !!activityId,
   });
 
