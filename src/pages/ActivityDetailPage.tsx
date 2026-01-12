@@ -1,7 +1,8 @@
 import 'react-day-picker/dist/style.css';
 import '@/styles/day-picker.css';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { isDateAvailable } from '@/utils/dateUtils';
 import Title from '@/components/common/Title';
 import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 import { TimeSelectButton } from '@/components/common/button/TimeSelectButton';
@@ -130,8 +131,8 @@ function ActivityDetailPage() {
     },
   });
 
-  // 예약 버튼 활성화 조건
-  const isReservationEnabled = selectedDate && selectedTimeSlot && participantCount > 0;
+  // 예약 버튼 활성화 조건 (boolean 타입으로 명시)
+  const isReservationEnabled = !!(selectedDate && selectedTimeSlot && participantCount > 0);
 
   // 케밥 메뉴 핸들러
   const handleEdit = () => {
@@ -183,18 +184,11 @@ function ActivityDetailPage() {
     setViewedMonth(date);
   };
 
-  // 바텀시트에서 예약하기
-  const handleBottomSheetReservation = () => {
-    if (!isAuthenticated) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
-      return;
-    }
-    if (!isReservationEnabled) {
-      return;
-    }
-    reservationMutation.mutate();
-  };
+  // 예약 가능한 날짜인지 확인하는 함수 (useCallback으로 메모이제이션)
+  const checkDateAvailable = useCallback(
+    (date: Date) => isDateAvailable(date, availableDates),
+    [availableDates]
+  );
 
   // 로딩 상태
   if (isLoading) {
@@ -304,7 +298,7 @@ function ActivityDetailPage() {
                 onReservation={handleReservation}
                 availableTimeSlots={availableTimeSlots}
                 availableDates={availableDates}
-                isReservationEnabled={!!isReservationEnabled}
+                isReservationEnabled={isReservationEnabled}
                 isLoading={reservationMutation.isPending}
                 onMonthChange={handleMonthChange}
                 isScheduleLoaded={isScheduleLoaded}
@@ -318,14 +312,13 @@ function ActivityDetailPage() {
           price={activity.price}
           selectedDate={selectedDate}
           selectedTimeSlot={selectedTimeSlot}
-          selectedTimeSlotDisplay={
-            availableTimeSlots.find((slot) => slot.id === selectedTimeSlot)
-              ? `${availableTimeSlots.find((slot) => slot.id === selectedTimeSlot)?.startTime}~${availableTimeSlots.find((slot) => slot.id === selectedTimeSlot)?.endTime}`
-              : undefined
-          }
+          selectedTimeSlotDisplay={(() => {
+            const foundSlot = availableTimeSlots.find((slot) => slot.id === selectedTimeSlot);
+            return foundSlot ? `${foundSlot.startTime}~${foundSlot.endTime}` : undefined;
+          })()}
           onOpenBottomSheet={handleMobileReservation}
           onReservation={handleReservation}
-          isReservationEnabled={!!isReservationEnabled}
+          isReservationEnabled={isReservationEnabled}
         />
       </div>
 
@@ -358,8 +351,7 @@ function ActivityDetailPage() {
                 onMonthChange={handleMonthChange}
                 className='font-md-medium w-full rounded-xl bg-white p-4'
                 modifiers={{
-                  available: (date) =>
-                    availableDates.some((d) => d.toDateString() === date.toDateString()),
+                  available: checkDateAvailable,
                 }}
                 modifiersClassNames={{
                   selected: 'custom-selected',
@@ -384,9 +376,7 @@ function ActivityDetailPage() {
                 disabled={[
                   { before: new Date() },
                   // 스케줄 데이터가 로드되었으면, 예약 가능한 날짜만 활성화
-                  (date) =>
-                    isScheduleLoaded &&
-                    !availableDates.some((d) => d.toDateString() === date.toDateString()),
+                  (date) => isScheduleLoaded && !checkDateAvailable(date),
                 ]}
               />
             </div>
@@ -456,7 +446,7 @@ function ActivityDetailPage() {
             </div>
             <PrimaryButton
               size='lg'
-              onClick={handleBottomSheetReservation}
+              onClick={handleReservation}
               className='w-full'
               disabled={!isReservationEnabled || reservationMutation.isPending}>
               {reservationMutation.isPending ? '예약 중...' : '확인'}

@@ -1,7 +1,9 @@
+import { useCallback } from 'react';
 import { DayPicker } from 'react-day-picker';
 import Title from '@/components/common/Title';
 import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 import { TimeSelectButton } from '@/components/common/button/TimeSelectButton';
+import { isDateAvailable } from '@/utils/dateUtils';
 
 interface TimeSlot {
   id: number;
@@ -45,12 +47,12 @@ export default function ActivityReservationPanel({
   onMonthChange,
   isScheduleLoaded = false,
 }: ActivityReservationPanelProps) {
-  // 예약 가능한 날짜인지 확인하는 함수
-  const isDateAvailable = (date: Date) => {
-    return availableDates.some(
-      (availableDate) => availableDate.toDateString() === date.toDateString()
-    );
-  };
+  // 예약 가능한 날짜인지 확인하는 함수 (useCallback으로 메모이제이션)
+  const checkDateAvailable = useCallback(
+    (date: Date) => isDateAvailable(date, availableDates),
+    [availableDates]
+  );
+
   return (
     <div className='rounded-3xl border border-gray-50 p-6 shadow-[0_0_20px_rgba(0,0,0,0.08)]'>
       {/* 가격 */}
@@ -75,7 +77,7 @@ export default function ActivityReservationPanel({
           onMonthChange={onMonthChange}
           className='font-md-medium w-full rounded-xl bg-white p-4'
           modifiers={{
-            available: (date) => isDateAvailable(date),
+            available: checkDateAvailable,
           }}
           modifiersClassNames={{
             selected: 'custom-selected',
@@ -100,7 +102,7 @@ export default function ActivityReservationPanel({
           disabled={[
             { before: new Date() },
             // 스케줄 데이터가 로드되었으면, 예약 가능한 날짜만 활성화
-            (date) => isScheduleLoaded && !isDateAvailable(date),
+            (date) => isScheduleLoaded && !checkDateAvailable(date),
           ]}
         />
       </div>

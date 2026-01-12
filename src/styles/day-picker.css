@@ -1,13 +1,13 @@
 /* DayPicker 커스텀 스타일 */
 
-/* 달력 화살표 색상 */
-.rdp-button_previous,
-.rdp-button_next {
+/* 달력 화살표 색상 - 라이브러리 스타일 덮어쓰기 위해 !important 필요 */
+.rdp .rdp-button_previous,
+.rdp .rdp-button_next {
   color: #1b1b1b !important;
 }
 
-.rdp-button_previous:hover,
-.rdp-button_next:hover {
+.rdp .rdp-button_previous:hover,
+.rdp .rdp-button_next:hover {
   color: #4b4b4b !important;
   background-color: #f5f5f5 !important;
 }

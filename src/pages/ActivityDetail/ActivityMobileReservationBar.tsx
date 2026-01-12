@@ -37,7 +37,7 @@ export default function ActivityMobileReservationBar({
       <div className='mx-auto flex max-w-300 items-center justify-between gap-4'>
         <button
           onClick={onOpenBottomSheet}
-          className='font-md-bold text-primary-500shrink-0 underline'>
+          className='font-md-bold text-primary-500 shrink-0 underline'>
           {formatSelectedDate()}
         </button>
         <div className='flex items-center gap-3'>
