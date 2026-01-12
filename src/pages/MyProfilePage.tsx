@@ -125,11 +125,13 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
         />
         <PasswordInput
           label='비밀번호'
-          placeholder='8자 이상 입력해주세요'
+          placeholder='8자 이상 입력해 주세요.'
           autoComplete='new-password'
           {...register('newPassword', {
-            minLength: { value: 8, message: '비밀번호는 8자 이상이어야 합니다' },
-            maxLength: { value: 16, message: '비밀번호는 16자 이하로 입력해주세요' },
+            pattern: {
+              value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/,
+              message: '8자 이상, 영문과 숫자를 포함해야 됩니다.',
+            },
           })}
           error={!!errors.newPassword}
           errorMessage={errors.newPassword?.message}

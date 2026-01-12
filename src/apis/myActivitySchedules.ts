@@ -15,6 +15,7 @@ export const getMyActivitySchedules = async ({
   const res = await http.get<MyActivitySchedulesResponse[]>(
     `/my-activities/${activityId}/reservation-dashboard`,
     {
+      //params로 받을 데이터 절약
       params: {
         year,
         month,

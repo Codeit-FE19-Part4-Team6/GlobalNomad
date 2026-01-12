@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Card from '@/components/common/card';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
 import ReviewModal from '@/components/common/modal/ReviewModal';
@@ -7,7 +7,7 @@ import Title from '@/components/common/Title';
 import { Down, Earth } from '@/assets/icons';
 import type { MyReservationsResponse } from '@/apis/type';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useMyReservationsQuery } from '@/hooks/queries/useMyReservationsQuery';
+import { useMyReservationsInfinite } from '@/hooks/queries/useMyReservationsQuery';
 import { useCancelReservationMutation } from '@/hooks/queries/useCancelReservationMutation';
 import { useReviewReservationMutation } from '@/hooks/queries/useReviewReservationMutation';
 
@@ -65,10 +65,49 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     setSelected('all');
     updateSearchParams('all');
   };
-  // 예약 내역 조회
-  const { data: reservations = [], isLoading, isError } = useMyReservationsQuery(selected);
 
-  const hasAnyData = reservations.length > 0; // 예약 데이터가 한 개라도 있는지 여부 확인
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useMyReservationsInfinite(selected);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const allFetchedReservations = data?.pages.flatMap((page) => page.reservations) ?? [];
+  const { data: allData } = useMyReservationsInfinite('all');
+  const hasAnyReservation = allData?.pages.some((page) => page.reservations.length > 0) ?? false;
+
+  // 클라이언트에서 체험 완료로 자동 변환
+  const rawReservations = allFetchedReservations.map((res) => {
+    const now = new Date();
+    const endDateTime = new Date(`${res.date}T${res.endTime}`);
+    if (res.status === 'confirmed' && now > endDateTime) {
+      return { ...res, status: 'completed' as const };
+    }
+    return res;
+  });
+
+  // 선택된 상태 필터 적용
+  const reservations = rawReservations.filter((res) => {
+    if (selected === 'all') {
+      return true;
+    }
+    return res.status === selected;
+  });
+
+  // IntersectionObserver를 이용한 무한 스크롤
+  useEffect(() => {
+    if (!bottomRef.current || !hasNextPage) {
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1 }
+    );
+    observer.observe(bottomRef.current);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
   // 후기 작성 버튼 클릭
   const handleReviewClick = (reservation: ReservationItem) => {
     setSelectedReservation(reservation);
@@ -121,8 +160,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         </Title>
         <div className='font-md-medium text-gray-500'>예약내역 변경 및 취소할 수 있습니다.</div>
       </div>
-      {/* hasAnyData가 true일 때만 필터 버튼 영역 렌더링 */}
-      {hasAnyData && (
+      {hasAnyReservation && (
         <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
           <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
             전체
@@ -204,6 +242,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
                 </div>
               </Card>
             ))}
+            <div ref={bottomRef} className='h-1' />
           </div>
         </>
       )}

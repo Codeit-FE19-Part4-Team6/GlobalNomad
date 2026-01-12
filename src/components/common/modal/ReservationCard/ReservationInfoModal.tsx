@@ -115,19 +115,6 @@ export default function ReservationInfoModal({
   useBodyScrollLock({ isLocked: isMouseOnModal });
 
   /**
-   * ✅ 탭 상단 카운트
-   * - 지금은 "현재 탭+시간대"로 가져온 reservations 기준으로 세는 형태
-   * - (원하면 다음 단계에서 status별 totalCount를 정확히 표시하도록 개선 가능)
-   */
-  // const reservationCount = useMemo(() => {
-  //   return {
-  //     confirmed: reservations.filter((r) => r.status === 'confirmed').length,
-  //     pending: reservations.filter((r) => r.status === 'pending').length,
-  //     declined: reservations.filter((r) => r.status === 'declined').length,
-  //   };
-  // }, [reservations]);
-
-  /**
    * ✅ 보여줄 리스트
    * - 지금 API가 이미 tab(status)로 필터되어 내려올 수도 있지만
    * - 안전하게 한 번 더 필터(겹치면 그냥 그대로)
@@ -197,7 +184,9 @@ export default function ReservationInfoModal({
           <div className='flex h-12 items-center rounded-xl border border-gray-50 px-5 lg:h-[54px]'>
             <Dropdown className='relative w-full'>
               <DropdownTrigger className='flex w-full items-center justify-between'>
-                <span className='font-lg-medium'>{selectedTime || '예약 내역이 없습니다.'}</span>
+                <span className='font-lg-medium text-gray-950'>
+                  {selectedTime || '예약 내역이 없습니다.'}
+                </span>
                 <ArrowDown />
               </DropdownTrigger>
 

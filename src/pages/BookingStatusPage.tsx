@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 
 import { Down, ArrowDown } from '@/assets/icons';
@@ -20,12 +20,16 @@ type Props = {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+//달력에 그려지는 예약 status
+//밸류값을 꺼내서 타입정의
 type DayCounts = {
-  [eventType.reservation]: number; // pending
-  [eventType.approved]: number; // confirmed
-  [eventType.completed]: number; // completed
+  [eventType.reservation]: number;
+  [eventType.approved]: number;
+  [eventType.completed]: number;
 };
-
+//서버와  date 형태 일치
+//DayPicker(Date 객체)에서 받은 날짜를 서버에서 사용하는 "YYYY-MM-DD" 문자열로 변환하여
+// 서버 데이터와 매칭 및 API 요청에 사용하기 위한 함수
 const toYmd = (date: Date) => {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -33,6 +37,8 @@ const toYmd = (date: Date) => {
   return `${y}-${m}-${d}`;
 };
 
+//인포모달에 보여줄 한국식 날짜
+//데이트 피커의date 를 바아서 toYmd(date)를 거쳐서 뱃지에 날짜 저장 뱃지클릭하면 해당날짜가 모달에 출력
 const ymdToKorean = (ymd: string) => {
   const [y, m, d] = ymd.split('-').map(Number);
   if (!y || !m || !d) {
@@ -42,18 +48,21 @@ const ymdToKorean = (ymd: string) => {
 };
 
 export default function BookingStatusPage({ setMobileOpen }: Props) {
-  // ✅ 드롭다운용: 내 체험 목록
+  //드롭다운 체험 title
   const { data: activities = [], isLoading, isError } = useMyActivity();
-
-  // ✅ 선택된 체험 id
+  //드롭다운에서 사용자가 선택한 체험id
+  //체험 미선택 시 undefined
   const [selectedActivityId, setSelectedActivityId] = useState<number | undefined>(undefined);
-
-  // ✅ 달력 현재 월
+  //월이 바뀔때마다 해당 월에 관련된 api호출하기 위해
   const [monthDate, setMonthDate] = useState(new Date());
-
-  // ✅ 모달 상태(이름 유지)
+  //모달 상태
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
+  //선택되는 뱃지
   const [selectBadge, setSelectBadge] = useState<string | null>(null);
+
+  const handleBadgeClick = (dateYmd: string) => () => {
+    openReservationModal(dateYmd);
+  };
 
   const openReservationModal = (dateYmd: string) => {
     setSelectBadge(dateYmd);
@@ -64,22 +73,32 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
     setIsReservationModalOpen(false);
     setSelectBadge(null);
   };
+  //실제 스크롤 요소 찾아서 스크롤 바 숨기기
+  useEffect(() => {
+    const el = document.scrollingElement as HTMLElement | null;
+    if (!el) {
+      return;
+    }
 
-  // ✅ selectBadge는 string | null 이라서, 훅에 넘길 때 undefined로 바꿔줌
+    el.classList.add('scrollbar-hide');
+    return () => el.classList.remove('scrollbar-hide');
+  }, []);
+
+  //selectBadge 에 날짜가 있다면
   const reservedDate = selectBadge ?? undefined;
 
-  // ✅ 모달이 열렸을 때만 + activityId/date 있을 때만 호출됨(enabled 조건)
+  //data의 이름 변경, 선택된 체험id와 날짜와,모달이true면 데이터 받기(hook에서 enabled로 제어)
   const { data: reservedSchedules = [] } = useReservedSchedule(
     selectedActivityId,
     reservedDate,
     isReservationModalOpen
   );
 
-  // ✅ year/month
+  // api요청시 해당 연,월을 인자로 같이 보냄
   const year = String(monthDate.getFullYear());
   const month = String(monthDate.getMonth() + 1).padStart(2, '0');
 
-  // ✅ 월별 예약현황 조회 (달력용)
+  //이름 변경 및 useMyActivitySchedules에 체험아이디와 ,date를 같이 보낸다.
   const {
     data: dashboard = [],
     isLoading: isDashboardLoading,
@@ -90,7 +109,7 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
     month,
   });
 
-  // ✅ 트리거에 보여줄 선택된 체험 객체
+  // 드롭다운 트리거에 보여줄 선택된 체험 객체
   const selectedActivity = useMemo(() => {
     if (!selectedActivityId) {
       return undefined;
@@ -98,7 +117,7 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
     return activities.find((a) => a.id === selectedActivityId);
   }, [activities, selectedActivityId]);
 
-  // ✅ dashboard -> countsByDate 변환
+  // MyActivitySchedulesResponse의 타입을 배열 => 객체형태로
   const countsByDate = useMemo(() => {
     return dashboard.reduce<Record<string, DayCounts>>((acc, item: MyActivitySchedulesResponse) => {
       acc[item.date] = {
@@ -109,10 +128,6 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
       return acc;
     }, {});
   }, [dashboard]);
-
-  const handleBadgeClick = (dateYmd: string) => () => {
-    openReservationModal(dateYmd);
-  };
 
   return (
     <div className='flex min-h-0 flex-1 flex-col'>
@@ -190,9 +205,14 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
               months: 'w-full h-full',
             }}
             components={{
+              //Day 를 커스텀 하기
+              //모든 타입의 props
               Day: (props: any) => {
+                //date에 해당날짜 칸의 Date객체 추출
                 const date: Date = props.date ?? props.day?.date ?? props.day;
+                //date문자열로 변환 해서 key담기
                 const key = toYmd(date);
+                //key에 해당하는 status들 가져와서 객체화 조회, counts에 담기
                 const counts = countsByDate[key];
 
                 const isOpenThisDay = isReservationModalOpen && selectBadge === key;
@@ -203,7 +223,7 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
                       {/* 날짜(기존 children) */}
                       <div className='w-full text-center'>{props.children}</div>
 
-                      {/* 뱃지 + (PC) 팝오버 */}
+                      {/* counts가 있으면 뱃지 렌더링 */}
                       {counts && (
                         <div className='relative mt-1 flex w-[45px] flex-col items-center gap-1 px-1 lg:w-[67px]'>
                           <EventBadge
