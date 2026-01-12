@@ -1,4 +1,4 @@
-// src/hooks/notification/useHeaderNotifications.ts
+// src/hooks/useHeaderNotifications.ts
 import { useCallback, useEffect, useRef, useState } from 'react';
 import notificationApi from '@/apis/notification';
 import type { MyNotification } from '@/apis/type';
