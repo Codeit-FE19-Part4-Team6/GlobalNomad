@@ -16,6 +16,8 @@ interface ActivityInfoProps {
   onEdit?: () => void;
   onDelete?: () => void;
   variant?: 'mobile' | 'desktop';
+  /** 케밥 메뉴 표시 여부 (본인의 체험일 때만 true) */
+  showKebabMenu?: boolean;
 }
 
 export default function ActivityInfo({
@@ -28,6 +30,7 @@ export default function ActivityInfo({
   onEdit,
   onDelete,
   variant = 'mobile',
+  showKebabMenu = false,
 }: ActivityInfoProps) {
   const titleSize = variant === 'desktop' ? '3xl' : '2xl';
   const marginBottom = variant === 'desktop' ? 'mb-14' : 'mb-4';
@@ -45,25 +48,27 @@ export default function ActivityInfo({
             {title}
           </Title>
         </div>
-        {/* 케밥 메뉴 */}
-        <Dropdown className='relative'>
-          <DropdownTrigger className='p-1'>
-            <More className='h-6 w-6 text-gray-900' />
-          </DropdownTrigger>
-          <DropdownList
-            className={`absolute top-8 right-0 z-10 ${dropdownWidth} overflow-hidden rounded-md border ${dropdownBorder} bg-white shadow-lg`}>
-            <DropdownItem
-              onClick={onEdit || (() => {})}
-              className='font-md-medium cursor-pointer px-4 py-2.5 text-center text-gray-800 hover:bg-gray-50'>
-              수정하기
-            </DropdownItem>
-            <DropdownItem
-              onClick={onDelete || (() => {})}
-              className='font-md-medium cursor-pointer px-4 py-2.5 text-center text-gray-800 hover:bg-gray-50'>
-              삭제하기
-            </DropdownItem>
-          </DropdownList>
-        </Dropdown>
+        {/* 케밥 메뉴 - 본인의 체험일 때만 표시 */}
+        {showKebabMenu && (
+          <Dropdown className='relative'>
+            <DropdownTrigger className='p-1'>
+              <More className='h-6 w-6 text-gray-900' />
+            </DropdownTrigger>
+            <DropdownList
+              className={`absolute top-8 right-0 z-10 ${dropdownWidth} overflow-hidden rounded-md border ${dropdownBorder} bg-white shadow-lg`}>
+              <DropdownItem
+                onClick={onEdit || (() => {})}
+                className='font-md-medium cursor-pointer px-4 py-2.5 text-center text-gray-800 hover:bg-gray-50'>
+                수정하기
+              </DropdownItem>
+              <DropdownItem
+                onClick={onDelete || (() => {})}
+                className='font-md-medium cursor-pointer px-4 py-2.5 text-center text-gray-800 hover:bg-gray-50'>
+                삭제하기
+              </DropdownItem>
+            </DropdownList>
+          </Dropdown>
+        )}
       </div>
 
       {/* 평점 */}
@@ -78,7 +83,7 @@ export default function ActivityInfo({
 
       {/* 주소 */}
       <div className={`flex items-start gap-1 ${variant === 'desktop' ? 'mb-6' : 'mb-2'}`}>
-        <Spot className='mt-0.5 h-4 w-4 flex-shrink-0 text-gray-700' />
+        <Spot className='mt-0.5 h-4 w-4 shrink-0 text-gray-700' />
         <span className='font-md-medium text-gray-700'>{address}</span>
       </div>
 

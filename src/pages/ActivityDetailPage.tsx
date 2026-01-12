@@ -1,6 +1,8 @@
 import 'react-day-picker/dist/style.css';
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import '@/styles/day-picker.css';
+import { useState, useMemo, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { isDateAvailable } from '@/utils/dateUtils';
 import Title from '@/components/common/Title';
 import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 import { TimeSelectButton } from '@/components/common/button/TimeSelectButton';
@@ -13,29 +15,134 @@ import ActivityMobileReservationBar from './ActivityDetail/ActivityMobileReserva
 import ActivityReviews from './ActivityDetail/ActivityReviews';
 import ActivityMap from './ActivityDetail/ActivityMap';
 import { useActivityDetail } from '@/hooks/queries/useActivityDetail';
+import { useAuthStore } from '@/stores/authStore';
+import { deleteMyActivity } from '@/apis/myActivities';
+import { createActivityReservation, getActivitySchedules } from '@/apis/activity';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { ActivityScheduleResponse } from '@/apis/type';
 
 const SHORT_DESCRIPTION_MAX_LENGTH = 100;
 
 function ActivityDetailPage() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   // URL에서 activityId 가져오기
   const { activityId } = useParams<{ activityId: string }>();
+
+  // 현재 로그인한 사용자 정보
+  const { user, isAuthenticated } = useAuthStore();
 
   // API 데이터 불러오기
   const { data: activity, isLoading, isError } = useActivityDetail(Number(activityId));
 
   // 예약 관련 상태
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<number | null>(null); // scheduleId로 변경
   const [participantCount, setParticipantCount] = useState(1);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
+  // 캘린더에서 보고 있는 월 상태 (API 호출에 사용)
+  const [viewedMonth, setViewedMonth] = useState<Date>(new Date());
+
+  // 현재 보고 있는 월의 연/월 계산
+  const currentYear = viewedMonth.getFullYear();
+  const currentMonth = viewedMonth.getMonth() + 1;
+
+  // 예약 가능일 조회
+  const { data: schedules, isFetched: isScheduleLoaded } = useQuery({
+    queryKey: ['activitySchedules', activityId, currentYear, currentMonth],
+    queryFn: () =>
+      getActivitySchedules({
+        activityId: Number(activityId),
+        year: currentYear,
+        month: currentMonth,
+      }),
+    enabled: !!activityId,
+  });
+
+  // 선택한 날짜에 해당하는 시간대 필터링
+  const availableTimeSlots = useMemo(() => {
+    if (!schedules || !selectedDate) {
+      return [];
+    }
+    // 타임존 이슈 방지: 로컬 날짜를 YYYY-MM-DD 형식으로 변환
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    const schedule = schedules.find((s: ActivityScheduleResponse) => s.date === dateStr);
+    return schedule?.times || [];
+  }, [schedules, selectedDate]);
+
+  // 예약 가능한 날짜들 (times 배열에 시간이 있는 날짜만)
+  const availableDates = useMemo(() => {
+    if (!schedules) {
+      return [];
+    }
+    // times 배열이 존재하고 길이가 1 이상인 날짜만 필터링
+    // 타임존 이슈 방지: "2026-01-27" -> new Date(2026, 0, 27)로 변환
+    return schedules
+      .filter((s: ActivityScheduleResponse) => s.times && s.times.length > 0)
+      .map((s: ActivityScheduleResponse) => {
+        const [year, month, day] = s.date.split('-').map(Number);
+        return new Date(year, month - 1, day);
+      });
+  }, [schedules]);
+
+  // 본인의 체험인지 확인
+  const isOwner = useMemo(() => {
+    if (!activity || !user) {
+      return false;
+    }
+    return activity.userId === user.id;
+  }, [activity, user]);
+
+  // 예약 mutation
+  const reservationMutation = useMutation({
+    mutationFn: () =>
+      createActivityReservation(Number(activityId), {
+        scheduleId: selectedTimeSlot!,
+        headCount: participantCount,
+      }),
+    onSuccess: () => {
+      alert('예약이 완료되었습니다!');
+      queryClient.invalidateQueries({ queryKey: ['activitySchedules'] });
+      // 상태 초기화
+      setSelectedDate(undefined);
+      setSelectedTimeSlot(null);
+      setParticipantCount(1);
+      setIsBottomSheetOpen(false);
+    },
+    onError: (error: Error) => {
+      alert(`예약 실패: ${error.message}`);
+    },
+  });
+
+  // 삭제 mutation
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteMyActivity({ activityId: Number(activityId) }),
+    onSuccess: () => {
+      alert('체험이 삭제되었습니다.');
+      navigate('/');
+    },
+    onError: (error: Error) => {
+      alert(`삭제 실패: ${error.message}`);
+    },
+  });
+
+  // 예약 버튼 활성화 조건 (boolean 타입으로 명시)
+  const isReservationEnabled = !!(selectedDate && selectedTimeSlot && participantCount > 0);
+
   // 케밥 메뉴 핸들러
   const handleEdit = () => {
-    // TODO: 수정 페이지로 이동
+    navigate(`/activities/${activityId}/edit`);
   };
 
   const handleDelete = () => {
-    // TODO: 삭제 확인 모달 열기
+    if (window.confirm('정말로 이 체험을 삭제하시겠습니까?')) {
+      deleteMutation.mutate();
+    }
   };
 
   // 참가 인원 증감 핸들러
@@ -51,7 +158,15 @@ function ActivityDetailPage() {
 
   // 예약하기 핸들러 (데스크톱)
   const handleReservation = () => {
-    // TODO: 예약 API 호출
+    if (!isAuthenticated) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+    if (!isReservationEnabled) {
+      return;
+    }
+    reservationMutation.mutate();
   };
 
   // 모바일 예약하기 핸들러 (바텀시트 열기)
@@ -64,11 +179,16 @@ function ActivityDetailPage() {
     setIsBottomSheetOpen(false);
   };
 
-  // 바텀시트에서 예약하기
-  const handleBottomSheetReservation = () => {
-    // TODO: 예약 API 호출
-    setIsBottomSheetOpen(false);
+  // 캘린더 월 변경 핸들러
+  const handleMonthChange = (date: Date) => {
+    setViewedMonth(date);
   };
+
+  // 예약 가능한 날짜인지 확인하는 함수 (useCallback으로 메모이제이션)
+  const checkDateAvailable = useCallback(
+    (date: Date) => isDateAvailable(date, availableDates),
+    [availableDates]
+  );
 
   // 로딩 상태
   if (isLoading) {
@@ -96,11 +216,11 @@ function ActivityDetailPage() {
   return (
     <div className='w-full'>
       {/* 컨텐츠 래퍼 - 반응형 너비 및 패딩 */}
-      <div className='mx-auto w-full max-w-[1200px] px-6 py-6 sm:px-[30px] sm:py-10 lg:px-10'>
+      <div className='mx-auto w-full max-w-300 px-6 py-6 sm:px-7.5 sm:py-10 lg:px-10'>
         {/* 메인 레이아웃: 좌측 컨텐츠 + 우측 예약 영역 */}
         <div className='flex flex-col gap-6 lg:flex-row lg:gap-6'>
           {/* 좌측 영역 - 체험 정보 */}
-          <div className='flex-1 lg:max-w-[770px]'>
+          <div className='flex-1 lg:max-w-192.5'>
             {/* 체험 타이틀 및 정보 (모바일/태블릿에서 상단 노출) */}
             <div className='lg:hidden'>
               <ActivityInfo
@@ -113,6 +233,7 @@ function ActivityDetailPage() {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 variant='mobile'
+                showKebabMenu={isOwner}
               />
             </div>
 
@@ -158,19 +279,29 @@ function ActivityDetailPage() {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 variant='desktop'
+                showKebabMenu={isOwner}
               />
 
               {/* 예약 정보 박스 */}
               <ActivityReservationPanel
                 price={activity.price}
                 selectedDate={selectedDate}
-                onSelectDate={setSelectedDate}
+                onSelectDate={(date) => {
+                  setSelectedDate(date);
+                  setSelectedTimeSlot(null); // 날짜 변경 시 시간 초기화
+                }}
                 selectedTimeSlot={selectedTimeSlot}
                 onSelectTimeSlot={setSelectedTimeSlot}
                 participantCount={participantCount}
                 onIncrement={handleIncrement}
                 onDecrement={handleDecrement}
                 onReservation={handleReservation}
+                availableTimeSlots={availableTimeSlots}
+                availableDates={availableDates}
+                isReservationEnabled={isReservationEnabled}
+                isLoading={reservationMutation.isPending}
+                onMonthChange={handleMonthChange}
+                isScheduleLoaded={isScheduleLoaded}
               />
             </div>
           </aside>
@@ -181,13 +312,19 @@ function ActivityDetailPage() {
           price={activity.price}
           selectedDate={selectedDate}
           selectedTimeSlot={selectedTimeSlot}
+          selectedTimeSlotDisplay={(() => {
+            const foundSlot = availableTimeSlots.find((slot) => slot.id === selectedTimeSlot);
+            return foundSlot ? `${foundSlot.startTime}~${foundSlot.endTime}` : undefined;
+          })()}
           onOpenBottomSheet={handleMobileReservation}
+          onReservation={handleReservation}
+          isReservationEnabled={isReservationEnabled}
         />
       </div>
 
       {/* 바텀시트 - 모바일/태블릿 예약 폼 */}
       <BottomSheet isOpen={isBottomSheetOpen} onClose={handleCloseBottomSheet}>
-        <div className='px-6 py-6 sm:px-[30px]'>
+        <div className='px-6 py-6 sm:px-7.5'>
           {/* 바텀시트 헤더 */}
           <div className='mb-6 flex items-center justify-between'>
             <Title as='h3' size='xl' weight='bold'>
@@ -207,12 +344,20 @@ function ActivityDetailPage() {
               <DayPicker
                 mode='single'
                 selected={selectedDate}
-                onSelect={setSelectedDate}
+                onSelect={(date) => {
+                  setSelectedDate(date);
+                  setSelectedTimeSlot(null); // 날짜 변경 시 시간 초기화
+                }}
+                onMonthChange={handleMonthChange}
                 className='font-md-medium w-full rounded-xl bg-white p-4'
+                modifiers={{
+                  available: checkDateAvailable,
+                }}
                 modifiersClassNames={{
                   selected: 'custom-selected',
                   today: 'custom-today',
                   disabled: 'text-gray-300 cursor-not-allowed',
+                  available: 'font-bold text-primary-500',
                 }}
                 modifiersStyles={{
                   selected: {
@@ -228,7 +373,11 @@ function ActivityDetailPage() {
                     borderRadius: '9999px',
                   },
                 }}
-                disabled={[{ before: new Date() }]}
+                disabled={[
+                  { before: new Date() },
+                  // 스케줄 데이터가 로드되었으면, 예약 가능한 날짜만 활성화
+                  (date) => isScheduleLoaded && !checkDateAvailable(date),
+                ]}
               />
             </div>
 
@@ -240,18 +389,21 @@ function ActivityDetailPage() {
                     예약 가능한 시간
                   </Title>
                   <div className='space-y-2'>
-                    <TimeSelectButton
-                      onClick={() => setSelectedTimeSlot('14:00~15:00')}
-                      selected={selectedTimeSlot === '14:00~15:00'}
-                      className='w-full'>
-                      14:00~15:00
-                    </TimeSelectButton>
-                    <TimeSelectButton
-                      onClick={() => setSelectedTimeSlot('15:00~16:00')}
-                      selected={selectedTimeSlot === '15:00~16:00'}
-                      className='w-full'>
-                      15:00~16:00
-                    </TimeSelectButton>
+                    {availableTimeSlots.length > 0 ? (
+                      availableTimeSlots.map((slot) => (
+                        <TimeSelectButton
+                          key={slot.id}
+                          onClick={() => setSelectedTimeSlot(slot.id)}
+                          selected={selectedTimeSlot === slot.id}
+                          className='w-full'>
+                          {slot.startTime}~{slot.endTime}
+                        </TimeSelectButton>
+                      ))
+                    ) : (
+                      <p className='font-md-medium text-center text-gray-500'>
+                        예약 가능한 시간이 없습니다.
+                      </p>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -273,7 +425,7 @@ function ActivityDetailPage() {
                 className='flex h-11 w-11 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
                 −
               </button>
-              <span className='font-lg-medium min-w-[40px] text-center text-gray-900'>
+              <span className='font-lg-medium min-w-10 text-center text-gray-900'>
                 {participantCount}
               </span>
               <button
@@ -292,8 +444,12 @@ function ActivityDetailPage() {
                 ₩ {(activity.price * participantCount).toLocaleString()}
               </Title>
             </div>
-            <PrimaryButton size='lg' onClick={handleBottomSheetReservation} className='w-full'>
-              확인
+            <PrimaryButton
+              size='lg'
+              onClick={handleReservation}
+              className='w-full'
+              disabled={!isReservationEnabled || reservationMutation.isPending}>
+              {reservationMutation.isPending ? '예약 중...' : '확인'}
             </PrimaryButton>
           </div>
         </div>
