@@ -1,128 +1,29 @@
 import { Bell, Delete } from '@/assets/icons';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import notificationApi from '@/apis/notification';
-import type { MyNotification } from '@/apis/type';
 import NotificationContent from '@/components/common/Header/NotificationContent';
 import { getTimeAgo } from '@/utils/timeUtils';
+import { useHeaderNotifications } from '@/hooks/useHeaderNotifications';
 
 interface Props {
-  isOpen: boolean; /** 알림 드롭다운 열림 여부 */
+  isOpen: boolean;
   onToggle: () => void;
 }
 
 export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
-  const [notifications, setNotifications] = useState<MyNotification[]>([]);
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
-  /** 다음 페이지를 요청하기 위한 커서 ID */
-  const [cursorId, setCursorId] = useState<number | undefined>(undefined);
-  const [hasMore, setHasMore] = useState(true); /** 더 불러올 데이터가 있는지 여부 */
-  const [isLoading, setIsLoading] = useState(false); /** 알림 로딩 중 여부 (중복 호출 방지) */
-  const [totalCount, setTotalCount] = useState(0);
-
-  const observerTarget = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-
-  // 알림 데이터 로드
-  const loadNotifications = useCallback(async () => {
-    if (isLoading || !hasMore) {
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await notificationApi.getNotifications(cursorId, 10);
-
-      setNotifications((prev) => {
-        const ids = new Set(prev.map((n) => n.id));
-        return [...prev, ...response.notifications.filter((n) => !ids.has(n.id))];
-      });
-
-      setTotalCount(response.totalCount);
-      setCursorId(response.cursorId);
-
-      if (!response.cursorId || response.notifications.length === 0) {
-        setHasMore(false);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [cursorId, isLoading, hasMore]);
-
-  //초기 데이터 로드
-  useEffect(() => {
-    if (notifications.length === 0 && !isLoading && hasMore) {
-      loadNotifications();
-    }
-  }, []);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      loadNotifications();
-    }, 10000);
-
-    return () => clearInterval(id);
-  }, [loadNotifications]);
-
-  /**
-   * IntersectionObserver 설정
-   *
-   * - 드롭다운이 열려 있을 때만 활성화
-   * - observerTarget이 화면에 들어오면 다음 페이지 로드
-   */
-
-  const options = {
-    root: null,
-    rootMargin: '20px', // 바닥 근처에서 미리 감지
-    threshold: 0.1, // 10%만 보여도 트리거
-  };
-  const handleObserver = (entries: IntersectionObserverEntry[]) => {
-    const target = entries[0];
-    if (target.isIntersecting) {
-      // 타겟이 화면에 들어오면 알림 추가 로드
-      loadNotifications();
-    }
-  };
-
-  useEffect(() => {
-    if (!isOpen || !hasMore) {
-      return;
-    }
-    observerRef.current = new IntersectionObserver(handleObserver, options);
-
-    const target = observerTarget.current;
-    if (target) {
-      observerRef.current.observe(target);
-    }
-
-    return () => observerRef.current?.disconnect();
-  }, [isOpen, hasMore, loadNotifications]);
-
-  // 알림 삭제
-  const handleDelete = async (e: React.MouseEvent, id: number) => {
-    e.stopPropagation();
-
-    try {
-      await notificationApi.deleteNotification(id);
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-      setTotalCount((prev) => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error('알림 삭제 실패:', error);
-    }
-  };
-
-  /**
-   * 알림 버튼 토글 핸들러
-   */
-  const handleToggle = () => {
-    onToggle();
-  };
+  const {
+    notifications,
+    hoveredId,
+    setHoveredId,
+    observerTarget,
+    isLoading,
+    hasMore,
+    totalCount,
+    deleteNotification,
+  } = useHeaderNotifications({ isOpen });
 
   return (
     <div className='relative flex items-center gap-5'>
       <button
-        onClick={handleToggle}
+        onClick={onToggle}
         className='relative h-6 w-6 cursor-pointer rounded-full transition-colors'
         aria-label={`알림 ${totalCount}개`}
         aria-expanded={isOpen}
@@ -148,7 +49,7 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
           <div className='flex items-center justify-between border-b border-gray-100 px-4 py-4'>
             <span className='font-lg-bold'>알림 {totalCount}개</span>
             <button
-              onClick={handleToggle}
+              onClick={onToggle}
               className='cursor-pointer transition-opacity hover:opacity-50'
               aria-label='알림창 닫기'>
               <Delete />
@@ -177,7 +78,7 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
                             {getTimeAgo(notification.createdAt)}
                           </span>
                           <button
-                            onClick={(e) => handleDelete(e, notification.id)}
+                            onClick={() => deleteNotification(notification.id)}
                             className={`hover:text-primary-500 absolute top-5 left-4 cursor-pointer transition-opacity ${
                               hoveredId === notification.id
                                 ? 'opacity-100'

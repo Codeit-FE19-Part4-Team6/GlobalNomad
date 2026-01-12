@@ -34,6 +34,7 @@ const KakaoCallbackPage = () => {
 
       // 회원가입 모드인지 확인
       const isKakaoSignUpMode = sessionStorage.getItem('isKakaoSignUpMode') === 'true';
+      console.log('✅isKakaoSignUpMode:', isKakaoSignUpMode);
 
       try {
         const requestData = {
@@ -51,6 +52,7 @@ const KakaoCallbackPage = () => {
 
           // 세션 스토리지 정리
           sessionStorage.removeItem('isKakaoSignUpMode');
+          console.log('✅🔥isKakaoSignUpMode:', isKakaoSignUpMode);
 
           token.setTokens(signUpResponse.data.accessToken, signUpResponse.data.refreshToken);
           showSnack(
@@ -70,12 +72,15 @@ const KakaoCallbackPage = () => {
       } catch (error) {
         if (isAxiosError(error) && error.response?.status === 403 && !isKakaoSignUpMode) {
           // 로그인 모드에서 가입되지 않은 사용자
+          console.log('😀isKakaoSignUpMode:', isKakaoSignUpMode);
+
           showSnack('가입되지 않은 사용자입니다. 회원가입을 진행해주세요.', 'error', {
             onClose: () => navigate('/signup'),
           });
         } else {
           // 에러 시 세션 정리
           sessionStorage.removeItem('isKakaoSignUpMode');
+          console.log('😀🔥isKakaoSignUpMode:', isKakaoSignUpMode);
 
           const errorMessage =
             isAxiosError(error) && error.response?.data?.message
