@@ -52,7 +52,7 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
               onClick={onToggle}
               className='cursor-pointer transition-opacity hover:opacity-50'
               aria-label='알림창 닫기'>
-              <Delete />
+              <Delete className='h-2.5 w-2.5' />
             </button>
           </div>
 
@@ -88,7 +88,7 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
                                 : 'pointer-events-none opacity-0'
                             }`}
                             aria-label='알림 삭제'>
-                            <Delete className='h-5 w-5' />
+                            <Delete className='mt-2 h-2.5 w-2.5' />
                           </button>
                         </div>
                       </div>
