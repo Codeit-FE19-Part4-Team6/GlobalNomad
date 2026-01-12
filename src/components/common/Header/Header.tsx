@@ -61,7 +61,7 @@ export const Header = ({ userName, onLogin, onSignUp }: Props) => {
   }, []);
 
   return (
-    <header className='sticky top-0 z-50 bg-white'>
+    <header className='sticky top-0 z-50'>
       <div className='mx-auto max-w-380 px-6'>
         <div className='flex h-20 items-center justify-between'>
           <Logo />

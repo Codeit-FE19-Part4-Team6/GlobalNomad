@@ -180,7 +180,7 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
                         </div>
 
                         {/* 오른쪽 영역 (시간 + 삭제 버튼) */}
-<div className='relative'>
+                        <div className='relative'>
                           <span className='font-xs-medium absolute right-0 whitespace-nowrap text-gray-400'>
                             {getTimeAgo(notification.createdAt)}
                           </span>
