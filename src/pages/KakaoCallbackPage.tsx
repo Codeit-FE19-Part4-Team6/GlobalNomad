@@ -27,7 +27,7 @@ const KakaoCallbackPage = () => {
 
       if (!code) {
         showSnack('카카오 인증에 실패했습니다.', 'error', {
-          onClose: () => navigate('/login'),
+          onClose: () => navigate('/login', { replace: true }),
         });
         return;
       }
@@ -58,20 +58,20 @@ const KakaoCallbackPage = () => {
             'success',
             { duration: 1500 }
           );
-          navigate('/');
+          navigate('/', { replace: true });
         } else {
           // 로그인 모드
           const response = await http.post('/oauth/sign-in/kakao', requestData);
 
           token.setTokens(response.data.accessToken, response.data.refreshToken);
           showSnack('로그인에 성공했습니다.', 'success');
-          navigate('/');
+          navigate('/', { replace: true });
         }
       } catch (error) {
         if (isAxiosError(error) && error.response?.status === 403 && !isKakaoSignUpMode) {
           // 로그인 모드에서 가입되지 않은 사용자
           showSnack('가입되지 않은 사용자입니다. 회원가입을 진행해주세요.', 'error', {
-            onClose: () => navigate('/signup'),
+            onClose: () => navigate('/signup', { replace: true }),
           });
         } else {
           // 에러 시 세션 정리
@@ -83,7 +83,7 @@ const KakaoCallbackPage = () => {
               : '카카오 처리에 실패했습니다.';
 
           showSnack(errorMessage, 'error', { duration: 1000 });
-          navigate('/login');
+          navigate('/login', { replace: true });
         }
       } finally {
         setIsLoading(false);
