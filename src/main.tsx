@@ -13,6 +13,7 @@ import CreateActivityPage from '@/pages/CreateActivityPage.tsx';
 import EditActivityPage from '@/pages/EditActivityPage.tsx';
 import SignupPage from '@/pages/SignupPage.tsx';
 import { SnackBarProvider } from '@/providers/SnackBarProvider.tsx';
+import KakaoCallbackPage from '@/pages/KakaoCallbackPage';
 
 // QueryClient 생성
 const queryClient = new QueryClient({
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       // Layout 없는 인증 페이지들
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
+      {
+        path: '/oauth/kakao',
+        element: <KakaoCallbackPage />,
+      },
     ],
   },
 ]);

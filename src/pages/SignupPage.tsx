@@ -1,4 +1,5 @@
 // src/pages/SignupPage.tsx
+import { kakaoApi } from '@/apis/kakao';
 import { KakaoLogin } from '@/assets/images';
 import { Logo } from '@/components/common/Logo';
 import { PrimaryButton, SecondaryButton } from '@/components/common/button';
@@ -9,6 +10,14 @@ import { Link } from 'react-router-dom';
 const SignupPage = () => {
   const { registerOptions, errors, isSubmitting, isFormValid, handleSubmit, getErrorMessage } =
     useSignupForm();
+
+  const handleKakaoSignup = () => {
+    // 카카오 회원가입 모드로 설정
+    sessionStorage.setItem('isKakaoSignUpMode', 'true');
+
+    const kakaoAuthUrl = kakaoApi.getKakaoAuthUrl('sign-up');
+    window.location.href = kakaoAuthUrl;
+  };
 
   return (
     <form
@@ -77,7 +86,7 @@ const SignupPage = () => {
           <div className='h-px flex-1 bg-gray-300'></div>
         </div>
 
-        <SecondaryButton type='button' className='w-full'>
+        <SecondaryButton type='button' className='w-full' onClick={handleKakaoSignup}>
           <div className='flex items-center gap-2 text-gray-600'>
             <img src={KakaoLogin} alt='카카오 로그인 버튼' className='h-6 w-6' />
             카카오 회원가입

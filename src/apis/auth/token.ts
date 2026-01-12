@@ -23,6 +23,7 @@ export const token = {
   setTokens: (access: string, refresh: string) => {
     accessToken = access;
     refreshToken = refresh;
+
     if (typeof window !== 'undefined') {
       localStorage.setItem(TOKEN_KEYS.ACCESS, access);
       localStorage.setItem(TOKEN_KEYS.REFRESH, refresh);
