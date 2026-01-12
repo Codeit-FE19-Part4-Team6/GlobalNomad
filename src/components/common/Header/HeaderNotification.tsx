@@ -73,13 +73,16 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
                         </div>
 
                         {/* 오른쪽 영역 (시간 + 삭제 버튼) */}
-                        <div className='relative flex flex-col items-end gap-2'>
-                          <span className='font-xs-medium whitespace-nowrap text-gray-400'>
+                        <div className='relative'>
+                          <span className='font-xs-medium absolute right-0 whitespace-nowrap text-gray-400'>
                             {getTimeAgo(notification.createdAt)}
                           </span>
                           <button
-                            onClick={() => deleteNotification(notification.id)}
-                            className={`hover:text-primary-500 absolute top-5 left-4 cursor-pointer transition-opacity ${
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteNotification(notification.id);
+                            }}
+                            className={`hover:text-primary-500 absolute top-5 right-0 cursor-pointer transition-opacity ${
                               hoveredId === notification.id
                                 ? 'opacity-100'
                                 : 'pointer-events-none opacity-0'
