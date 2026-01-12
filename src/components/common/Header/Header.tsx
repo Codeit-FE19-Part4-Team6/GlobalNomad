@@ -62,8 +62,8 @@ export const Header = ({ userName, onLogin, onSignUp }: Props) => {
 
   return (
     <header className='sticky top-0 z-50 bg-white'>
-      <div className='mx-auto max-w-380 px-6 py-2.5 sm:py-6.5'>
-        <div className='flex h-16 items-center justify-between'>
+      <div className='mx-auto max-w-380 px-6'>
+        <div className='flex h-20 items-center justify-between'>
           <Logo />
           <div className='flex items-center space-x-4'>
             {/* 로그인 상태일 때만 알림 표시 */}

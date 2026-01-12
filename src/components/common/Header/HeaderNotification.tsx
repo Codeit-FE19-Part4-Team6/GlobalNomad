@@ -159,7 +159,7 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
               onClick={handleToggle}
               className='cursor-pointer transition-opacity hover:opacity-50'
               aria-label='알림창 닫기'>
-              <Delete />
+              <Delete className='h-2.5 w-2.5' />
             </button>
           </div>
 
@@ -180,19 +180,19 @@ export const HeaderNotification = ({ isOpen, onToggle }: Props) => {
                         </div>
 
                         {/* 오른쪽 영역 (시간 + 삭제 버튼) */}
-                        <div className='relative flex flex-col items-end gap-2'>
-                          <span className='font-xs-medium whitespace-nowrap text-gray-400'>
+<div className='relative'>
+                          <span className='font-xs-medium absolute right-0 whitespace-nowrap text-gray-400'>
                             {getTimeAgo(notification.createdAt)}
                           </span>
                           <button
                             onClick={(e) => handleDelete(e, notification.id)}
-                            className={`hover:text-primary-500 absolute top-5 left-4 cursor-pointer transition-opacity ${
+                            className={`hover:text-primary-500 absolute top-5 right-0 cursor-pointer transition-opacity ${
                               hoveredId === notification.id
                                 ? 'opacity-100'
                                 : 'pointer-events-none opacity-0'
                             }`}
                             aria-label='알림 삭제'>
-                            <Delete className='h-5 w-5' />
+                            <Delete className='mt-2 h-2.5 w-2.5' />
                           </button>
                         </div>
                       </div>
