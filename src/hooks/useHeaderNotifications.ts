@@ -67,9 +67,10 @@ export const useHeaderNotifications = ({ isOpen }: UseHeaderNotificationsParams)
   /**
    * 60초 polling
    */
-  setInterval(() => {
-    loadNotifications();
-  }, 60000);
+  useEffect(() => {
+    const intervalId = setInterval(loadNotifications, 60000);
+    return () => clearInterval(intervalId);
+  }, [loadNotifications]);
 
   /**
    * IntersectionObserver 콜백
