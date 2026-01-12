@@ -15,7 +15,7 @@ const eventColor: Record<EventType, 'blue' | 'orange' | 'gray'> = {
 type EventBadgeProps = {
   type: EventType;
   count?: number;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 /**
  * 캘린더 날짜 칸 내부에서 예약 상태별 건수를 요약해서 보여주는 버튼형 배지 컴포넌트입니다.

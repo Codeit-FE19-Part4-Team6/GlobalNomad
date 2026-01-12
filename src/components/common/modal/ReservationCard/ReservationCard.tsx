@@ -32,7 +32,7 @@ export default function ReservationCard({
         </div>
 
         <div className='flex flex-col gap-2'>
-          {tab === 'confirmed' && (
+          {tab === 'pending' && (
             <>
               <ActionButton
                 action='neutral'
@@ -51,7 +51,7 @@ export default function ReservationCard({
             </>
           )}
 
-          {tab === 'pending' && <StateBadge status='pending'></StateBadge>}
+          {tab === 'confirmed' && <StateBadge status='confirmed'></StateBadge>}
           {tab === 'declined' && <StateBadge status='declined'></StateBadge>}
         </div>
       </div>

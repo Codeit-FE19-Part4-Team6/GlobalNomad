@@ -7,7 +7,7 @@ const statusColor: Record<
 > = {
   confirmed: 'green', // 예약 완료
   declined: 'red', // 예약 거절
-  completed: 'darkblue', // 체험 완료
+  completed: 'darkblue',
   pending: 'cyan', // 예약 대기
   canceled: 'darkgray', // 예약 취소
 };
