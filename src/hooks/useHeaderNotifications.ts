@@ -137,7 +137,7 @@ export const useHeaderNotifications = ({ isOpen }: UseHeaderNotificationsParams)
    * 60초 polling (최신 알림만)
    */
   useEffect(() => {
-    const intervalId = setInterval(pollNewNotifications, 10000);
+    const intervalId = setInterval(pollNewNotifications, 60000);
     return () => clearInterval(intervalId);
   }, [pollNewNotifications]);
 
