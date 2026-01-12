@@ -33,11 +33,11 @@ export default function ActivityMobileReservationBar({
   };
 
   return (
-    <div className='fixed inset-x-0 bottom-0 z-50 bg-white px-6 py-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] sm:px-[30px] lg:hidden'>
-      <div className='mx-auto flex max-w-[1200px] items-center justify-between gap-4'>
+    <div className='fixed inset-x-0 bottom-0 z-50 bg-white px-6 py-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] sm:px-7.5 lg:hidden'>
+      <div className='mx-auto flex max-w-300 items-center justify-between gap-4'>
         <button
           onClick={onOpenBottomSheet}
-          className='font-md-bold text-primary-500 flex-shrink-0 underline'>
+          className='font-md-bold text-primary-500shrink-0 underline'>
           {formatSelectedDate()}
         </button>
         <div className='flex items-center gap-3'>

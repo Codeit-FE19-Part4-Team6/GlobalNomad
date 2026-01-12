@@ -116,7 +116,7 @@ export default function ActivityReservationPanel({
             className='flex h-10 w-10 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
             −
           </button>
-          <span className='font-lg-medium min-w-[40px] text-center text-gray-900'>
+          <span className='font-lg-medium min-w-10 text-center text-gray-900'>
             {participantCount}
           </span>
           <button

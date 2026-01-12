@@ -83,7 +83,7 @@ export default function ActivityInfo({
 
       {/* 주소 */}
       <div className={`flex items-start gap-1 ${variant === 'desktop' ? 'mb-6' : 'mb-2'}`}>
-        <Spot className='mt-0.5 h-4 w-4 flex-shrink-0 text-gray-700' />
+        <Spot className='mt-0.5 h-4 w-4 shrink-0 text-gray-700' />
         <span className='font-md-medium text-gray-700'>{address}</span>
       </div>
 
