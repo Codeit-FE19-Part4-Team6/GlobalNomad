@@ -173,7 +173,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         </div>
       )}
       {reservations.length === 0 ? (
-        <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
+        <div className='mt-8 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
           <div className='flex flex-col items-center justify-center'>
             <Earth className='mb-7.5' />
             <div className='font-xl-medium text-center whitespace-nowrap text-gray-600'>

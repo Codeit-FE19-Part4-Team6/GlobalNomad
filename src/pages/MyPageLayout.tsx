@@ -59,7 +59,7 @@ export default function MyPageLayout() {
   };
 
   return (
-    <div className='mx-auto mb-3 flex w-full max-w-300 flex-col justify-center px-6 md:flex-row md:items-start md:gap-7.5 md:px-7.5 lg:justify-between'>
+    <div className='mx-auto mb-3 flex min-h-[calc(100vh-140px)] w-full max-w-300 flex-col justify-center px-6 md:flex-row md:items-start md:gap-7.5 md:px-7.5 lg:justify-between'>
       <aside
         className={`md:sticky md:top-30 md:w-auto md:shrink-0 ${mobileOpen ? 'hidden md:block' : 'block'}`}>
         <div className='block md:hidden'>
