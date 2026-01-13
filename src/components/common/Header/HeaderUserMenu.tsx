@@ -3,6 +3,7 @@ import Avatar from '@/components/common/Avatar';
 import { LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLogoutMutation } from '@/hooks/queries/useLogoutMutation';
+import { useProfileImageStore } from '@/stores/profileImageStore';
 
 interface Props {
   userName?: string; // optional로 변경
@@ -24,10 +25,12 @@ export const HeaderUserMenu = ({
   const isLoggedIn = !!userName; // userName이 있으면 로그인 상태
   const navigate = useNavigate();
   const { mutate: logout, isPending } = useLogoutMutation();
+  const resetProfileImage = useProfileImageStore((state) => state.reset);
 
   const handleLogout = () => {
     logout(undefined, {
       onSettled: () => {
+        resetProfileImage();
         navigate('/');
         onClose();
       },
