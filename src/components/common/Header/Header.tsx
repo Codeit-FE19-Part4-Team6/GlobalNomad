@@ -42,7 +42,7 @@ interface Props {
 export const Header = ({ userName, onLogin, onSignUp }: Props) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-
+  const [scrollY, setScrollY] = useState(0);
   const isLoggedIn = !!userName;
 
   const handleCloseAllDropdowns = () => {
@@ -60,11 +60,23 @@ export const Header = ({ userName, onLogin, onSignUp }: Props) => {
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // 스크롤 위치에 따른 배경 투명도 계산 (0~100px 사이에서 전환)
+  const backgroundOpacity = Math.min(scrollY / 10, 1);
+
   return (
-    <header className='sticky top-0 z-50'>
+    <header className='sticky top-0 z-50 transition-colors duration-300'>
+      <div className='absolute inset-0 bg-white' style={{ opacity: backgroundOpacity }} />
       <div className='mx-auto max-w-380 px-6'>
         <div className='flex h-20 items-center justify-between'>
-          <Logo />
+          <Logo className='z-100' />
           <div className='flex items-center space-x-4'>
             {/* 로그인 상태일 때만 알림 표시 */}
             {isLoggedIn && (
