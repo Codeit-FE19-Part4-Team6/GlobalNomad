@@ -246,6 +246,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
           </div>
         </>
       )}
+
       <CancelReservationModal
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
