@@ -72,8 +72,8 @@ export const Header = ({ userName, onLogin, onSignUp }: Props) => {
   const backgroundOpacity = Math.min(scrollY / 10, 1);
 
   return (
-    <header className='sticky top-0 z-50 transition-colors duration-300'>
-      <div className='absolute inset-0 bg-white' style={{ opacity: backgroundOpacity }} />
+    <header className='sticky top-0 z-50'>
+      <div className='absolute inset-0 bg-white transition-opacity duration-300' style={{ opacity: backgroundOpacity }} />
       <div className='mx-auto max-w-380 px-6'>
         <div className='flex h-20 items-center justify-between'>
           <Logo className='z-100' />
