@@ -4,7 +4,7 @@ import CancelReservationModal from '@/components/common/modal/CancelReservationM
 import ReviewModal from '@/components/common/modal/ReviewModal';
 import { FilterButton, PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
-import { Down, Earth } from '@/assets/icons';
+import { Earth, Menu } from '@/assets/icons';
 import type { MyReservationsResponse } from '@/apis/type';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMyReservationsInfinite } from '@/hooks/queries/useMyReservationsQuery';
@@ -151,8 +151,8 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   return (
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
       <div className='flex flex-col items-start gap-2.5 py-[10px]'>
-        <Down
-          className='block rotate-90 cursor-pointer md:hidden'
+        <Menu
+          className='block cursor-pointer text-gray-950 md:hidden'
           onClick={() => setMobileOpen(false)}
         />
         <Title as='h3' size='xl' weight='bold'>

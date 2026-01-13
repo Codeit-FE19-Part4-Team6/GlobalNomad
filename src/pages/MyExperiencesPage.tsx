@@ -1,6 +1,6 @@
 import Card from '@/components/common/card';
 import Title from '@/components/common/Title';
-import { Down, Earth } from '@/assets/icons';
+import { Earth, Menu } from '@/assets/icons';
 import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '@/components/common/button';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
@@ -70,8 +70,8 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
       <div className='mb-[30px] flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
         <div className='flex flex-col gap-2.5'>
-          <Down
-            className='block rotate-90 cursor-pointer md:hidden'
+          <Menu
+            className='text-gray-950cursor-pointer block md:hidden'
             onClick={() => setMobileOpen(false)}
           />
           <Title as='h3' size='xl' weight='bold'>

@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 
-import { Down, ArrowDown } from '@/assets/icons';
+import { ArrowDown, Menu } from '@/assets/icons';
 import Title from '@/components/common/Title';
 
 import Dropdown from '@/components/common/dropdown/Dropdown';
@@ -131,9 +131,9 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
 
   return (
     <div className='flex min-h-0 flex-1 flex-col'>
-      <div className='px-4 py-4'>
-        <Down
-          className='block rotate-90 cursor-pointer md:hidden'
+      <div className='py-4'>
+        <Menu
+          className='block cursor-pointer text-gray-950 md:hidden'
           onClick={() => setMobileOpen(false)}
         />
       </div>

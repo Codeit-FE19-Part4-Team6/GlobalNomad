@@ -4,7 +4,7 @@ import { useProfileImageStore } from '@/stores/profileImageStore';
 import { PrimaryButton } from '@/components/common/button';
 import { PasswordInput, TextInput } from '@/components/common/input';
 import Title from '@/components/common/Title';
-import { Down } from '@/assets/icons';
+import { Menu } from '@/assets/icons';
 import { useEditMyInfoMutation } from '@/hooks/queries/useEditMyInfoMutation';
 import { uploadImageToServer } from '@/apis/upload';
 import type { User, UserEditRequest } from '@/apis/type';
@@ -94,8 +94,8 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='flex w-full flex-col gap-5 md:gap-6'>
       <div className='flex flex-col items-start gap-2.5 py-2.5'>
-        <Down
-          className='block rotate-90 cursor-pointer md:hidden'
+        <Menu
+          className='block cursor-pointer text-gray-950 md:hidden'
           onClick={() => setMobileOpen(false)}
         />
         <Title as='h3' size='xl' weight='bold'>
