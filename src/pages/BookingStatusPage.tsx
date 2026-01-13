@@ -205,7 +205,7 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
               <ArrowDown />
             </DropdownTrigger>
 
-            <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-[280px] w-full overflow-y-auto rounded-xl border border-gray-100 bg-white p-1 shadow-md'>
+            <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-70 w-full overflow-y-auto rounded-xl border border-gray-100 bg-white p-1 shadow-md'>
               {isLoading && <div className='px-3 py-2 text-sm text-gray-400'>불러오는 중...</div>}
               {isError && (
                 <div className='px-3 py-2 text-sm text-red-500'>체험 목록을 불러오지 못했어요.</div>
@@ -304,7 +304,7 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
                           {/* ✅ PC(lg)에서는 셀 기준 팝오버(딤 없음) */}
                           {isReservationModalOpen && selectBadge && popover && (
                             <div
-                              className='fixed z-[10000] hidden lg:block'
+                              className='fixed z-10000 hidden lg:block'
                               style={{ top: popover.top, left: popover.left }}
                               onClick={(e) => e.stopPropagation()}>
                               <ReservationInfoModal
@@ -331,9 +331,9 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
       {/* ✅ 모바일(md 이하): 딤 + 바텀시트 */}
       {isReservationModalOpen && selectBadge && (
         <div className='lg:hidden'>
-          <div className='fixed inset-0 z-[9999] bg-black/40' onClick={closeReservationModal} />
+          <div className='fixed inset-0 z-9999 bg-black/40' onClick={closeReservationModal} />
 
-          <div className='fixed inset-x-0 bottom-0 z-[10000]' onClick={(e) => e.stopPropagation()}>
+          <div className='fixed inset-x-0 bottom-0 z-10000' onClick={(e) => e.stopPropagation()}>
             <ReservationInfoModal
               isOpen={isReservationModalOpen}
               onClose={closeReservationModal}
@@ -349,7 +349,7 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
       {/* ✅ PC(lg 이상): 바깥 클릭 닫기용 투명 레이어 */}
       {isReservationModalOpen && selectBadge && (
         <div
-          className='fixed inset-0 z-[9998] hidden bg-transparent lg:block'
+          className='fixed inset-0 z-9998 hidden bg-transparent lg:block'
           onClick={closeReservationModal}
         />
       )}
