@@ -94,7 +94,6 @@ export type ActivityFormValues = {
 //페이지가 폼을 어떻게 동작시킬지 정하는 타입
 type ActivityFormProps = {
   mode: 'create' | 'edit';
-  draftKey: string;
   // edit일 때 초기값 주입
   initialData?: ActivityFormInitialData;
   onDirtyChange?: (dirty: boolean) => void;
