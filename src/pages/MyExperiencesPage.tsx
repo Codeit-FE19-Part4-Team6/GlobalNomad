@@ -1,6 +1,6 @@
 import Card from '@/components/common/card';
 import Title from '@/components/common/Title';
-import { Earth, Menu } from '@/assets/icons';
+import { Burger, Delete, Earth } from '@/assets/icons';
 import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '@/components/common/button';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
@@ -9,10 +9,11 @@ import { useDeleteActivityMutation } from '@/hooks/queries/useDeleteActivityMuta
 import { useMyActivitiesInfinite } from '@/hooks/queries/useMyActivitiesInfinite';
 
 type Props = {
+  mobileOpen: boolean;
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function MyExperiencesPage({ setMobileOpen }: Props) {
+export default function MyExperiencesPage({ setMobileOpen, mobileOpen }: Props) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState<number | null>(null);
   const navigate = useNavigate();
@@ -41,6 +42,19 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  useEffect(() => {
+    if (mobileOpen) {
+      // 모바일에서 사이드바 열려있으면 스크롤 막기
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
   // 삭제 버튼 클릭
   const handleDelete = (id: number) => {
     setSelectedActivityId(id);
@@ -68,12 +82,19 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
 
   return (
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
+      {!mobileOpen ? (
+        <Burger
+          className='block cursor-pointer text-gray-950 md:hidden'
+          onClick={() => setMobileOpen(true)}
+        />
+      ) : (
+        <Delete
+          className='-ml-1 block h-3 w-3 cursor-pointer md:hidden'
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
       <div className='mb-[30px] flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
         <div className='flex flex-col gap-2.5'>
-          <Menu
-            className='text-gray-950cursor-pointer block md:hidden'
-            onClick={() => setMobileOpen(false)}
-          />
           <Title as='h3' size='xl' weight='bold'>
             내 체험 관리
           </Title>

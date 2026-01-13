@@ -40,4 +40,4 @@ export { default as Tour } from './page/tour.svg';
 export { default as User } from './page/user.svg';
 export { default as Warning } from './page/warning.svg';
 export { default as Wellbeing } from './page/wellbeing.svg';
-export { default as Menu } from './page/menu.svg';
+export { default as Burger } from './page/burger.svg';

@@ -4,7 +4,7 @@ import CancelReservationModal from '@/components/common/modal/CancelReservationM
 import ReviewModal from '@/components/common/modal/ReviewModal';
 import { FilterButton, PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
-import { Earth, Menu } from '@/assets/icons';
+import { Burger, Delete, Earth } from '@/assets/icons';
 import type { MyReservationsResponse } from '@/apis/type';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMyReservationsInfinite } from '@/hooks/queries/useMyReservationsQuery';
@@ -24,11 +24,12 @@ const STATUS_TEXT_MAP: Record<Status, string> = {
 type Status = (typeof STATUS_LIST)[number];
 type SelectedStatus = 'all' | Status;
 type Props = {
+  mobileOpen: boolean;
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 type ReservationItem = MyReservationsResponse['reservations'][number];
 
-export default function ReservationPage({ setMobileOpen }: Props) {
+export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false); // 모달 상태
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null); // 선택된 예약 정보
@@ -108,6 +109,19 @@ export default function ReservationPage({ setMobileOpen }: Props) {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  useEffect(() => {
+    if (mobileOpen) {
+      // 모바일에서 사이드바 열려있으면 스크롤 막기
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
   // 후기 작성 버튼 클릭
   const handleReviewClick = (reservation: ReservationItem) => {
     setSelectedReservation(reservation);
@@ -150,11 +164,18 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   }
   return (
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
-      <div className='flex flex-col items-start gap-2.5 py-[10px]'>
-        <Menu
+      {!mobileOpen ? (
+        <Burger
           className='block cursor-pointer text-gray-950 md:hidden'
+          onClick={() => setMobileOpen(true)}
+        />
+      ) : (
+        <Delete
+          className='-ml-1 block h-3 w-3 cursor-pointer md:hidden'
           onClick={() => setMobileOpen(false)}
         />
+      )}
+      <div className='flex flex-col items-start gap-2.5 py-[10px]'>
         <Title as='h3' size='xl' weight='bold'>
           예약내역
         </Title>
