@@ -28,12 +28,6 @@ type Props = {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-type ModalPlace = {
-  top: number;
-  left: number;
-  placement: 'right' | 'left';
-};
-
 //달력에 그려지는 예약 status
 //밸류값을 꺼내서 타입정의
 type DayCounts = {

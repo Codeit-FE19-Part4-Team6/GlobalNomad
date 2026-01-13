@@ -114,16 +114,6 @@ type ActivityFormProps = {
   titleText: string;
 };
 
-type LocalStorageValues = {
-  title: string;
-  category: string;
-  text: string;
-  price: string;
-  address: string;
-  draft: ScheduleDraft;
-  rows: ScheduleRow[];
-};
-
 export default function ActivityForm({
   mode,
   initialData,

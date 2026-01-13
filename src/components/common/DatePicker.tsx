@@ -5,7 +5,7 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 
 import { useDropdown } from '@/hooks/useDropdown';
-import { Calendar, PasswordHidden } from '@/assets/icons';
+import { Calendar } from '@/assets/icons';
 
 function formatDate(date?: Date | string | null) {
   if (!date) {
