@@ -17,11 +17,14 @@ import type { ScheduleRow } from '@/types/ScheduleRow';
 import type { ActivityCategory } from '@/apis/type';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
 import type { Address } from 'react-daum-postcode';
-import { useDraftParams } from '@/hooks/useDraftParams';
 import { useSnackBar } from '@/providers/SnackBarProvider';
+
+//import { normalizeDate } from '@/utils/normalizeDate';
 const MAX_BANNER = 1;
 const MAX_INTRO = 4;
-
+const MAX_TITLE_LENGTH = 25;
+const MAX_CONTENT = 1000;
+const MAX_PRICE = 11;
 //문자열 시간을 받아서 숫자로 바꾸는 함수
 //time을 받아서 " : " 기준으로 나눈다음 첫번째 인자를 리턴한다.
 const toHour = (time: string) => Number(time.split(':')[0]);
@@ -129,7 +132,6 @@ export default function ActivityForm({
   submitText,
   titleText,
   onDirtyChange,
-  draftKey,
 }: ActivityFormProps) {
   const [category, setCategory] = useState<string>('');
   const [text, setText] = useState<string>('');
@@ -155,15 +157,6 @@ export default function ActivityForm({
     setAddress(data.address);
   };
   //로컬스토리지에 저장할 value
-  const values: LocalStorageValues = {
-    title,
-    category,
-    text,
-    price,
-    address,
-    draft,
-    rows,
-  };
 
   //현재 폼 상태
   const makeSnapshot = () =>
@@ -206,29 +199,6 @@ export default function ActivityForm({
       bannerCount: 0, //마운트 되자마자 사용자가 새로운 파일을 아직 첨부 안해서 0
       introCount: 0,
     });
-
-  useDraftParams<LocalStorageValues>({
-    key: draftKey,
-    values,
-    applyDraft: (d) => {
-      setTitle(d.title ?? '');
-      setCategory(d.category ?? '');
-      setText(d.text ?? '');
-      setPrice(d.price ?? '');
-      setAddress(d.address ?? '');
-      setDraft(d.draft ?? createDraft());
-      setRows(
-        (d.rows ?? [])
-          .map((row) => {
-            const date = new Date((row as any).date); // string -> Date
-            return { ...row, date };
-          })
-          // ✅ Invalid Date 제거 (date가 없거나 깨진 값이면 여기서 탈락)
-          .filter((row): row is ScheduleRow => !Number.isNaN(row.date.getTime()))
-      );
-    },
-    delayMs: 400,
-  });
 
   //등록페이지 에서 초기 기준점을 잡고 onDirtyChange를 false로 초기화
   useEffect(() => {
@@ -338,7 +308,9 @@ export default function ActivityForm({
 
   //사용자가 입력한 값을 담는 함수
   const onChangeTitle: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    setTitle(e.target.value);
+    const value = e.target.value;
+    const limitValue = value.slice(0, MAX_TITLE_LENGTH);
+    setTitle(limitValue);
   };
 
   const handleClickCategory = (value: string) => {
@@ -346,7 +318,8 @@ export default function ActivityForm({
   };
 
   const onChangeText = (value: string) => {
-    setText(value);
+    const limitText = value.slice(0, MAX_CONTENT);
+    setText(limitText);
   };
 
   const formatNumber = (value: string) => {
@@ -389,6 +362,7 @@ export default function ActivityForm({
   //date옆에 ! 는 타입스크립트에게 null, undefinded가 아니라는 확신을 준다.
   //위에 만들어 두었던 초기화 함수 실행
   //    addScheduleFromDraft
+
   const addScheduleFromDraft = () => {
     const toYmd = (d: Date) => d.toISOString().split('T')[0];
     // 1) 날짜 없으면 끝
@@ -490,14 +464,14 @@ export default function ActivityForm({
           <Label className='font-lg-bold text-gray-950'>카테고리</Label>
 
           <Dropdown className='relative w-full'>
-            <DropdownTrigger className='flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
+            <DropdownTrigger className='flex w-full items-center justify-between rounded-xl border border-gray-100 bg-white px-3 py-2'>
               <span className={category ? 'text-gray-900' : 'text-gray-400'}>
                 {category || '카테고리를 선택해 주세요'}
               </span>
               <ArrowDown />
             </DropdownTrigger>
 
-            <DropdownList className='absolute top-full left-0 z-50 mt-2 w-full rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
+            <DropdownList className='absolute top-full left-0 z-50 mt-2 w-full rounded-xl border border-gray-100 bg-white p-1 shadow-md'>
               {['문화 · 예술', '식음료', '투어', '관광', '웰빙', '스포츠'].map((c) => (
                 <DropdownItem
                   key={c}
@@ -529,7 +503,8 @@ export default function ActivityForm({
             onChange={(e) => {
               //문자전체 중 0에서9까지가 아닌 모든 문자는 "" 로 만들어 제거, / /는 정규식, ^는 부정, [0-9]는 0~9까지 ,g는 글로벌 문자전체
               const onlyNumber = e.target.value.replace(/[^0-9]/g, '');
-              setPrice(onlyNumber);
+              const limitPrice = onlyNumber.slice(0, MAX_PRICE);
+              setPrice(limitPrice);
             }}
             id='price'
             placeholder='체험 금액을 입력해 주세요'
@@ -576,12 +551,12 @@ export default function ActivityForm({
               <div className='w-full sm:w-40'>
                 <Label className='font-lg-medium text-gray-950 sm:hidden'>시작 시간</Label>
                 <Dropdown className='relative w-full'>
-                  <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
+                  <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-100 bg-white px-3 py-2'>
                     <span>{draft.startTime}</span>
                     <ArrowDown />
                   </DropdownTrigger>
 
-                  <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
+                  <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-100 bg-white p-1 shadow-md'>
                     {TIME_OPTIONS.map((time) => (
                       <DropdownItem
                         key={time}
@@ -599,12 +574,12 @@ export default function ActivityForm({
               <div className='w-full sm:w-40'>
                 <Label className='font-lg-medium text-gray-950 sm:hidden'>종료 시간</Label>
                 <Dropdown className='relative w-full'>
-                  <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
+                  <DropdownTrigger className='flex h-13.5 w-full items-center justify-between rounded-xl border border-gray-100 bg-white px-3 py-2'>
                     <span>{draft.endTime}</span>
                     <ArrowDown />
                   </DropdownTrigger>
 
-                  <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-md'>
+                  <DropdownList className='absolute top-full left-0 z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-gray-100 bg-white p-1 shadow-md'>
                     {TIME_OPTIONS.filter((t) => toHour(t) > toHour(draft.startTime)).map((time) => (
                       <DropdownItem
                         key={time}
@@ -628,7 +603,7 @@ export default function ActivityForm({
           </div>
         </div>
 
-        <span className='border-grey-100 mt-5 mb-5 block w-full border-b' />
+        <span className='mt-5 mb-5 block w-full border-b border-gray-100' />
 
         {rows.map((row) => (
           <div
@@ -637,7 +612,7 @@ export default function ActivityForm({
             <div className='flex items-end gap-3 sm:block'>
               <div className='flex-1'>
                 <Label className='font-lg-medium text-gray-950 sm:hidden'>날짜</Label>
-                <div className='flex h-13.5 items-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-700'>
+                <div className='flex h-13.5 items-center rounded-xl border border-gray-100 bg-white px-3 py-2 text-gray-700'>
                   {row.date.toLocaleDateString('ko-KR')}
                 </div>
               </div>
@@ -646,7 +621,7 @@ export default function ActivityForm({
             <div className='grid grid-cols-[1fr_auto_1fr_auto] items-end gap-2 sm:contents'>
               <div className='w-full sm:w-40'>
                 <Label className='font-lg-medium text-gray-950 sm:hidden'>시작 시간</Label>
-                <div className='flex h-13.5 items-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900'>
+                <div className='flex h-13.5 items-center rounded-xl border border-gray-100 bg-white px-3 py-2 text-gray-900'>
                   {row.startTime}
                 </div>
               </div>
@@ -655,7 +630,7 @@ export default function ActivityForm({
 
               <div className='w-full sm:w-40'>
                 <Label className='font-lg-medium text-gray-950 sm:hidden'>종료 시간</Label>
-                <div className='flex h-13.5 items-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900'>
+                <div className='flex h-13.5 items-center rounded-xl border border-gray-100 bg-white px-3 py-2 text-gray-900'>
                   {row.endTime}
                 </div>
               </div>

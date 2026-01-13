@@ -7,14 +7,20 @@ import 'react-day-picker/dist/style.css';
 import { useDropdown } from '@/hooks/useDropdown';
 import { Calendar, PasswordHidden } from '@/assets/icons';
 
-function formatDate(date?: Date | null) {
+function formatDate(date?: Date | string | null) {
   if (!date) {
     return '';
   }
 
-  const yy = date.getFullYear().toString().slice(-2);
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
+  const parsed = typeof date === 'string' ? new Date(date) : date;
+
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  const yy = parsed.getFullYear().toString().slice(-2);
+  const mm = String(parsed.getMonth() + 1).padStart(2, '0');
+  const dd = String(parsed.getDate()).padStart(2, '0');
 
   return `${yy}/${mm}/${dd}`;
 }
@@ -26,7 +32,7 @@ function DateInput({ value }: { value?: Date }) {
         className={`font-md-medium md:font-lg-medium ${value ? 'text-gray-950' : 'text-gray-400'}`}>
         {value ? formatDate(value) : 'yy/mm/dd'}
       </span>
-      {value ? <PasswordHidden className='text-gray-400' /> : <Calendar />}
+      <Calendar />
     </div>
   );
 }
