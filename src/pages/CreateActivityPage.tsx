@@ -15,7 +15,6 @@ export default function CreateActivityPage() {
   const [leaveOpen, setLeaveOpen] = useState(false);
   const ignoreBlockOnceRef = useRef(false);
   const { showSnack } = useSnackBar();
-  const [draftKey, setDraftKey] = useState('draft:createActivity');
 
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
     if (ignoreBlockOnceRef.current) {
@@ -108,7 +107,6 @@ export default function CreateActivityPage() {
           Object.keys(localStorage)
             .filter((k) => k.startsWith('draft:createActivity'))
             .forEach((k) => localStorage.removeItem(k));
-          setDraftKey(`draft:createActivity:${Date.now()}`);
 
           setIsDirty(false);
 
@@ -153,7 +151,6 @@ export default function CreateActivityPage() {
         isPending={isPending}
         onSubmit={handleCreate}
         onDirtyChange={setIsDirty}
-        draftKey={draftKey}
       />
 
       <CancelReservationModal

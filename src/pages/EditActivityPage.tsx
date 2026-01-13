@@ -21,7 +21,6 @@ export default function EditActivityPage() {
   const [leaveOpen, setLeaveOpen] = useState(false);
   const ignoreBlockOnceRef = useRef(false);
   const { showSnack } = useSnackBar();
-  const draftKey = `draft:editActivity:${activityId}`;
   const pendingLocationRef = useRef<string | null>(null);
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
     if (ignoreBlockOnceRef.current) {
@@ -241,7 +240,6 @@ export default function EditActivityPage() {
         initialData={initialData}
         onSubmit={handleEdit}
         onDirtyChange={setIsDirty}
-        draftKey={draftKey}
       />
 
       <CancelReservationModal
