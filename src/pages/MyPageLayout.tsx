@@ -44,6 +44,19 @@ export default function MyPageLayout() {
     }
   }, [initialize, myInfo]);
 
+  useEffect(() => {
+    if (mobileOpen) {
+      // 모바일에서 사이드바 열려있으면 스크롤 막기
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
   // profileImageStore 초기화
   useEffect(() => {
     if (myInfo?.profileImageUrl) {

@@ -76,19 +76,6 @@ export default function BookingStatusPage({ setMobileOpen, mobileOpen }: Props) 
     setSelectBadge(null);
   };
 
-  useEffect(() => {
-    if (mobileOpen) {
-      // 모바일에서 사이드바 열려있으면 스크롤 막기
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [mobileOpen]);
-
   //실제 스크롤 요소 찾아서 스크롤 바 숨기기
   useEffect(() => {
     const el = document.scrollingElement as HTMLElement | null;

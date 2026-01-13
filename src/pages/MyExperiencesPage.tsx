@@ -42,19 +42,6 @@ export default function MyExperiencesPage({ setMobileOpen, mobileOpen }: Props) 
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  useEffect(() => {
-    if (mobileOpen) {
-      // 모바일에서 사이드바 열려있으면 스크롤 막기
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [mobileOpen]);
-
   // 삭제 버튼 클릭
   const handleDelete = (id: number) => {
     setSelectedActivityId(id);

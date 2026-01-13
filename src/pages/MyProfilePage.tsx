@@ -49,19 +49,6 @@ export default function MyProfilePage({ mobileOpen, setMobileOpen }: Props) {
     setProfileImageUrl(myInfo.profileImageUrl ?? '');
   }, [myInfo, reset, setProfileImageUrl]);
 
-  useEffect(() => {
-    if (mobileOpen) {
-      // 모바일에서 사이드바 열려있으면 스크롤 막기
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [mobileOpen]);
-
   const nickname = watch('nickname');
   const newPassword = watch('newPassword');
   const newPasswordConfirm = watch('newPasswordConfirm');
