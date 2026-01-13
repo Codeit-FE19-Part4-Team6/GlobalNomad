@@ -29,7 +29,7 @@ export default function CardsideBar({
         'scrollbar-hide flex shrink-0 flex-col items-center rounded-xl border border-gray-50',
         variant === 'desktop' && 'h-112.5 w-72.5 gap-6 px-3.5 py-6',
         variant === 'tablet' && 'h-85.5 w-44.5 gap-3 overflow-y-auto px-3.5 py-4',
-        variant === 'mobile' && 'h-112.5 w-full max-w-93 gap-6 px-3.5 py-6'
+        variant === 'mobile' && 'h-full w-full gap-6 px-4 py-6'
       )}>
       <ProfileImageUpload
         size={variant === 'tablet' ? 'medium' : 'large'}

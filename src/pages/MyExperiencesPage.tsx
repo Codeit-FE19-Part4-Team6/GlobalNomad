@@ -88,8 +88,8 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
         </PrimaryButton>
       </div>
       {activities.length === 0 ? (
-        <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
-          <Earth className='mb-7.5' />
+        <div className='mt-8 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
+          <Earth />
           <div className='font-xl-medium text-center text-gray-600'>아직 등록한 체험이 없어요</div>
         </div>
       ) : (
