@@ -4,7 +4,7 @@ import { useProfileImageStore } from '@/stores/profileImageStore';
 import { PrimaryButton } from '@/components/common/button';
 import { PasswordInput, TextInput } from '@/components/common/input';
 import Title from '@/components/common/Title';
-import { Down } from '@/assets/icons';
+import { Burger, Delete } from '@/assets/icons';
 import { useEditMyInfoMutation } from '@/hooks/queries/useEditMyInfoMutation';
 import { uploadImageToServer } from '@/apis/upload';
 import type { User, UserEditRequest } from '@/apis/type';
@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 
 type Props = {
+  mobileOpen: boolean;
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -22,10 +23,11 @@ type FormValues = {
   newPasswordConfirm: string;
 };
 
-export default function MyProfilePage({ setMobileOpen }: Props) {
+export default function MyProfilePage({ mobileOpen, setMobileOpen }: Props) {
   const { file, setFile, setProfileImageUrl } = useProfileImageStore();
   const { user: myInfo } = useAuthStore();
   const navigate = useNavigate();
+
   const {
     register,
     watch,
@@ -93,14 +95,23 @@ export default function MyProfilePage({ setMobileOpen }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='flex w-full flex-col gap-5 md:gap-6'>
-      <div className='flex flex-col items-start gap-2.5 py-2.5'>
-        <Down
-          className='block rotate-90 cursor-pointer md:hidden'
+      {!mobileOpen ? (
+        <Burger
+          className='ml-1 block h-6 w-6 cursor-pointer text-gray-950 md:hidden'
+          onClick={() => setMobileOpen(true)}
+        />
+      ) : (
+        <Delete
+          className='ml-3 block h-3 w-3 cursor-pointer md:hidden'
           onClick={() => setMobileOpen(false)}
         />
+      )}
+
+      <div className='flex flex-col items-start gap-2.5 py-2.5'>
         <Title as='h3' size='xl' weight='bold'>
           내 정보
         </Title>
+
         <div className='font-md-medium text-gray-500'>
           닉네임과 비밀번호, 프로필 이미지를 수정하실 수 있습니다.
         </div>

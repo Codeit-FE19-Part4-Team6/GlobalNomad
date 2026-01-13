@@ -81,7 +81,7 @@ export default function CardButton({
             <ActionButton
               action='muted'
               onClick={onCancelClick}
-              className='w-full py-2.5 whitespace-nowrap lg:h-7.25 lg:w-17.75 lg:py-0'>
+              className='w-full py-2.5 whitespace-nowrap md:w-119 lg:h-7.25 lg:w-17.75 lg:py-0'>
               예약 취소
             </ActionButton>
           </div>

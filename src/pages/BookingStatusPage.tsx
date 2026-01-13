@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 
-import { Down, ArrowDown } from '@/assets/icons';
+import { ArrowDown, Burger, Delete } from '@/assets/icons';
 import Title from '@/components/common/Title';
 
 import Dropdown from '@/components/common/dropdown/Dropdown';
@@ -16,7 +16,9 @@ import { eventType, EventBadge } from '@/components/common/badge/EventBadge';
 import type { MyActivitySchedulesResponse } from '@/apis/type';
 import ReservationInfoModal from '@/components/common/modal/ReservationCard/ReservationInfoModal';
 import { useReservedSchedule } from '@/hooks/useReservedSchedule';
+
 type Props = {
+  mobileOpen: boolean;
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -47,7 +49,7 @@ const ymdToKorean = (ymd: string) => {
   return `${y}년 ${m}월 ${d}일`;
 };
 
-export default function BookingStatusPage({ setMobileOpen }: Props) {
+export default function BookingStatusPage({ setMobileOpen, mobileOpen }: Props) {
   //드롭다운 체험 title
   const { data: activities = [], isLoading, isError } = useMyActivity();
   //드롭다운에서 사용자가 선택한 체험id
@@ -73,6 +75,7 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
     setIsReservationModalOpen(false);
     setSelectBadge(null);
   };
+
   //실제 스크롤 요소 찾아서 스크롤 바 숨기기
   useEffect(() => {
     const el = document.scrollingElement as HTMLElement | null;
@@ -131,14 +134,20 @@ export default function BookingStatusPage({ setMobileOpen }: Props) {
 
   return (
     <div className='flex min-h-0 flex-1 flex-col'>
-      <div className='px-4 py-4'>
-        <Down
-          className='block rotate-90 cursor-pointer md:hidden'
-          onClick={() => setMobileOpen(false)}
-        />
-      </div>
-
       <div className='flex flex-col gap-[18px] md:gap-6 lg:gap-[30px]'>
+        <div className='flex items-center'>
+          {!mobileOpen ? (
+            <Burger
+              className='block cursor-pointer text-gray-950 md:hidden'
+              onClick={() => setMobileOpen(true)}
+            />
+          ) : (
+            <Delete
+              className='ml-3 block h-3 w-3 cursor-pointer md:hidden'
+              onClick={() => setMobileOpen(false)}
+            />
+          )}
+        </div>
         <div className='flex flex-col gap-[10px]'>
           <Title as='h3' className='font-xl-bold text-gray-950'>
             예약 현황

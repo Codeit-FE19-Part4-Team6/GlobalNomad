@@ -1,6 +1,6 @@
 import Card from '@/components/common/card';
 import Title from '@/components/common/Title';
-import { Down, Earth } from '@/assets/icons';
+import { Burger, Delete, Earth } from '@/assets/icons';
 import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '@/components/common/button';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
@@ -9,10 +9,11 @@ import { useDeleteActivityMutation } from '@/hooks/queries/useDeleteActivityMuta
 import { useMyActivitiesInfinite } from '@/hooks/queries/useMyActivitiesInfinite';
 
 type Props = {
+  mobileOpen: boolean;
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function MyExperiencesPage({ setMobileOpen }: Props) {
+export default function MyExperiencesPage({ setMobileOpen, mobileOpen }: Props) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState<number | null>(null);
   const navigate = useNavigate();
@@ -68,12 +69,19 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
 
   return (
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
+      {!mobileOpen ? (
+        <Burger
+          className='block cursor-pointer text-gray-950 md:hidden'
+          onClick={() => setMobileOpen(true)}
+        />
+      ) : (
+        <Delete
+          className='-ml-1 block h-3 w-3 cursor-pointer md:hidden'
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
       <div className='mb-[30px] flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
         <div className='flex flex-col gap-2.5'>
-          <Down
-            className='block rotate-90 cursor-pointer md:hidden'
-            onClick={() => setMobileOpen(false)}
-          />
           <Title as='h3' size='xl' weight='bold'>
             내 체험 관리
           </Title>
@@ -88,8 +96,8 @@ export default function MyExperiencesPage({ setMobileOpen }: Props) {
         </PrimaryButton>
       </div>
       {activities.length === 0 ? (
-        <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
-          <Earth className='mb-7.5' />
+        <div className='mt-8 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
+          <Earth />
           <div className='font-xl-medium text-center text-gray-600'>아직 등록한 체험이 없어요</div>
         </div>
       ) : (

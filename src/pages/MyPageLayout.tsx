@@ -44,6 +44,19 @@ export default function MyPageLayout() {
     }
   }, [initialize, myInfo]);
 
+  useEffect(() => {
+    if (mobileOpen) {
+      // 모바일에서 사이드바 열려있으면 스크롤 막기
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
   // profileImageStore 초기화
   useEffect(() => {
     if (myInfo?.profileImageUrl) {
@@ -52,17 +65,17 @@ export default function MyPageLayout() {
   }, [myInfo, setProfileImageUrl]);
 
   const pageMap: Record<ActivePage, React.ReactNode> = {
-    profile: <MyProfilePage setMobileOpen={setMobileOpen} />,
-    reservation: <ReservationPage setMobileOpen={setMobileOpen} />,
-    experiences: <MyExperiencesPage setMobileOpen={setMobileOpen} />,
-    status: <BookingStatusPage setMobileOpen={setMobileOpen} />,
+    profile: <MyProfilePage mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />,
+    reservation: <ReservationPage mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />,
+    experiences: <MyExperiencesPage mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />,
+    status: <BookingStatusPage mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />,
   };
 
   return (
-    <div className='mx-auto mb-3 flex w-full max-w-300 flex-col justify-center px-6 md:flex-row md:items-start md:gap-7.5 md:px-7.5 lg:justify-between'>
+    <div className='mx-auto mb-3 flex min-h-[calc(100vh-140px)] w-full max-w-300 flex-col px-6 md:flex-row md:items-start md:gap-7.5 md:px-7.5 lg:justify-between'>
       <aside
-        className={`md:sticky md:top-30 md:w-auto md:shrink-0 ${mobileOpen ? 'hidden md:block' : 'block'}`}>
-        <div className='block md:hidden'>
+        className={`fixed top-[110px] left-0 z-50 h-[calc(100vh-110px)] w-full bg-white transition-transform duration-300 ease-in-out ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} md:static md:sticky md:top-30 md:z-auto md:h-auto md:w-auto md:shrink-0 md:translate-x-0 md:bg-transparent`}>
+        <div className='block h-full md:hidden'>
           <CardsideBar
             variant='mobile'
             activePage={activePage}
@@ -72,7 +85,6 @@ export default function MyPageLayout() {
             onBookingStatusClick={() => handleSelect('status')}
           />
         </div>
-
         <div className='hidden md:block lg:hidden'>
           <CardsideBar
             variant='tablet'
@@ -83,7 +95,6 @@ export default function MyPageLayout() {
             onBookingStatusClick={() => handleSelect('status')}
           />
         </div>
-
         <div className='hidden lg:block'>
           <CardsideBar
             variant='desktop'
@@ -95,9 +106,8 @@ export default function MyPageLayout() {
           />
         </div>
       </aside>
-
       <main className='min-w-0 flex-1'>
-        {mobileOpen && <div className='block md:hidden'>{pageMap[activePage]}</div>}
+        <div className='block md:hidden'>{pageMap[activePage]}</div>
         <div className='hidden md:flex md:flex-1'>{pageMap[activePage]}</div>
       </main>
     </div>
