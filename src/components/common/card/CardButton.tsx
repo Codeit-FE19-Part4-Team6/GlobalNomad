@@ -76,7 +76,7 @@ export default function CardButton({
             후기 작성
           </PrimaryButton>
         )}
-        {status === 'confirmed' && (
+        {status === 'pending' && (
           <div className='flex w-full gap-2 lg:w-auto'>
             <ActionButton
               action='muted'
