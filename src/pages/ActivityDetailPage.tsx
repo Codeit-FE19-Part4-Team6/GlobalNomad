@@ -8,6 +8,7 @@ import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 import { TimeSelectButton } from '@/components/common/button/TimeSelectButton';
 import { DayPicker } from 'react-day-picker';
 import BottomSheet from '@/components/common/modal/BottomSheet';
+import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
 import ActivityInfo from './ActivityDetail/ActivityInfo';
 import ActivityImageGallery from './ActivityDetail/ActivityImageGallery';
 import ActivityReservationPanel from './ActivityDetail/ActivityReservationPanel';
@@ -16,7 +17,8 @@ import ActivityReviews from './ActivityDetail/ActivityReviews';
 import ActivityMap from './ActivityDetail/ActivityMap';
 import { useActivityDetail } from '@/hooks/queries/useActivityDetail';
 import { useAuthStore } from '@/stores/authStore';
-import { deleteMyActivity } from '@/apis/myActivities';
+import { useShallow } from 'zustand/react/shallow';
+import { useDeleteActivityMutation } from '@/hooks/queries/useDeleteActivityMutation';
 import { createActivityReservation, getActivitySchedules } from '@/apis/activity';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ActivityScheduleResponse } from '@/apis/type';
@@ -30,8 +32,10 @@ function ActivityDetailPage() {
   // URL에서 activityId 가져오기
   const { activityId } = useParams<{ activityId: string }>();
 
-  // 현재 로그인한 사용자 정보
-  const { user, isAuthenticated } = useAuthStore();
+  // 현재 로그인한 사용자 정보 (useShallow로 리렌더링 최적화)
+  const { user, isAuthenticated } = useAuthStore(
+    useShallow((state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }))
+  );
 
   // API 데이터 불러오기
   const { data: activity, isLoading, isError } = useActivityDetail(Number(activityId));
@@ -41,6 +45,9 @@ function ActivityDetailPage() {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<number | null>(null); // scheduleId로 변경
   const [participantCount, setParticipantCount] = useState(1);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+
+  // 삭제 확인 모달 상태
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // 캘린더에서 보고 있는 월 상태 (API 호출에 사용)
   const [viewedMonth, setViewedMonth] = useState<Date>(new Date());
@@ -119,16 +126,10 @@ function ActivityDetailPage() {
     },
   });
 
-  // 삭제 mutation
-  const deleteMutation = useMutation({
-    mutationFn: () => deleteMyActivity({ activityId: Number(activityId) }),
-    onSuccess: () => {
-      alert('체험이 삭제되었습니다.');
-      navigate('/');
-    },
-    onError: (error: Error) => {
-      alert(`삭제 실패: ${error.message}`);
-    },
+  // 삭제 mutation (useDeleteActivityMutation 훅 사용)
+  const { mutate: deleteMutate } = useDeleteActivityMutation(() => {
+    setIsDeleteModalOpen(false);
+    navigate('/');
   });
 
   // 예약 버튼 활성화 조건 (boolean 타입으로 명시)
@@ -136,12 +137,17 @@ function ActivityDetailPage() {
 
   // 케밥 메뉴 핸들러
   const handleEdit = () => {
-    navigate(`/activities/${activityId}/edit`);
+    navigate(`/activities/edit/${activityId}`);
   };
 
   const handleDelete = () => {
-    if (window.confirm('정말로 이 체험을 삭제하시겠습니까?')) {
-      deleteMutation.mutate();
+    setIsDeleteModalOpen(true);
+  };
+
+  // 삭제 확인 핸들러
+  const handleConfirmDelete = () => {
+    if (activityId) {
+      deleteMutate(Number(activityId));
     }
   };
 
@@ -282,178 +288,194 @@ function ActivityDetailPage() {
                 showKebabMenu={isOwner}
               />
 
-              {/* 예약 정보 박스 */}
-              <ActivityReservationPanel
-                price={activity.price}
-                selectedDate={selectedDate}
-                onSelectDate={(date) => {
-                  setSelectedDate(date);
-                  setSelectedTimeSlot(null); // 날짜 변경 시 시간 초기화
-                }}
-                selectedTimeSlot={selectedTimeSlot}
-                onSelectTimeSlot={setSelectedTimeSlot}
-                participantCount={participantCount}
-                onIncrement={handleIncrement}
-                onDecrement={handleDecrement}
-                onReservation={handleReservation}
-                availableTimeSlots={availableTimeSlots}
-                availableDates={availableDates}
-                isReservationEnabled={isReservationEnabled}
-                isLoading={reservationMutation.isPending}
-                onMonthChange={handleMonthChange}
-                isScheduleLoaded={isScheduleLoaded}
-              />
+              {/* 예약 정보 박스 - 본인 체험이 아닐 때만 표시 */}
+              {!isOwner && (
+                <ActivityReservationPanel
+                  price={activity.price}
+                  selectedDate={selectedDate}
+                  onSelectDate={(date) => {
+                    setSelectedDate(date);
+                    setSelectedTimeSlot(null); // 날짜 변경 시 시간 초기화
+                  }}
+                  selectedTimeSlot={selectedTimeSlot}
+                  onSelectTimeSlot={setSelectedTimeSlot}
+                  participantCount={participantCount}
+                  onIncrement={handleIncrement}
+                  onDecrement={handleDecrement}
+                  onReservation={handleReservation}
+                  availableTimeSlots={availableTimeSlots}
+                  availableDates={availableDates}
+                  isReservationEnabled={isReservationEnabled}
+                  isLoading={reservationMutation.isPending}
+                  onMonthChange={handleMonthChange}
+                  isScheduleLoaded={isScheduleLoaded}
+                />
+              )}
             </div>
           </aside>
         </div>
 
-        {/* 모바일/태블릿 하단 고정 예약 바 */}
-        <ActivityMobileReservationBar
-          price={activity.price}
-          selectedDate={selectedDate}
-          selectedTimeSlot={selectedTimeSlot}
-          selectedTimeSlotDisplay={(() => {
-            const foundSlot = availableTimeSlots.find((slot) => slot.id === selectedTimeSlot);
-            return foundSlot ? `${foundSlot.startTime}~${foundSlot.endTime}` : undefined;
-          })()}
-          onOpenBottomSheet={handleMobileReservation}
-          onReservation={handleReservation}
-          isReservationEnabled={isReservationEnabled}
-        />
+        {/* 모바일/태블릿 하단 고정 예약 바 - 본인 체험이 아닐 때만 표시 */}
+        {!isOwner && (
+          <ActivityMobileReservationBar
+            price={activity.price}
+            selectedDate={selectedDate}
+            selectedTimeSlot={selectedTimeSlot}
+            selectedTimeSlotDisplay={(() => {
+              const foundSlot = availableTimeSlots.find((slot) => slot.id === selectedTimeSlot);
+              return foundSlot ? `${foundSlot.startTime}~${foundSlot.endTime}` : undefined;
+            })()}
+            onOpenBottomSheet={handleMobileReservation}
+            onReservation={handleReservation}
+            isReservationEnabled={isReservationEnabled}
+          />
+        )}
       </div>
 
-      {/* 바텀시트 - 모바일/태블릿 예약 폼 */}
-      <BottomSheet isOpen={isBottomSheetOpen} onClose={handleCloseBottomSheet}>
-        <div className='px-6 py-6 sm:px-7.5'>
-          {/* 바텀시트 헤더 */}
-          <div className='mb-6 flex items-center justify-between'>
-            <Title as='h3' size='xl' weight='bold'>
-              날짜
-            </Title>
-            <button
-              onClick={handleCloseBottomSheet}
-              className='font-lg-medium text-gray-600 hover:text-gray-900'>
-              ✕
-            </button>
-          </div>
+      {/* 삭제 확인 모달 */}
+      <CancelReservationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        cancelText='아니요'
+        confirmText='삭제'>
+        정말 삭제하시겠습니까?
+      </CancelReservationModal>
 
-          {/* 날짜 및 시간 선택 영역 */}
-          <div className='mb-6 flex flex-col gap-6 sm:flex-row'>
-            {/* 날짜 선택 */}
-            <div className='flex-1'>
-              <DayPicker
-                mode='single'
-                selected={selectedDate}
-                onSelect={(date) => {
-                  setSelectedDate(date);
-                  setSelectedTimeSlot(null); // 날짜 변경 시 시간 초기화
-                }}
-                onMonthChange={handleMonthChange}
-                className='font-md-medium w-full rounded-xl bg-white p-4'
-                modifiers={{
-                  available: checkDateAvailable,
-                }}
-                modifiersClassNames={{
-                  selected: 'custom-selected',
-                  today: 'custom-today',
-                  disabled: 'text-gray-300 cursor-not-allowed',
-                  available: 'font-bold text-primary-500',
-                }}
-                modifiersStyles={{
-                  selected: {
-                    backgroundColor: 'var(--color-primary-500)',
-                    color: 'white',
-                    fontWeight: 700,
-                    borderRadius: '9999px',
-                  },
-                  today: {
-                    backgroundColor: 'var(--color-primary-100)',
-                    color: 'var(--color-primary-500)',
-                    fontWeight: 700,
-                    borderRadius: '9999px',
-                  },
-                }}
-                disabled={[
-                  { before: new Date() },
-                  // 스케줄 데이터가 로드되었으면, 예약 가능한 날짜만 활성화
-                  (date) => isScheduleLoaded && !checkDateAvailable(date),
-                ]}
-              />
-            </div>
-
-            {/* 예약 가능한 시간 (날짜 선택 시에만 보임) */}
-            <div className='flex-1'>
-              {selectedDate ? (
-                <div>
-                  <Title as='h4' size='lg' weight='bold' className='mb-4'>
-                    예약 가능한 시간
-                  </Title>
-                  <div className='space-y-2'>
-                    {availableTimeSlots.length > 0 ? (
-                      availableTimeSlots.map((slot) => (
-                        <TimeSelectButton
-                          key={slot.id}
-                          onClick={() => setSelectedTimeSlot(slot.id)}
-                          selected={selectedTimeSlot === slot.id}
-                          className='w-full'>
-                          {slot.startTime}~{slot.endTime}
-                        </TimeSelectButton>
-                      ))
-                    ) : (
-                      <p className='font-md-medium text-center text-gray-500'>
-                        예약 가능한 시간이 없습니다.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className='flex h-full items-center justify-center rounded-xl border border-gray-300 bg-gray-50'>
-                  <p className='font-md-medium text-gray-500'>날짜를 선택해주세요.</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* 참가 인원 수 */}
-          <div className='mb-6 flex items-center justify-between'>
-            <Title as='h4' size='lg' weight='bold'>
-              참여 인원 수
-            </Title>
-            <div className='flex items-center gap-3 rounded-3xl border border-gray-200 p-0'>
-              <button
-                onClick={handleDecrement}
-                className='flex h-11 w-11 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
-                −
-              </button>
-              <span className='font-lg-medium min-w-10 text-center text-gray-900'>
-                {participantCount}
-              </span>
-              <button
-                onClick={handleIncrement}
-                className='flex h-11 w-11 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
-                +
-              </button>
-            </div>
-          </div>
-
-          {/* 총 금액 및 예약 버튼 */}
-          <div className='space-y-4 border-t border-gray-300 pt-6'>
-            <div className='flex items-center justify-between'>
-              <span className='font-lg-medium text-gray-900'>총 합계</span>
-              <Title as='h3' size='2xl' weight='bold'>
-                ₩ {(activity.price * participantCount).toLocaleString()}
+      {/* 바텀시트 - 모바일/태블릿 예약 폼 (본인 체험이 아닐 때만 표시) */}
+      {!isOwner && (
+        <BottomSheet isOpen={isBottomSheetOpen} onClose={handleCloseBottomSheet}>
+          <div className='px-6 py-6 sm:px-7.5'>
+            {/* 바텀시트 헤더 */}
+            <div className='mb-6 flex items-center justify-between'>
+              <Title as='h3' size='xl' weight='bold'>
+                날짜
               </Title>
+              <button
+                onClick={handleCloseBottomSheet}
+                className='font-lg-medium text-gray-600 hover:text-gray-900'>
+                ✕
+              </button>
             </div>
-            <PrimaryButton
-              size='lg'
-              onClick={handleReservation}
-              className='w-full'
-              disabled={!isReservationEnabled || reservationMutation.isPending}>
-              {reservationMutation.isPending ? '예약 중...' : '확인'}
-            </PrimaryButton>
+
+            {/* 날짜 및 시간 선택 영역 */}
+            <div className='mb-6 flex flex-col gap-6 sm:flex-row'>
+              {/* 날짜 선택 */}
+              <div className='flex-1'>
+                <DayPicker
+                  mode='single'
+                  selected={selectedDate}
+                  onSelect={(date) => {
+                    setSelectedDate(date);
+                    setSelectedTimeSlot(null); // 날짜 변경 시 시간 초기화
+                  }}
+                  onMonthChange={handleMonthChange}
+                  className='font-md-medium w-full rounded-xl bg-white p-4'
+                  modifiers={{
+                    available: checkDateAvailable,
+                  }}
+                  modifiersClassNames={{
+                    selected: 'custom-selected',
+                    today: 'custom-today',
+                    disabled: 'text-gray-300 cursor-not-allowed',
+                    available: 'font-bold text-primary-500',
+                  }}
+                  modifiersStyles={{
+                    selected: {
+                      backgroundColor: 'var(--color-primary-500)',
+                      color: 'white',
+                      fontWeight: 700,
+                      borderRadius: '9999px',
+                    },
+                    today: {
+                      backgroundColor: 'var(--color-primary-100)',
+                      color: 'var(--color-primary-500)',
+                      fontWeight: 700,
+                      borderRadius: '9999px',
+                    },
+                  }}
+                  disabled={[
+                    { before: new Date() },
+                    // 스케줄 데이터가 로드되었으면, 예약 가능한 날짜만 활성화
+                    (date) => isScheduleLoaded && !checkDateAvailable(date),
+                  ]}
+                />
+              </div>
+
+              {/* 예약 가능한 시간 (날짜 선택 시에만 보임) */}
+              <div className='flex-1'>
+                {selectedDate ? (
+                  <div>
+                    <Title as='h4' size='lg' weight='bold' className='mb-4'>
+                      예약 가능한 시간
+                    </Title>
+                    <div className='space-y-2'>
+                      {availableTimeSlots.length > 0 ? (
+                        availableTimeSlots.map((slot) => (
+                          <TimeSelectButton
+                            key={slot.id}
+                            onClick={() => setSelectedTimeSlot(slot.id)}
+                            selected={selectedTimeSlot === slot.id}
+                            className='w-full'>
+                            {slot.startTime}~{slot.endTime}
+                          </TimeSelectButton>
+                        ))
+                      ) : (
+                        <p className='font-md-medium text-center text-gray-500'>
+                          예약 가능한 시간이 없습니다.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className='flex h-full items-center justify-center rounded-xl border border-gray-300 bg-gray-50'>
+                    <p className='font-md-medium text-gray-500'>날짜를 선택해주세요.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 참가 인원 수 */}
+            <div className='mb-6 flex items-center justify-between'>
+              <Title as='h4' size='lg' weight='bold'>
+                참여 인원 수
+              </Title>
+              <div className='flex items-center gap-3 rounded-3xl border border-gray-200 p-0'>
+                <button
+                  onClick={handleDecrement}
+                  className='flex h-11 w-11 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
+                  −
+                </button>
+                <span className='font-lg-medium min-w-10 text-center text-gray-900'>
+                  {participantCount}
+                </span>
+                <button
+                  onClick={handleIncrement}
+                  className='flex h-11 w-11 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* 총 금액 및 예약 버튼 */}
+            <div className='space-y-4 border-t border-gray-300 pt-6'>
+              <div className='flex items-center justify-between'>
+                <span className='font-lg-medium text-gray-900'>총 합계</span>
+                <Title as='h3' size='2xl' weight='bold'>
+                  ₩ {(activity.price * participantCount).toLocaleString()}
+                </Title>
+              </div>
+              <PrimaryButton
+                size='lg'
+                onClick={handleReservation}
+                className='w-full'
+                disabled={!isReservationEnabled || reservationMutation.isPending}>
+                {reservationMutation.isPending ? '예약 중...' : '확인'}
+              </PrimaryButton>
+            </div>
           </div>
-        </div>
-      </BottomSheet>
+        </BottomSheet>
+      )}
     </div>
   );
 }
