@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useActivities } from '@/hooks/queries/useActivities';
+import { SearchInput } from '@/components/SearchInput';
 import MainBanner from './Main/MainBanner';
 import PopularActivities from './Main/PopularActivities';
 import AllActivities, { type Category, type PriceSort } from './Main/AllActivities';
@@ -61,17 +62,30 @@ const MainPage = () => {
 
   return (
     <div className='w-full'>
-      {/* 배너 + 검색 영역 */}
+      {/* 배너 영역 */}
       <MainBanner
         bannerImageUrl={popularActivitiesData?.activities[0]?.bannerImageUrl}
         bannerTitle={popularActivitiesData?.activities[0]?.title}
-        onSearch={handleSearch}
       />
 
       {/* 흰색 배경 영역 */}
       <div className='mx-auto w-full max-w-300 px-6 sm:px-7.5 lg:px-10'>
         {/* 인기 체험 섹션 */}
         <PopularActivities activities={popularActivitiesData?.activities || []} />
+
+        {/* 검색 영역 */}
+        <section className='mb-10 sm:mb-16'>
+          <SearchInput
+            title='무엇을 체험하고 싶으신가요?'
+            placeholder='내가 원하는 체험은'
+            onSearch={handleSearch}
+            searchButtonText='검색하기'
+            showButton
+            enableRealtimeSearch
+            debounceMs={300}
+            minLength={0}
+          />
+        </section>
 
         {/* 모든 체험 섹션 */}
         <AllActivities
