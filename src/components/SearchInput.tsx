@@ -127,8 +127,8 @@ export const SearchInput = ({
     }
 
     setError(false);
-    onSearch?.(trimmedValue);
-  }, [value, minLength, onSearch, onEmptySearch]);
+    onSearchRef.current?.(trimmedValue);
+  }, [value, minLength, onEmptySearch]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
