@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Logo } from '@/components/common/Logo';
 import { HeaderNotification } from '@/components/common/Header/HeaderNotification';
 import { HeaderUserMenu } from '@/components/common/Header/HeaderUserMenu';
@@ -42,7 +42,7 @@ interface Props {
 export const Header = ({ userName, onLogin, onSignUp }: Props) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-
+  const [scrollY, setScrollY] = useState(0);
   const isLoggedIn = !!userName;
 
   const handleCloseAllDropdowns = () => {
@@ -60,10 +60,49 @@ export const Header = ({ userName, onLogin, onSignUp }: Props) => {
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
+  useEffect(() => {
+    let rafId: number | null = null;
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      // 이미 예약된 프레임이 있으면 중복 호출 방지
+      if (rafId !== null) {
+        return;
+      }
+
+      rafId = requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY;
+
+        // 스크롤 값이 실제로 변경된 경우에만 state 업데이트
+        if (lastScrollY !== currentScrollY) {
+          setScrollY(currentScrollY);
+          lastScrollY = currentScrollY;
+        }
+        rafId = null;
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }, []);
+
+  // 스크롤 위치에 따른 배경 투명도 계산 (0~10px 사이에서 전환)
+  const backgroundOpacity = useMemo(() => Math.min(scrollY / 10, 1), [scrollY]);
+
   return (
-    <header className='sticky top-0 z-50 bg-white'>
-      <div className='mx-auto max-w-380 px-6 py-2.5 sm:py-6.5'>
-        <div className='flex h-16 items-center justify-between'>
+    <header className='sticky top-0 z-50'>
+      <div
+        className='absolute inset-0 bg-white transition-opacity duration-300'
+        style={{ opacity: backgroundOpacity }}
+      />
+      <div className='relative mx-auto max-w-380 px-6'>
+        <div className='flex h-20 items-center justify-between'>
           <Logo />
           <div className='flex items-center space-x-4'>
             {/* 로그인 상태일 때만 알림 표시 */}

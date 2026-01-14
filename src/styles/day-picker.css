@@ -1,0 +1,11 @@
+/* DayPicker 커스텀 스타일 */
+
+/* 달력 화살표(chevron) 색상 변경 */
+.rdp-chevron {
+  fill: var(--color-black-50) !important;
+}
+
+.rdp-button_previous:hover .rdp-chevron,
+.rdp-button_next:hover .rdp-chevron {
+  fill: var(--color-gray-700) !important;
+}

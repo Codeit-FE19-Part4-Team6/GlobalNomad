@@ -16,7 +16,7 @@ export const useLoginForm = () => {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<LoginRequest>({
     mode: 'onBlur',
   });
@@ -25,10 +25,18 @@ export const useLoginForm = () => {
   const watchEmail = watch('email');
   const watchPassword = watch('password');
 
+  // const isFormValid = useMemo(() => {
+  //   const allFieldsFilled = !!watchEmail?.trim() && !!watchPassword?.trim();
+  //   return allFieldsFilled && isValid;
+  // }, [watchEmail, watchPassword, isValid]);
+
   const isFormValid = useMemo(() => {
-    const allFieldsFilled = !!watchEmail?.trim() && !!watchPassword?.trim();
-    return allFieldsFilled && isValid;
-  }, [watchEmail, watchPassword, isValid]);
+    const emailFilled = !!watchEmail?.trim();
+    const passwordFilled = !!watchPassword?.trim();
+    const emailValid = emailFilled && isValidEmail(watchEmail);
+
+    return emailValid && passwordFilled;
+  }, [watchEmail, watchPassword]);
 
   const onSubmit = (data: LoginRequest) => {
     login(data, {

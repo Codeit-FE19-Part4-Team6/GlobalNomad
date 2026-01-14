@@ -29,7 +29,7 @@ export const useSignupForm = () => {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<SignupFormInputs>({
     mode: 'onBlur',
   });
@@ -42,13 +42,17 @@ export const useSignupForm = () => {
 
   // 폼 유효성 검사
   const isFormValid = useMemo(() => {
-    const allFieldsFilled =
-      !!watchEmail?.trim() &&
-      !!watchNickname?.trim() &&
-      !!watchPassword?.trim() &&
-      !!watchPasswordConfirm?.trim();
-    return allFieldsFilled && isValid;
-  }, [watchEmail, watchNickname, watchPassword, watchPasswordConfirm, isValid]);
+    const emailFilled = !!watchEmail?.trim();
+    const nicknameFilled = !!watchNickname?.trim();
+    const passwordFilled = !!watchPassword?.trim();
+    const passwordConfirmFilled = !!watchPasswordConfirm?.trim();
+
+    const emailValid = emailFilled && isValidEmail(watchEmail);
+    const nicknameValid = nicknameFilled && isValidNickname(watchNickname);
+    const passwordValid = passwordFilled && isValidPassword(watchPassword);
+
+    return emailValid && nicknameValid && passwordValid && passwordConfirmFilled;
+  }, [watchEmail, watchNickname, watchPassword, watchPasswordConfirm]);
 
   const onSubmit = (data: SignupFormInputs) => {
     signup(data, {

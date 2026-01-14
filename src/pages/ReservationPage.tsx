@@ -4,7 +4,7 @@ import CancelReservationModal from '@/components/common/modal/CancelReservationM
 import ReviewModal from '@/components/common/modal/ReviewModal';
 import { FilterButton, PrimaryButton } from '@/components/common/button';
 import Title from '@/components/common/Title';
-import { Down, Earth } from '@/assets/icons';
+import { Burger, Delete, Earth } from '@/assets/icons';
 import type { MyReservationsResponse } from '@/apis/type';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMyReservationsInfinite } from '@/hooks/queries/useMyReservationsQuery';
@@ -24,11 +24,12 @@ const STATUS_TEXT_MAP: Record<Status, string> = {
 type Status = (typeof STATUS_LIST)[number];
 type SelectedStatus = 'all' | Status;
 type Props = {
+  mobileOpen: boolean;
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 type ReservationItem = MyReservationsResponse['reservations'][number];
 
-export default function ReservationPage({ setMobileOpen }: Props) {
+export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false); // 모달 상태
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null); // 선택된 예약 정보
@@ -150,11 +151,18 @@ export default function ReservationPage({ setMobileOpen }: Props) {
   }
   return (
     <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
-      <div className='flex flex-col items-start gap-2.5 py-[10px]'>
-        <Down
-          className='block rotate-90 cursor-pointer md:hidden'
+      {!mobileOpen ? (
+        <Burger
+          className='block cursor-pointer text-gray-950 md:hidden'
+          onClick={() => setMobileOpen(true)}
+        />
+      ) : (
+        <Delete
+          className='-ml-1 block h-3 w-3 cursor-pointer md:hidden'
           onClick={() => setMobileOpen(false)}
         />
+      )}
+      <div className='flex flex-col items-start gap-2.5 py-[10px]'>
         <Title as='h3' size='xl' weight='bold'>
           예약내역
         </Title>
@@ -173,7 +181,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
         </div>
       )}
       {reservations.length === 0 ? (
-        <div className='mb-3 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
+        <div className='mt-8 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
           <div className='flex flex-col items-center justify-center'>
             <Earth className='mb-7.5' />
             <div className='font-xl-medium text-center whitespace-nowrap text-gray-600'>
@@ -246,6 +254,7 @@ export default function ReservationPage({ setMobileOpen }: Props) {
           </div>
         </>
       )}
+
       <CancelReservationModal
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
