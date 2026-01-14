@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { PrimaryButton } from '@/components/common/button';
 import { BaseInput } from '@/components/common/input/BaseInput';
 import type { BaseInputProps } from '@/components/common/input/types';
@@ -13,7 +13,7 @@ export interface SearchInputProps extends Omit<BaseInputProps, 'type'> {
   minLength?: number;
   /** 빈 검색어 시도 시 콜백 */
   onEmptySearch?: () => void;
-  /** 디바운스 지연 시간 (ms, 기본값: 0 - 디바운스 비활성화) */
+  /** 디바운스 지연 시간 (ms, 기본값: 300 - 실시간 검색 시 적용) */
   debounceMs?: number;
   /** 실시간 검색 활성화 (타이핑하면 자동 검색, 기본값: false) */
   enableRealtimeSearch?: boolean;
@@ -67,7 +67,7 @@ export const SearchInput = ({
   className = '',
   minLength = 1,
   onEmptySearch,
-  debounceMs = 0,
+  debounceMs = 300,
   enableRealtimeSearch = false,
   value: controlledValue,
   defaultValue,
@@ -84,9 +84,15 @@ export const SearchInput = ({
   // 실제 사용할 값 (Controlled이면 외부 값, 아니면 내부 값)
   const value = isControlled ? controlledValue : internalValue;
 
+  // onSearch를 ref로 저장하여 useEffect 의존성에서 제외 (무한 루프 방지)
+  const onSearchRef = useRef(onSearch);
+  useEffect(() => {
+    onSearchRef.current = onSearch;
+  }, [onSearch]);
+
   // 디바운스 처리 (실시간 검색 활성화 시)
   useEffect(() => {
-    if (!enableRealtimeSearch || debounceMs === 0) {
+    if (!enableRealtimeSearch) {
       return;
     }
 
@@ -95,7 +101,7 @@ export const SearchInput = ({
 
       // 빈 검색어일 때
       if (!trimmedValue) {
-        onSearch?.(''); // 빈 문자열로 검색 실행 (전체보기)
+        onSearchRef.current?.(''); // 빈 문자열로 검색 실행 (전체보기)
         return;
       }
 
@@ -104,11 +110,11 @@ export const SearchInput = ({
         return;
       }
 
-      onSearch?.(trimmedValue);
+      onSearchRef.current?.(trimmedValue);
     }, debounceMs);
 
     return () => clearTimeout(timer);
-  }, [value, enableRealtimeSearch, debounceMs, minLength, onSearch]);
+  }, [value, enableRealtimeSearch, debounceMs, minLength]);
 
   const handleSearch = useCallback(() => {
     const trimmedValue = String(value).trim();
@@ -121,8 +127,8 @@ export const SearchInput = ({
     }
 
     setError(false);
-    onSearch?.(trimmedValue);
-  }, [value, minLength, onSearch, onEmptySearch]);
+    onSearchRef.current?.(trimmedValue);
+  }, [value, minLength, onEmptySearch]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -167,7 +173,7 @@ export const SearchInput = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           error={error}
-          className={`h-[50px] w-full rounded-2xl border pl-14 sm:h-[70px] sm:rounded-3xl ${
+          className={`h-12.5 w-full rounded-2xl border pl-14 sm:h-17.5 sm:rounded-3xl ${
             showButton ? 'pr-38' : 'pr-5'
           } caret-primary-500 sm:placeholder:font-xl-medium placeholder:font-md-medium shadow-[0_0_20px_rgba(0,0,0,0.08)] transition-all duration-200 outline-none placeholder:text-gray-400 focus:ring-2 ${className}`}
           {...props}
@@ -177,7 +183,7 @@ export const SearchInput = ({
           <div className='absolute top-1/2 right-3 -translate-y-1/2'>
             <PrimaryButton
               onClick={handleSearch}
-              className='font-md-bold sm:font-lg-bold h-[41px] px-5 py-3 leading-none sm:h-[50px] sm:px-8 sm:py-4'
+              className='font-md-bold sm:font-lg-bold h-10.25 px-5 py-3 leading-none sm:h-12.5 sm:px-8 sm:py-4'
               aria-label='검색 실행'>
               {searchButtonText}
             </PrimaryButton>

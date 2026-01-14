@@ -1,14 +1,12 @@
 import Title from '@/components/common/Title';
 import { Cloud } from '@/assets/images';
-import { SearchInput } from '@/components/SearchInput';
 
 interface MainBannerProps {
   bannerImageUrl?: string;
   bannerTitle?: string;
-  onSearch: (value: string) => void;
 }
 
-export default function MainBanner({ bannerImageUrl, bannerTitle, onSearch }: MainBannerProps) {
+export default function MainBanner({ bannerImageUrl, bannerTitle }: MainBannerProps) {
   return (
     <div className='relative -mt-21 overflow-hidden bg-linear-to-b from-blue-50 via-blue-50/50 to-white pt-21 pb-10 sm:-mt-29 sm:pt-29 sm:pb-16'>
       {/* 구름 이미지들 - 불규칙 배치 */}
@@ -22,7 +20,7 @@ export default function MainBanner({ bannerImageUrl, bannerTitle, onSearch }: Ma
       {/* 컨텐츠 래퍼 */}
       <div className='relative z-10 mx-auto w-full max-w-300 px-6 sm:px-7.5 lg:px-10'>
         {/* 배너 섹션 */}
-        <section className='relative mb-10 h-60 w-full overflow-hidden rounded-3xl sm:mb-16 sm:h-137.5'>
+        <section className='relative h-45 w-full overflow-hidden rounded-3xl sm:h-93.75 lg:h-125'>
           <div
             className='absolute inset-0 bg-cover bg-center bg-no-repeat'
             style={{
@@ -41,20 +39,6 @@ export default function MainBanner({ bannerImageUrl, bannerTitle, onSearch }: Ma
             </Title>
             <p className='font-md-medium sm:font-xl-medium text-white'>1월의 인기 체험 BEST</p>
           </div>
-        </section>
-
-        {/* 검색 영역 */}
-        <section className='mb-10 sm:mb-16'>
-          <SearchInput
-            title='무엇을 체험하고 싶으신가요?'
-            placeholder='내가 원하는 체험은'
-            onSearch={onSearch}
-            searchButtonText='검색하기'
-            showButton
-            enableRealtimeSearch
-            debounceMs={300}
-            minLength={0}
-          />
         </section>
       </div>
     </div>

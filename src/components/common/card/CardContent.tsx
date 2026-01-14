@@ -19,7 +19,7 @@ export default function CardContent({
   const { variant } = useCardContext();
 
   const styles: Record<typeof variant, string> = {
-    grid: '-mt-[33.75px] flex w-full flex-col rounded-[18px] border-white bg-white px-4.25 py-4 md:-mt-15 md:rounded-4xl md:px-7.5 md:py-7.5 shadow-[0_-8px_20px_0_rgba(0,0,0,0.05)] relative z-10',
+    grid: '-mt-8 flex w-full flex-1 flex-col rounded-[18px] border-white bg-white px-4 py-3 sm:-mt-15 sm:rounded-4xl sm:px-6 sm:py-5 lg:-mt-10 lg:px-5 lg:py-4 shadow-[0_-8px_20px_0_rgba(0,0,0,0.05)] relative z-10',
     reservation: cn(
       'relative z-10 flex flex-col',
       'rounded-3xl border border-white bg-white p-5 lg:px-10 lg:py-[26px]',
