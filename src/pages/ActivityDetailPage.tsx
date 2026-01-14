@@ -130,8 +130,14 @@ function ActivityDetailPage() {
       setParticipantCount(1);
       setIsBottomSheetOpen(false);
     },
-    onError: () => {
-      setAlertModal({ isOpen: true, message: '이미 예약된 시간입니다.' });
+    onError: (error: unknown) => {
+      // 바텀시트 닫기 (AlertModal이 가려지지 않도록)
+      setIsBottomSheetOpen(false);
+      // API 응답에서 에러 메시지 추출, 없으면 기본 메시지 표시
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        '이미 예약된 시간입니다.';
+      setAlertModal({ isOpen: true, message: errorMessage });
     },
   });
 
@@ -193,6 +199,11 @@ function ActivityDetailPage() {
   const handleCloseBottomSheet = () => {
     setIsBottomSheetOpen(false);
   };
+
+  // 알림 모달 닫기 (useCallback으로 메모이제이션)
+  const handleCloseAlertModal = useCallback(() => {
+    setAlertModal({ isOpen: false, message: '' });
+  }, []);
 
   // 캘린더 월 변경 핸들러
   const handleMonthChange = (date: Date) => {
@@ -354,7 +365,7 @@ function ActivityDetailPage() {
       {/* 알림 모달 */}
       <AlertModal
         isOpen={alertModal.isOpen}
-        onClose={() => setAlertModal({ isOpen: false, message: '' })}
+        onClose={handleCloseAlertModal}
         message={alertModal.message}
       />
 
