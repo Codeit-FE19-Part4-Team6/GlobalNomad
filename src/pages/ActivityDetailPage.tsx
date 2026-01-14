@@ -8,6 +8,7 @@ import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 import { TimeSelectButton } from '@/components/common/button/TimeSelectButton';
 import { DayPicker } from 'react-day-picker';
 import BottomSheet from '@/components/common/modal/BottomSheet';
+import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
 import ActivityInfo from './ActivityDetail/ActivityInfo';
 import ActivityImageGallery from './ActivityDetail/ActivityImageGallery';
 import ActivityReservationPanel from './ActivityDetail/ActivityReservationPanel';
@@ -16,7 +17,7 @@ import ActivityReviews from './ActivityDetail/ActivityReviews';
 import ActivityMap from './ActivityDetail/ActivityMap';
 import { useActivityDetail } from '@/hooks/queries/useActivityDetail';
 import { useAuthStore } from '@/stores/authStore';
-import { deleteMyActivity } from '@/apis/myActivities';
+import { useDeleteActivityMutation } from '@/hooks/queries/useDeleteActivityMutation';
 import { createActivityReservation, getActivitySchedules } from '@/apis/activity';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ActivityScheduleResponse } from '@/apis/type';
@@ -42,6 +43,9 @@ function ActivityDetailPage() {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<number | null>(null); // scheduleId로 변경
   const [participantCount, setParticipantCount] = useState(1);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+
+  // 삭제 확인 모달 상태
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // 캘린더에서 보고 있는 월 상태 (API 호출에 사용)
   const [viewedMonth, setViewedMonth] = useState<Date>(new Date());
@@ -120,29 +124,31 @@ function ActivityDetailPage() {
     },
   });
 
-  // 삭제 mutation
-  const deleteMutation = useMutation({
-    mutationFn: () => deleteMyActivity({ activityId: Number(activityId) }),
-    onSuccess: () => {
-      alert('체험이 삭제되었습니다.');
+  // 삭제 mutation (useDeleteActivityMutation 훅 사용)
+  const { mutate: deleteMutate } = useDeleteActivityMutation(
+    () => {
+      setIsDeleteModalOpen(false);
       navigate('/');
     },
-    onError: (error: Error) => {
-      alert(`삭제 실패: ${error.message}`);
-    },
-  });
+    () => {}
+  );
 
   // 예약 버튼 활성화 조건 (boolean 타입으로 명시)
   const isReservationEnabled = !!(selectedDate && selectedTimeSlot && participantCount > 0);
 
   // 케밥 메뉴 핸들러
   const handleEdit = () => {
-    navigate(`/activities/${activityId}/edit`);
+    navigate(`/activities/edit/${activityId}`);
   };
 
   const handleDelete = () => {
-    if (window.confirm('정말로 이 체험을 삭제하시겠습니까?')) {
-      deleteMutation.mutate();
+    setIsDeleteModalOpen(true);
+  };
+
+  // 삭제 확인 핸들러
+  const handleConfirmDelete = () => {
+    if (activityId) {
+      deleteMutate(Number(activityId));
     }
   };
 
@@ -326,6 +332,16 @@ function ActivityDetailPage() {
           />
         )}
       </div>
+
+      {/* 삭제 확인 모달 */}
+      <CancelReservationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        cancelText='아니요'
+        confirmText='삭제'>
+        정말 삭제하시겠습니까?
+      </CancelReservationModal>
 
       {/* 바텀시트 - 모바일/태블릿 예약 폼 (본인 체험이 아닐 때만 표시) */}
       {!isOwner && (
