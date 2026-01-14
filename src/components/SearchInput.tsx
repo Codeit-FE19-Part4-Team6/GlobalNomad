@@ -173,7 +173,7 @@ export const SearchInput = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           error={error}
-          className={`h-[50px] w-full rounded-2xl border pl-14 sm:h-[70px] sm:rounded-3xl ${
+          className={`h-12.5 w-full rounded-2xl border pl-14 sm:h-17.5 sm:rounded-3xl ${
             showButton ? 'pr-38' : 'pr-5'
           } caret-primary-500 sm:placeholder:font-xl-medium placeholder:font-md-medium shadow-[0_0_20px_rgba(0,0,0,0.08)] transition-all duration-200 outline-none placeholder:text-gray-400 focus:ring-2 ${className}`}
           {...props}
@@ -183,7 +183,7 @@ export const SearchInput = ({
           <div className='absolute top-1/2 right-3 -translate-y-1/2'>
             <PrimaryButton
               onClick={handleSearch}
-              className='font-md-bold sm:font-lg-bold h-[41px] px-5 py-3 leading-none sm:h-[50px] sm:px-8 sm:py-4'
+              className='font-md-bold sm:font-lg-bold h-10.25 px-5 py-3 leading-none sm:h-12.5 sm:px-8 sm:py-4'
               aria-label='검색 실행'>
               {searchButtonText}
             </PrimaryButton>

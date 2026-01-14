@@ -14,7 +14,7 @@ export default function CardImage({ src, alt }: { src?: string; alt?: string }) 
   const { variant } = useCardContext();
 
   const imageWrapperStyle = {
-    grid: 'w-full overflow-hidden rounded-[18px_18px_0_0] h-[136px] sm:h-[282px] sm:rounded-[32px_32px_0_0] lg:h-[214px]',
+    grid: 'w-full overflow-hidden rounded-[18px_18px_0_0] h-34 sm:h-70.5 sm:rounded-[32px_32px_0_0] lg:h-53.5',
     list: 'h-20.5 w-20.5 shrink-0 lg:h-35.5 lg:w-35.5',
     reservation:
       'aspect-square h-34 min-h-38.25 w-34 shrink-0 overflow-hidden rounded-[0_24px_24px_0] bg-gray-100 lg:h-45.25 lg:w-45.25 lg:rounded-[0_32px_32px_0] relative z-0 -ml-6 lg:-ml-10',
