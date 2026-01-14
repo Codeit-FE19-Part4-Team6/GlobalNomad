@@ -92,7 +92,7 @@ export default function PopularActivities({ activities }: PopularActivitiesProps
             <div
               key={activity.id}
               onClick={() => navigate(`/activities/${activity.id}`)}
-              className='cursor-pointer'>
+              className='w-[calc((100%-32px)/3)] shrink-0 cursor-pointer sm:w-[calc((100%-24px)/2.5)] lg:w-[282px]'>
               <Card variant='grid'>
                 <Card.Image src={activity.bannerImageUrl} alt={activity.title} />
                 <Card.Content>
