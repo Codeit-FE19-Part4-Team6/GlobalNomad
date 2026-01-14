@@ -21,21 +21,28 @@ export default function EditActivityPage() {
   const [leaveOpen, setLeaveOpen] = useState(false);
   const ignoreBlockOnceRef = useRef(false);
   const { showSnack } = useSnackBar();
-  const draftKey = `draft:editActivity:${activityId}`;
+  const pendingLocationRef = useRef<string | null>(null);
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
-    //성공 후 모달띄워지는걸 막기위한 Ref
     if (ignoreBlockOnceRef.current) {
       return false;
     }
-    //변경사항 없을 시
     if (!isDirty) {
       return false;
     }
-    //경로가 같을 시
-    if (currentLocation.pathname === nextLocation.pathname) {
+
+    // pathname만 비교하면 query가 바뀌는 이동도 "같은 경로"로 취급될 수 있어서
+    // search까지 합쳐서 비교하는게 안전
+    const curr = currentLocation.pathname + currentLocation.search;
+    const next = nextLocation.pathname + nextLocation.search;
+
+    if (curr === next) {
       return false;
     }
-    return true;
+
+    // ✅ “어디로 가려고 했는지” 저장 (뒤로/앞으로도 결국 nextLocation이 있음)
+    pendingLocationRef.current = next;
+
+    return true; // 이동 막기
   });
 
   useEffect(() => {
@@ -60,7 +67,25 @@ export default function EditActivityPage() {
 
   const handleLeaveYes = () => {
     setLeaveOpen(false);
-    blocker.proceed?.();
+
+    // ✅ 다음 내비게이션은 막지 않도록(한 번만)
+    ignoreBlockOnceRef.current = true;
+
+    // ✅ 변경사항 없다고 처리(다음 이동에서 blocker 조건을 꺼버림)
+    setIsDirty(false);
+
+    // ✅ 라우터 blocked 상태 해제 (이거 안 하면 먹통처럼 남는 케이스가 있음)
+    blocker.reset?.();
+
+    // ✅ 저장해둔 목적지로 이동
+    const next = pendingLocationRef.current;
+    if (next) {
+      navigate(next, { replace: true });
+      pendingLocationRef.current = null;
+    } else {
+      // 혹시 모를 fallback
+      navigate(-1);
+    }
   };
 
   const initialData: ActivityFormInitialData | undefined = useMemo(() => {
@@ -163,7 +188,7 @@ export default function EditActivityPage() {
           });
 
           // ✅ 이번 이동은 모달 무시 (즉시 반영되는 ref 사용)
-          //ignoreBlockOnceRef.current = true;
+          ignoreBlockOnceRef.current = true;
 
           setIsDirty(false);
           setTimeout(() => {
@@ -215,7 +240,6 @@ export default function EditActivityPage() {
         initialData={initialData}
         onSubmit={handleEdit}
         onDirtyChange={setIsDirty}
-        draftKey={draftKey}
       />
 
       <CancelReservationModal

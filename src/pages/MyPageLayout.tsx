@@ -7,7 +7,7 @@ import MyProfilePage from '@/pages/MyProfilePage';
 import ReservationPage from '@/pages/ReservationPage';
 import { useProfileImageStore } from '@/stores/profileImageStore';
 import { useAuthStore } from '@/stores/authStore';
-
+import { useIsMobile } from '@/hooks/useIsMobile';
 type ActivePage = 'profile' | 'reservation' | 'experiences' | 'status';
 
 export default function MyPageLayout() {
@@ -16,7 +16,7 @@ export default function MyPageLayout() {
 
   const { user: myInfo, initialize } = useAuthStore();
   const { setProfileImageUrl } = useProfileImageStore();
-
+  const isMobile = useIsMobile();
   const activePage: ActivePage =
     tabParam === 'profile' ||
     tabParam === 'reservation' ||
@@ -45,7 +45,7 @@ export default function MyPageLayout() {
   }, [initialize, myInfo]);
 
   useEffect(() => {
-    if (mobileOpen) {
+    if (mobileOpen && isMobile) {
       // 모바일에서 사이드바 열려있으면 스크롤 막기
       document.body.style.overflow = 'hidden';
     } else {
@@ -55,7 +55,7 @@ export default function MyPageLayout() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [mobileOpen]);
+  }, [mobileOpen, isMobile]);
 
   // profileImageStore 초기화
   useEffect(() => {

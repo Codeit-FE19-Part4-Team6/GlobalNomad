@@ -219,15 +219,15 @@ export default function ReservationInfoModal({
 
           <div className='scrollbar-hide max-h-[235px] space-y-3 overflow-y-auto'>
             {isReservationsLoading ? (
-              <div className='font-md-medium rounded-xl border border-gray-200 py-8 text-center text-gray-500'>
+              <div className='font-md-medium rounded-xl border border-gray-100 py-8 text-center text-gray-500'>
                 불러오는 중...
               </div>
             ) : isReservationsError ? (
-              <div className='font-md-medium rounded-xl border border-gray-200 py-8 text-center text-red-500'>
+              <div className='font-md-medium rounded-xl border border-gray-100 py-8 text-center text-red-500'>
                 예약 내역을 불러오지 못했어요.
               </div>
             ) : visibleList.length === 0 ? (
-              <div className='font-md-medium rounded-xl border border-gray-200 py-8 text-center text-gray-500'>
+              <div className='font-md-medium rounded-xl border border-gray-100 py-8 text-center text-gray-500'>
                 예약 내역이 없습니다.
               </div>
             ) : (

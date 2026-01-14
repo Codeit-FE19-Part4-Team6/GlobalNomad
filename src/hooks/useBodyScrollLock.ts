@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 
 interface UseBodyScrollLockProps {
-  isLocked: boolean;
+  isLocked?: boolean;
+  isHover?: boolean;
 }
 
 export default function useBodyScrollLock({ isLocked }: UseBodyScrollLockProps) {
