@@ -9,6 +9,7 @@ import { TimeSelectButton } from '@/components/common/button/TimeSelectButton';
 import { DayPicker } from 'react-day-picker';
 import BottomSheet from '@/components/common/modal/BottomSheet';
 import CancelReservationModal from '@/components/common/modal/CancelReservationModal';
+import AlertModal from '@/components/common/modal/AlertModal';
 import ActivityInfo from './ActivityDetail/ActivityInfo';
 import ActivityImageGallery from './ActivityDetail/ActivityImageGallery';
 import ActivityReservationPanel from './ActivityDetail/ActivityReservationPanel';
@@ -19,6 +20,7 @@ import { useActivityDetail } from '@/hooks/queries/useActivityDetail';
 import { useAuthStore } from '@/stores/authStore';
 import { useShallow } from 'zustand/react/shallow';
 import { useDeleteActivityMutation } from '@/hooks/queries/useDeleteActivityMutation';
+import { useSnackBar } from '@/providers/SnackBarProvider';
 import { createActivityReservation, getActivitySchedules } from '@/apis/activity';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ActivityScheduleResponse } from '@/apis/type';
@@ -28,6 +30,7 @@ const SHORT_DESCRIPTION_MAX_LENGTH = 100;
 function ActivityDetailPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { showSnack } = useSnackBar();
 
   // URL에서 activityId 가져오기
   const { activityId } = useParams<{ activityId: string }>();
@@ -48,6 +51,12 @@ function ActivityDetailPage() {
 
   // 삭제 확인 모달 상태
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // 알림 모달 상태
+  const [alertModal, setAlertModal] = useState<{ isOpen: boolean; message: string }>({
+    isOpen: false,
+    message: '',
+  });
 
   // 캘린더에서 보고 있는 월 상태 (API 호출에 사용)
   const [viewedMonth, setViewedMonth] = useState<Date>(new Date());
@@ -113,7 +122,7 @@ function ActivityDetailPage() {
         headCount: participantCount,
       }),
     onSuccess: () => {
-      alert('예약이 완료되었습니다!');
+      showSnack('예약이 완료되었습니다!', 'success');
       queryClient.invalidateQueries({ queryKey: ['activitySchedules'] });
       // 상태 초기화
       setSelectedDate(undefined);
@@ -121,8 +130,8 @@ function ActivityDetailPage() {
       setParticipantCount(1);
       setIsBottomSheetOpen(false);
     },
-    onError: (error: Error) => {
-      alert(`예약 실패: ${error.message}`);
+    onError: () => {
+      setAlertModal({ isOpen: true, message: '이미 예약된 시간입니다.' });
     },
   });
 
@@ -341,6 +350,13 @@ function ActivityDetailPage() {
         confirmText='삭제'>
         정말 삭제하시겠습니까?
       </CancelReservationModal>
+
+      {/* 알림 모달 */}
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={() => setAlertModal({ isOpen: false, message: '' })}
+        message={alertModal.message}
+      />
 
       {/* 바텀시트 - 모바일/태블릿 예약 폼 (본인 체험이 아닐 때만 표시) */}
       {!isOwner && (
