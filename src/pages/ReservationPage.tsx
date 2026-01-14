@@ -114,6 +114,7 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
     setSelectedReservation(reservation);
     setIsReviewModalOpen(true);
   };
+
   // 후기 제출
   const handleSubmitReview = (data: { rating: number; content: string }) => {
     if (!selectedReservation) {
@@ -132,10 +133,12 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
     setSelectedReservationId(id);
     setIsCancelModalOpen(true);
   };
+
   const { mutate: cancelMutate } = useCancelReservationMutation(
     () => setIsCancelModalOpen(false),
     () => setSelectedReservationId(null)
   );
+
   // 예약 취소 확정
   const handleConfirmCancel = () => {
     if (!selectedReservationId) {
@@ -143,14 +146,16 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
     }
     cancelMutate(selectedReservationId);
   };
+
   if (isLoading) {
     return <div className='px-4 py-10'>로딩 중...</div>;
   }
   if (isError) {
     return <div className='px-4 py-10'>예약 내역을 불러오지 못했어요.</div>;
   }
+
   return (
-    <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
+    <div className='flex flex-col gap-3.5'>
       {!mobileOpen ? (
         <Burger
           className='block cursor-pointer text-gray-950 md:hidden'
@@ -158,18 +163,18 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
         />
       ) : (
         <Delete
-          className='-ml-1 block h-3 w-3 cursor-pointer md:hidden'
+          className='ml-1 block h-3 w-3 cursor-pointer md:hidden'
           onClick={() => setMobileOpen(false)}
         />
       )}
-      <div className='flex flex-col items-start gap-2.5 py-[10px]'>
+      <div className='flex flex-col items-start gap-2.5 py-2.5'>
         <Title as='h3' size='xl' weight='bold'>
           예약내역
         </Title>
         <div className='font-md-medium text-gray-500'>예약내역 변경 및 취소할 수 있습니다.</div>
       </div>
       {hasAnyReservation && (
-        <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
+        <div className='scrollbar-hide mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-7.5'>
           <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
             전체
           </FilterButton>
@@ -189,7 +194,7 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
             </div>
           </div>
           <PrimaryButton
-            className='font-lg-medium h-[54px] w-[182px] rounded-2xl px-10 py-3.5'
+            className='font-lg-medium h-13.5 w-45.5 rounded-2xl px-10 py-3.5'
             onClick={() => navigate('/')}>
             둘러보기
           </PrimaryButton>

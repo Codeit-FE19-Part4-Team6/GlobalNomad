@@ -68,7 +68,7 @@ export default function MyExperiencesPage({ setMobileOpen, mobileOpen }: Props) 
   }
 
   return (
-    <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
+    <div className='flex flex-col'>
       {!mobileOpen ? (
         <Burger
           className='block cursor-pointer text-gray-950 md:hidden'
@@ -80,7 +80,7 @@ export default function MyExperiencesPage({ setMobileOpen, mobileOpen }: Props) 
           onClick={() => setMobileOpen(false)}
         />
       )}
-      <div className='mb-[30px] flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
+      <div className='mb-7.5 flex flex-col gap-3 py-2.5 md:flex-row md:items-center md:justify-between'>
         <div className='flex flex-col gap-2.5'>
           <Title as='h3' size='xl' weight='bold'>
             내 체험 관리
@@ -91,7 +91,7 @@ export default function MyExperiencesPage({ setMobileOpen, mobileOpen }: Props) 
         </div>
         <PrimaryButton
           onClick={() => navigate('/activities/create')}
-          className='font-lg-bold md:h-12 md:w-[138px]'>
+          className='font-lg-bold md:h-12 md:w-34.5'>
           체험 등록하기
         </PrimaryButton>
       </div>
@@ -106,13 +106,13 @@ export default function MyExperiencesPage({ setMobileOpen, mobileOpen }: Props) 
             <Card key={activity.id} variant='list'>
               <div className='flex w-full items-stretch justify-between'>
                 <Card.Content className='flex flex-1 flex-col justify-center'>
-                  <Card.Title title={activity.title} className='mb-[6px] lg:mb-2' />
+                  <Card.Title title={activity.title} className='mb-1.5 lg:mb-2' />
                   <Card.Rating
                     rating={activity.rating}
                     reviewCount={activity.reviewCount}
-                    className='mb-[10px] lg:mb-3'
+                    className='mb-2.5 lg:mb-3'
                   />
-                  <Card.Price price={activity.price} className='mb-[10px] lg:mb-5' />
+                  <Card.Price price={activity.price} className='mb-2.5 lg:mb-5' />
                   <Card.CardButton
                     onEdit={() => navigate(`/activities/edit/${activity.id}`)}
                     onDelete={() => handleDelete(activity.id)}

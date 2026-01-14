@@ -72,9 +72,9 @@ export default function MyPageLayout() {
   };
 
   return (
-    <div className='mx-auto mb-3 flex min-h-[calc(100vh-140px)] w-full max-w-300 flex-col px-6 md:flex-row md:items-start md:gap-7.5 md:px-7.5 lg:justify-between'>
+    <div className='mx-auto mb-3 flex min-h-[calc(100vh-140px)] w-full max-w-300 flex-col gap-6 px-6 sm:gap-7.5 md:flex-row md:items-start md:gap-[50px] md:px-7.5 lg:justify-between'>
       <aside
-        className={`fixed top-[110px] left-0 z-50 h-[calc(100vh-110px)] w-full bg-white transition-transform duration-300 ease-in-out ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} md:static md:sticky md:top-30 md:z-auto md:h-auto md:w-auto md:shrink-0 md:translate-x-0 md:bg-transparent`}>
+        className={`fixed top-27.5 left-0 z-50 h-[calc(100vh-110px)] w-full bg-white transition-transform duration-300 ease-in-out ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} md:static md:sticky md:top-30 md:z-auto md:h-auto md:w-auto md:shrink-0 md:translate-x-0 md:bg-transparent`}>
         <div className='block h-full md:hidden'>
           <CardsideBar
             variant='mobile'

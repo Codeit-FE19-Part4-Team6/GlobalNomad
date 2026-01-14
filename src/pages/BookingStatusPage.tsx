@@ -175,23 +175,23 @@ export default function BookingStatusPage({ setMobileOpen, mobileOpen }: Props) 
   }, [dashboard]);
 
   return (
-    <div className='flex min-h-0 flex-1 flex-col'>
-      <div className='flex flex-col gap-[18px] md:gap-6 lg:gap-[30px]'>
-        <div className='flex items-center'>
-          {!mobileOpen ? (
-            <Burger
-              className='block cursor-pointer text-gray-950 md:hidden'
-              onClick={() => setMobileOpen(true)}
-            />
-          ) : (
-            <Delete
-              className='ml-3 block h-3 w-3 cursor-pointer md:hidden'
-              onClick={() => setMobileOpen(false)}
-            />
-          )}
-        </div>
-        <div className='flex flex-col gap-[10px]'>
-          <Title as='h3' className='font-xl-bold text-gray-950'>
+    <div className='flex min-h-0 flex-col'>
+      <div className='flex items-center'>
+        {!mobileOpen ? (
+          <Burger
+            className='block cursor-pointer text-gray-950 md:hidden'
+            onClick={() => setMobileOpen(true)}
+          />
+        ) : (
+          <Delete
+            className='ml-3 block h-3 w-3 cursor-pointer md:hidden'
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
+      </div>
+      <div className='flex flex-col gap-7.5 py-2.5'>
+        <div className='flex flex-col gap-2.5'>
+          <Title as='h3' size='xl' weight='bold'>
             예약 현황
           </Title>
           <span className='font-md-medium text-gray-500'>
