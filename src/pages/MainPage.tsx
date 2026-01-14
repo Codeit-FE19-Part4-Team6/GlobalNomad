@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useActivities } from '@/hooks/queries/useActivities';
 import { SearchInput } from '@/components/SearchInput';
 import MainBanner from './Main/MainBanner';
@@ -37,16 +37,17 @@ const MainPage = () => {
     sort: priceSort || 'latest',
   });
 
+  // 실제 로딩 상태 (초기 로딩일 때만 true, 이전 데이터 표시 중에는 false)
+  const showLoading = isLoading && !allActivitiesData;
+
   // 페이지네이션 계산
   const totalPages = allActivitiesData ? Math.ceil(allActivitiesData.totalCount / pageSize) : 1;
 
-  // 검색 핸들러
-  const handleSearch = (value: string) => {
+  // 검색 핸들러 (useCallback으로 메모이제이션하여 불필요한 재생성 방지)
+  const handleSearch = useCallback((value: string) => {
     setSearchKeyword(value);
-    setSelectedCategory('전체');
-    setPriceSort(null);
     setCurrentPage(1);
-  };
+  }, []);
 
   // 카테고리 필터 핸들러
   const handleCategoryChange = (category: Category) => {
@@ -81,16 +82,16 @@ const MainPage = () => {
             onSearch={handleSearch}
             searchButtonText='검색하기'
             showButton
+            minLength={0}
             enableRealtimeSearch
             debounceMs={300}
-            minLength={0}
           />
         </section>
 
         {/* 모든 체험 섹션 */}
         <AllActivities
           activities={allActivitiesData?.activities || []}
-          isLoading={isLoading}
+          isLoading={showLoading}
           searchKeyword={searchKeyword}
           selectedCategory={selectedCategory}
           onCategoryChange={handleCategoryChange}
