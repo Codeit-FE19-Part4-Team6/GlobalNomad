@@ -17,6 +17,7 @@ import ActivityReviews from './ActivityDetail/ActivityReviews';
 import ActivityMap from './ActivityDetail/ActivityMap';
 import { useActivityDetail } from '@/hooks/queries/useActivityDetail';
 import { useAuthStore } from '@/stores/authStore';
+import { useShallow } from 'zustand/react/shallow';
 import { useDeleteActivityMutation } from '@/hooks/queries/useDeleteActivityMutation';
 import { createActivityReservation, getActivitySchedules } from '@/apis/activity';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -31,9 +32,10 @@ function ActivityDetailPage() {
   // URL에서 activityId 가져오기
   const { activityId } = useParams<{ activityId: string }>();
 
-  // 현재 로그인한 사용자 정보 (selector 패턴으로 변경 감지)
-  const user = useAuthStore((state) => state.user);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  // 현재 로그인한 사용자 정보 (useShallow로 리렌더링 최적화)
+  const { user, isAuthenticated } = useAuthStore(
+    useShallow((state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }))
+  );
 
   // API 데이터 불러오기
   const { data: activity, isLoading, isError } = useActivityDetail(Number(activityId));
@@ -125,13 +127,10 @@ function ActivityDetailPage() {
   });
 
   // 삭제 mutation (useDeleteActivityMutation 훅 사용)
-  const { mutate: deleteMutate } = useDeleteActivityMutation(
-    () => {
-      setIsDeleteModalOpen(false);
-      navigate('/');
-    },
-    () => {}
-  );
+  const { mutate: deleteMutate } = useDeleteActivityMutation(() => {
+    setIsDeleteModalOpen(false);
+    navigate('/');
+  });
 
   // 예약 버튼 활성화 조건 (boolean 타입으로 명시)
   const isReservationEnabled = !!(selectedDate && selectedTimeSlot && participantCount > 0);
