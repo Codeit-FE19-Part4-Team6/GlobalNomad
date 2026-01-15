@@ -96,7 +96,7 @@ export const Header = ({ userName, onLogin, onSignUp }: Props) => {
   const backgroundOpacity = useMemo(() => Math.min(scrollY / 10, 1), [scrollY]);
 
   return (
-    <header className='sticky top-0 z-100 mb-7.5 md:mb-10 2xl:mb-[33px]'>
+    <header className='sticky top-0 z-100 mb-7.5 md:mb-8 2xl:mb-[33px]'>
       <div
         className='absolute inset-0 bg-white transition-opacity duration-300'
         style={{ opacity: backgroundOpacity }}
