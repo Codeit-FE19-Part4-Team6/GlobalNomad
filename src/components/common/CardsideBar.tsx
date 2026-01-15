@@ -38,7 +38,13 @@ export default function CardsideBar({
         activePage={activePage}
       />
 
-      <div className={cn('flex w-full flex-col', variant === 'mobile' ? 'gap-6' : 'gap-3.5')}>
+      <div
+        className={cn(
+          'flex w-full flex-col',
+          variant === 'mobile' && 'gap-6',
+          variant === 'tablet' && 'gap-3',
+          variant === 'desktop' && 'gap-3.5'
+        )}>
         <SidebarButton
           theme='MyProfile'
           onClick={onProfileClick}

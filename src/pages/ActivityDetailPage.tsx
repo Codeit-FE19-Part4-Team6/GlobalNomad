@@ -24,6 +24,8 @@ import { useSnackBar } from '@/providers/SnackBarProvider';
 import { createActivityReservation, getActivitySchedules } from '@/apis/activity';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ActivityScheduleResponse } from '@/apis/type';
+import { ArrowDown } from '@/assets/icons';
+import { truncateBySentence } from '@/utils/truncateBySentence';
 
 const SHORT_DESCRIPTION_MAX_LENGTH = 100;
 
@@ -255,7 +257,10 @@ function ActivityDetailPage() {
                 rating={activity.rating}
                 reviewCount={activity.reviewCount}
                 address={activity.address}
-                shortDescription={activity.description.slice(0, SHORT_DESCRIPTION_MAX_LENGTH)}
+                shortDescription={truncateBySentence(
+                  activity.description,
+                  SHORT_DESCRIPTION_MAX_LENGTH
+                )}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 variant='mobile'
@@ -301,7 +306,10 @@ function ActivityDetailPage() {
                 rating={activity.rating}
                 reviewCount={activity.reviewCount}
                 address={activity.address}
-                shortDescription={activity.description.slice(0, SHORT_DESCRIPTION_MAX_LENGTH)}
+                shortDescription={truncateBySentence(
+                  activity.description,
+                  SHORT_DESCRIPTION_MAX_LENGTH
+                )}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 variant='desktop'
@@ -374,7 +382,7 @@ function ActivityDetailPage() {
         <BottomSheet isOpen={isBottomSheetOpen} onClose={handleCloseBottomSheet}>
           <div className='px-6 py-6 sm:px-7.5'>
             {/* 바텀시트 헤더 */}
-            <div className='mb-6 flex items-center justify-between'>
+            <div className='flex items-center justify-between'>
               <Title as='h3' size='xl' weight='bold'>
                 날짜
               </Title>
@@ -419,6 +427,14 @@ function ActivityDetailPage() {
                       color: 'var(--color-primary-500)',
                       fontWeight: 700,
                       borderRadius: '9999px',
+                    },
+                  }}
+                  components={{
+                    Chevron: ({ orientation, className, ...props }) => {
+                      const rotate = orientation === 'left' ? 'rotate-90' : '-rotate-90';
+                      return (
+                        <ArrowDown {...props} className={`${className ?? ''} ${rotate} h-5 w-5`} />
+                      );
                     },
                   }}
                   disabled={[

@@ -175,23 +175,21 @@ export default function BookingStatusPage({ setMobileOpen, mobileOpen }: Props) 
   }, [dashboard]);
 
   return (
-    <div className='flex min-h-0 flex-1 flex-col'>
-      <div className='flex flex-col gap-[18px] md:gap-6 lg:gap-[30px]'>
-        <div className='flex items-center'>
-          {!mobileOpen ? (
-            <Burger
-              className='block cursor-pointer text-gray-950 md:hidden'
-              onClick={() => setMobileOpen(true)}
-            />
-          ) : (
-            <Delete
-              className='ml-3 block h-3 w-3 cursor-pointer md:hidden'
-              onClick={() => setMobileOpen(false)}
-            />
-          )}
-        </div>
-        <div className='flex flex-col gap-[10px]'>
-          <Title as='h3' className='font-xl-bold text-gray-950'>
+    <div className='flex min-h-0 flex-col'>
+      {!mobileOpen ? (
+        <Burger
+          className='z-80 block cursor-pointer text-gray-900 md:hidden'
+          onClick={() => setMobileOpen(true)}
+        />
+      ) : (
+        <Delete
+          className='z-80 mb-1 ml-3 block h-3 w-3 cursor-pointer text-gray-900 md:hidden'
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+      <div className='flex flex-col gap-7.5 py-2.5'>
+        <div className='flex flex-col gap-2.5'>
+          <Title as='h3' size='xl' weight='bold'>
             예약 현황
           </Title>
           <span className='font-md-medium text-gray-500'>
@@ -256,6 +254,9 @@ export default function BookingStatusPage({ setMobileOpen, mobileOpen }: Props) 
               button_next: 'absolute right-[30%] top-[9px]',
               month_grid: 'lg:w-[640px] lg:h-[779px] md:h-[779px] w-full h-[500px] ',
               months: 'w-full h-full ',
+            }}
+            modifiersClassNames={{
+              today: 'bg-primary-50 text-primary-500 font-bold rounded-full',
             }}
             components={{
               //Chevron 데이트 피커의 svg교체를 위한 컴포넌트 덮어쓴다는 느낌, 버튼까지 바꾸려면 nav

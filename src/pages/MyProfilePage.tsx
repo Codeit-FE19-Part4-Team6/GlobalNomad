@@ -94,15 +94,17 @@ export default function MyProfilePage({ mobileOpen, setMobileOpen }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className='flex w-full flex-col gap-5 md:gap-6'>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className='flex w-full max-w-160 flex-col gap-5 md:gap-6'>
       {!mobileOpen ? (
         <Burger
-          className='ml-1 block h-6 w-6 cursor-pointer text-gray-950 md:hidden'
+          className='z-80 block h-6 w-6 cursor-pointer text-gray-900 md:hidden'
           onClick={() => setMobileOpen(true)}
         />
       ) : (
         <Delete
-          className='ml-3 block h-3 w-3 cursor-pointer md:hidden'
+          className='z-80 mb-1 ml-3 block h-3 w-3 cursor-pointer text-gray-900 md:hidden'
           onClick={() => setMobileOpen(false)}
         />
       )}

@@ -92,11 +92,11 @@ export const Header = ({ userName, onLogin, onSignUp }: Props) => {
     };
   }, []);
 
-  // 스크롤 위치에 따른 배경 투명도 계산 (0~10px 사이에서 전환)
+  // 스크롤 위치에 따른 헤더 배경 투명도 계산 (0~10px 사이에서 전환)
   const backgroundOpacity = useMemo(() => Math.min(scrollY / 10, 1), [scrollY]);
 
   return (
-    <header className='sticky top-0 z-50'>
+    <header className='sticky top-0 z-100 mb-7.5 md:mb-8 2xl:mb-[33px]'>
       <div
         className='absolute inset-0 bg-white transition-opacity duration-300'
         style={{ opacity: backgroundOpacity }}

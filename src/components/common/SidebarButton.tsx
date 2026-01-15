@@ -78,7 +78,8 @@ export default function SidebarButton<T extends React.ElementType = 'button'>({
     <Component {...componentProps}>
       <IconComponent
         className={cn(
-          'h-6 w-6 shrink-0 transition-colors',
+          'shrink-0 transition-colors',
+          'h-6 w-6 md:h-5 md:w-5 lg:h-6 lg:w-6',
           selected ? 'text-primary-500' : 'group-hover:text-primary-500 text-gray-600'
         )}
       />

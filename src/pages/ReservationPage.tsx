@@ -84,13 +84,22 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
     return res;
   });
 
-  // 선택된 상태 필터 적용
-  const reservations = rawReservations.filter((res) => {
-    if (selected === 'all') {
-      return true;
-    }
-    return res.status === selected;
-  });
+  // 선택된 상태 필터 적용 + 최신순 정렬
+  const reservations = rawReservations
+    .filter((res) => {
+      if (selected === 'all') {
+        return true;
+      }
+      return res.status === selected;
+    })
+    .sort((a, b) => {
+      // 날짜 최신순 (DESC)
+      if (a.date !== b.date) {
+        return b.date.localeCompare(a.date);
+      }
+      // 같은 날짜면 시작시간 최신순 (DESC)
+      return b.startTime.localeCompare(a.startTime);
+    });
 
   // IntersectionObserver를 이용한 무한 스크롤
   useEffect(() => {
@@ -114,6 +123,7 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
     setSelectedReservation(reservation);
     setIsReviewModalOpen(true);
   };
+
   // 후기 제출
   const handleSubmitReview = (data: { rating: number; content: string }) => {
     if (!selectedReservation) {
@@ -132,10 +142,12 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
     setSelectedReservationId(id);
     setIsCancelModalOpen(true);
   };
+
   const { mutate: cancelMutate } = useCancelReservationMutation(
     () => setIsCancelModalOpen(false),
     () => setSelectedReservationId(null)
   );
+
   // 예약 취소 확정
   const handleConfirmCancel = () => {
     if (!selectedReservationId) {
@@ -143,33 +155,35 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
     }
     cancelMutate(selectedReservationId);
   };
+
   if (isLoading) {
     return <div className='px-4 py-10'>로딩 중...</div>;
   }
   if (isError) {
     return <div className='px-4 py-10'>예약 내역을 불러오지 못했어요.</div>;
   }
+
   return (
-    <div className='flex flex-col gap-3.5 px-4 md:px-7.5'>
+    <div className='flex flex-col gap-3.5'>
       {!mobileOpen ? (
         <Burger
-          className='block cursor-pointer text-gray-950 md:hidden'
+          className='z-80 block cursor-pointer text-gray-900 md:hidden'
           onClick={() => setMobileOpen(true)}
         />
       ) : (
         <Delete
-          className='-ml-1 block h-3 w-3 cursor-pointer md:hidden'
+          className='z-80 mb-1 ml-3 block h-3 w-3 cursor-pointer text-gray-900 md:hidden'
           onClick={() => setMobileOpen(false)}
         />
       )}
-      <div className='flex flex-col items-start gap-2.5 py-[10px]'>
+      <div className='flex flex-col items-start gap-2.5 py-2.5'>
         <Title as='h3' size='xl' weight='bold'>
           예약내역
         </Title>
         <div className='font-md-medium text-gray-500'>예약내역 변경 및 취소할 수 있습니다.</div>
       </div>
       {hasAnyReservation && (
-        <div className='scrollbar-hide -mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-[30px]'>
+        <div className='scrollbar-hide mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-7.5'>
           <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
             전체
           </FilterButton>
@@ -189,7 +203,7 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
             </div>
           </div>
           <PrimaryButton
-            className='font-lg-medium h-[54px] w-[182px] rounded-2xl px-10 py-3.5'
+            className='font-lg-medium h-13.5 w-45.5 rounded-2xl px-10 py-3.5'
             onClick={() => navigate('/')}>
             둘러보기
           </PrimaryButton>
@@ -197,59 +211,71 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
       ) : (
         <>
           <div className='flex flex-col gap-7.5 lg:gap-6'>
-            {reservations.map((item) => (
-              <Card
-                key={item.id}
-                variant='reservation'
-                className='border-t border-gray-50 first:border-t-0 lg:border-t-0 lg:pt-0'>
-                <div className='mt-5 mb-3 ml-2 lg:hidden'>
-                  <Card.Schedule
-                    date={item.date}
-                    startTime={item.startTime}
-                    endTime={item.endTime}
-                    isMobileDate
-                  />
-                </div>
-                <div className='flex flex-row'>
-                  <Card.Content>
-                    <Card.Badge status={item.status} />
-                    <Card.Title title={item.activity.title} />
-                    <div className='font-sm-medium text-gray-500 lg:hidden'>
-                      {item.startTime} - {item.endTime}
-                    </div>
-                    <div className='hidden lg:block'>
+            {reservations.map((item, idx) => {
+              const prev = reservations[idx - 1];
+              const isDateChanged = idx !== 0 && prev?.date !== item.date; // ✅ 날짜 경계
+
+              return (
+                <div key={item.id} className='flex flex-col'>
+                  {/* ✅ 날짜가 바뀌는 “경계”에만 구분선 */}
+                  {isDateChanged && <div className='my-6 h-px w-full bg-gray-50' />}
+
+                  <Card variant='reservation'>
+                    <div className='mt-5 mb-3 ml-2 lg:hidden'>
                       <Card.Schedule
                         date={item.date}
                         startTime={item.startTime}
                         endTime={item.endTime}
+                        isMobileDate
                       />
                     </div>
-                    <div className='flex w-full items-center justify-between'>
-                      <Card.Price price={item.totalPrice} headCount={item.headCount} />
-                      <div className='hidden lg:flex'>
-                        <Card.CardButton
-                          status={item.status}
-                          onReviewClick={() => handleReviewClick(item)}
-                          onCancelClick={() => handleCancelClick(item.id)}
-                          reviewSubmitted={
-                            item.status === 'completed' ? item.reviewSubmitted : undefined
-                          }
-                        />
-                      </div>
+
+                    <div className='flex flex-row'>
+                      <Card.Content>
+                        <Card.Badge status={item.status} />
+                        <Card.Title title={item.activity.title} />
+                        <div className='font-sm-medium text-gray-500 lg:hidden'>
+                          {item.startTime} - {item.endTime}
+                        </div>
+                        <div className='hidden lg:block'>
+                          <Card.Schedule
+                            date={item.date}
+                            startTime={item.startTime}
+                            endTime={item.endTime}
+                          />
+                        </div>
+                        <div className='flex w-full items-center justify-between'>
+                          <Card.Price price={item.totalPrice} headCount={item.headCount} />
+                          <div className='hidden lg:flex'>
+                            <Card.CardButton
+                              status={item.status}
+                              onReviewClick={() => handleReviewClick(item)}
+                              onCancelClick={() => handleCancelClick(item.id)}
+                              reviewSubmitted={
+                                item.status === 'completed' ? item.reviewSubmitted : undefined
+                              }
+                            />
+                          </div>
+                        </div>
+                      </Card.Content>
+                      <Card.Image src={item.activity.bannerImageUrl} alt={item.activity.title} />
                     </div>
-                  </Card.Content>
-                  <Card.Image src={item.activity.bannerImageUrl} alt={item.activity.title} />
+
+                    <div className='lg:hidden'>
+                      <Card.CardButton
+                        status={item.status}
+                        onReviewClick={() => handleReviewClick(item)}
+                        onCancelClick={() => handleCancelClick(item.id)}
+                        reviewSubmitted={
+                          item.status === 'completed' ? item.reviewSubmitted : undefined
+                        }
+                      />
+                    </div>
+                  </Card>
                 </div>
-                <div className='lg:hidden'>
-                  <Card.CardButton
-                    status={item.status}
-                    onReviewClick={() => handleReviewClick(item)}
-                    onCancelClick={() => handleCancelClick(item.id)}
-                    reviewSubmitted={item.status === 'completed' ? item.reviewSubmitted : undefined}
-                  />
-                </div>
-              </Card>
-            ))}
+              );
+            })}
+
             <div ref={bottomRef} className='h-1' />
           </div>
         </>
