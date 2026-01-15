@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useActivities } from '@/hooks/queries/useActivities';
 import { SearchInput } from '@/components/SearchInput';
 import MainBanner from './Main/MainBanner';
@@ -26,6 +26,24 @@ const MainPage = () => {
     size: 10,
     sort: 'most_reviewed',
   });
+
+  // 배너용 전체 체험 API (랜덤 선택을 위해 더 많은 데이터 가져오기)
+  const { data: bannerActivitiesData, isLoading: isBannerLoading } = useActivities({
+    method: 'offset',
+    page: 1,
+    size: 20,
+    sort: 'latest',
+  });
+
+  // 랜덤 배너 체험 선택 (컴포넌트 마운트 시 한 번만 계산)
+  const randomBannerActivity = useMemo(() => {
+    const activities = bannerActivitiesData?.activities;
+    if (!activities || activities.length === 0) {
+      return null;
+    }
+    const randomIndex = Math.floor(Math.random() * activities.length);
+    return activities[randomIndex];
+  }, [bannerActivitiesData?.activities]);
 
   // 모든 체험 API (카테고리 필터링 + 페이지네이션 + 정렬 + 검색)
   const { data: allActivitiesData, isLoading } = useActivities({
@@ -65,8 +83,9 @@ const MainPage = () => {
     <div className='w-full'>
       {/* 배너 영역 */}
       <MainBanner
-        bannerImageUrl={popularActivitiesData?.activities[0]?.bannerImageUrl}
-        bannerTitle={popularActivitiesData?.activities[0]?.title}
+        bannerImageUrl={randomBannerActivity?.bannerImageUrl}
+        bannerTitle={randomBannerActivity?.title}
+        isLoading={isBannerLoading}
       />
 
       {/* 흰색 배경 영역 */}
