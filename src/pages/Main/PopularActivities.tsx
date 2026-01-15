@@ -68,7 +68,7 @@ export default function PopularActivities({ activities }: PopularActivitiesProps
         {showLeftArrow && (
           <button
             onClick={() => handleSlide('left')}
-            className='absolute top-1/2 left-0 z-10 hidden -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:scale-110 sm:block'
+            className='absolute top-1/2 left-0 z-20 hidden -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:scale-110 sm:block'
             aria-label='이전 카드'>
             <ArrowRight className='h-6 w-6 rotate-180 text-gray-900' />
           </button>
@@ -78,7 +78,7 @@ export default function PopularActivities({ activities }: PopularActivitiesProps
         {showRightArrow && (
           <button
             onClick={() => handleSlide('right')}
-            className='absolute top-1/2 right-0 z-10 hidden -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:scale-110 sm:block'
+            className='absolute top-1/2 right-0 z-20 hidden -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:scale-110 sm:block'
             aria-label='다음 카드'>
             <ArrowRight className='h-6 w-6 text-gray-900' />
           </button>
