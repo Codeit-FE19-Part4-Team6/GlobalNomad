@@ -1,23 +1,44 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useActivities } from '@/hooks/queries/useActivities';
 import { SearchInput } from '@/components/SearchInput';
 import MainBanner from './Main/MainBanner';
 import PopularActivities from './Main/PopularActivities';
 import AllActivities, { type Category, type PriceSort } from './Main/AllActivities';
 
+// 유효한 카테고리 목록
+const validCategories: Category[] = [
+  '전체',
+  '문화 · 예술',
+  '식음료',
+  '스포츠',
+  '투어',
+  '관광',
+  '웰빙',
+];
+
+// 유효한 정렬 옵션
+const validSorts: (PriceSort | 'price_asc' | 'price_desc')[] = ['price_asc', 'price_desc'];
+
 const MainPage = () => {
-  // 카테고리 필터 상태
-  const [selectedCategory, setSelectedCategory] = useState<Category>('전체');
-
-  // 가격 정렬 상태
-  const [priceSort, setPriceSort] = useState<PriceSort>(null);
-
-  // 검색어 상태
-  const [searchKeyword, setSearchKeyword] = useState('');
-
-  // 페이지네이션 상태
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
   const pageSize = 8;
+
+  // URL에서 상태 읽기
+  const categoryParam = searchParams.get('category');
+  const selectedCategory: Category = validCategories.includes(categoryParam as Category)
+    ? (categoryParam as Category)
+    : '전체';
+
+  const sortParam = searchParams.get('sort');
+  const priceSort: PriceSort = validSorts.includes(sortParam as PriceSort)
+    ? (sortParam as PriceSort)
+    : null;
+
+  const searchKeyword = searchParams.get('keyword') || '';
+
+  const pageParam = searchParams.get('page');
+  const currentPage = pageParam ? Math.max(1, parseInt(pageParam, 10)) || 1 : 1;
 
   // 인기 체험 API (most_reviewed 정렬)
   const { data: popularActivitiesData } = useActivities({
@@ -61,23 +82,53 @@ const MainPage = () => {
   // 페이지네이션 계산
   const totalPages = allActivitiesData ? Math.ceil(allActivitiesData.totalCount / pageSize) : 1;
 
-  // 검색 핸들러 (useCallback으로 메모이제이션하여 불필요한 재생성 방지)
-  const handleSearch = useCallback((value: string) => {
-    setSearchKeyword(value);
-    setCurrentPage(1);
-  }, []);
+  // URL 파라미터 업데이트 헬퍼 함수
+  const updateSearchParams = useCallback(
+    (updates: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParams);
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value === null || value === '' || value === '전체' || value === '1') {
+          params.delete(key);
+        } else {
+          params.set(key, value);
+        }
+      });
+      setSearchParams(params);
+    },
+    [searchParams, setSearchParams]
+  );
+
+  // 검색 핸들러
+  const handleSearch = useCallback(
+    (value: string) => {
+      updateSearchParams({ keyword: value, page: null });
+    },
+    [updateSearchParams]
+  );
 
   // 카테고리 필터 핸들러
-  const handleCategoryChange = (category: Category) => {
-    setSelectedCategory(category);
-    setCurrentPage(1);
-  };
+  const handleCategoryChange = useCallback(
+    (category: Category) => {
+      updateSearchParams({ category, page: null });
+    },
+    [updateSearchParams]
+  );
 
   // 가격 정렬 핸들러
-  const handlePriceSortChange = (sortValue: PriceSort) => {
-    setPriceSort(sortValue);
-    setCurrentPage(1);
-  };
+  const handlePriceSortChange = useCallback(
+    (sortValue: PriceSort) => {
+      updateSearchParams({ sort: sortValue, page: null });
+    },
+    [updateSearchParams]
+  );
+
+  // 페이지 변경 핸들러
+  const handlePageChange = useCallback(
+    (page: number) => {
+      updateSearchParams({ page: page.toString() });
+    },
+    [updateSearchParams]
+  );
 
   return (
     <div className='w-full'>
@@ -118,7 +169,7 @@ const MainPage = () => {
           onPriceSortChange={handlePriceSortChange}
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
         />
       </div>
     </div>
