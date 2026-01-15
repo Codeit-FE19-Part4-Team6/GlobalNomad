@@ -4,9 +4,14 @@ import { Cloud } from '@/assets/images';
 interface MainBannerProps {
   bannerImageUrl?: string;
   bannerTitle?: string;
+  isLoading?: boolean;
 }
 
-export default function MainBanner({ bannerImageUrl, bannerTitle }: MainBannerProps) {
+export default function MainBanner({
+  bannerImageUrl,
+  bannerTitle,
+  isLoading = false,
+}: MainBannerProps) {
   return (
     <div className='relative -mt-21 overflow-hidden bg-linear-to-b from-blue-50 via-blue-50/50 to-white pt-21 pb-10 sm:-mt-29 sm:pt-29 sm:pb-16'>
       {/* 구름 이미지들 - 불규칙 배치 */}
@@ -21,24 +26,31 @@ export default function MainBanner({ bannerImageUrl, bannerTitle }: MainBannerPr
       <div className='relative z-10 mx-auto w-full max-w-300 px-6 sm:px-7.5 lg:px-10'>
         {/* 배너 섹션 */}
         <section className='relative h-45 w-full overflow-hidden rounded-3xl sm:h-93.75 lg:h-125'>
-          <div
-            className='absolute inset-0 bg-cover bg-center bg-no-repeat'
-            style={{
-              backgroundImage: bannerImageUrl
-                ? `url(${bannerImageUrl})`
-                : 'url(https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=1920&h=550&fit=crop)',
-            }}>
-            {/* 오버레이 */}
-            <div className='absolute inset-0 rounded-3xl bg-black/30' />
-          </div>
+          {isLoading ? (
+            /* 로딩 스켈레톤 */
+            <div className='absolute inset-0 animate-pulse bg-gray-200' />
+          ) : (
+            <>
+              <div
+                className='absolute inset-0 bg-cover bg-center bg-no-repeat'
+                style={{
+                  backgroundImage: bannerImageUrl
+                    ? `url(${bannerImageUrl})`
+                    : 'url(https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=1920&h=550&fit=crop)',
+                }}>
+                {/* 오버레이 */}
+                <div className='absolute inset-0 rounded-3xl bg-black/30' />
+              </div>
 
-          {/* 배너 텍스트 */}
-          <div className='relative flex h-full flex-col items-center justify-center px-4 text-center text-white'>
-            <Title as='h1' size='3xl' weight='bold' className='mb-4 text-white sm:text-4xl'>
-              {bannerTitle || '함께 배우며 즐기는 스트릿 댄스'}
-            </Title>
-            <p className='font-md-medium sm:font-xl-medium text-white'>1월의 인기 체험 BEST</p>
-          </div>
+              {/* 배너 텍스트 */}
+              <div className='relative flex h-full flex-col items-center justify-center px-4 text-center text-white'>
+                <Title as='h1' size='3xl' weight='bold' className='mb-4 text-white sm:text-4xl'>
+                  {bannerTitle || '함께 배우며 즐기는 스트릿 댄스'}
+                </Title>
+                <p className='font-md-medium sm:font-xl-medium text-white'>1월의 인기 체험 BEST</p>
+              </div>
+            </>
+          )}
         </section>
       </div>
     </div>
