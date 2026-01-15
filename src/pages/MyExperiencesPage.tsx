@@ -68,15 +68,15 @@ export default function MyExperiencesPage({ setMobileOpen, mobileOpen }: Props) 
   }
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col gap-3.5'>
       {!mobileOpen ? (
         <Burger
-          className='block cursor-pointer text-gray-950 md:hidden'
+          className='z-80 block cursor-pointer text-gray-900 md:hidden'
           onClick={() => setMobileOpen(true)}
         />
       ) : (
         <Delete
-          className='-ml-1 block h-3 w-3 cursor-pointer md:hidden'
+          className='z-80 mb-1 ml-3 block h-3 w-3 cursor-pointer text-gray-900 md:hidden'
           onClick={() => setMobileOpen(false)}
         />
       )}

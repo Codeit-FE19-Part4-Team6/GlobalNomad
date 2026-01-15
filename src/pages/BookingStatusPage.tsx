@@ -176,19 +176,17 @@ export default function BookingStatusPage({ setMobileOpen, mobileOpen }: Props) 
 
   return (
     <div className='flex min-h-0 flex-col'>
-      <div className='flex items-center'>
-        {!mobileOpen ? (
-          <Burger
-            className='block cursor-pointer text-gray-950 md:hidden'
-            onClick={() => setMobileOpen(true)}
-          />
-        ) : (
-          <Delete
-            className='ml-3 block h-3 w-3 cursor-pointer md:hidden'
-            onClick={() => setMobileOpen(false)}
-          />
-        )}
-      </div>
+      {!mobileOpen ? (
+        <Burger
+          className='z-80 block cursor-pointer text-gray-900 md:hidden'
+          onClick={() => setMobileOpen(true)}
+        />
+      ) : (
+        <Delete
+          className='z-80 mb-1 ml-3 block h-3 w-3 cursor-pointer text-gray-900 md:hidden'
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
       <div className='flex flex-col gap-7.5 py-2.5'>
         <div className='flex flex-col gap-2.5'>
           <Title as='h3' size='xl' weight='bold'>
