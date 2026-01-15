@@ -108,17 +108,20 @@ export default function AllActivities({
       </div>
 
       {/* 카테고리 필터 */}
-      <div className='mb-8 flex flex-wrap gap-2 sm:gap-3'>
-        {categories.map((category) => (
-          <FilterButton
-            key={category}
-            size='md'
-            icon={category === '전체' ? null : categoryIconMap[category as ActivityCategory]}
-            selected={selectedCategory === category}
-            onClick={() => onCategoryChange(category)}>
-            {category}
-          </FilterButton>
-        ))}
+      <div className='scrollbar-hide -mx-6 mb-8 overflow-x-auto px-6 sm:-mx-7.5 sm:px-7.5 lg:-mx-10 lg:px-10'>
+        <div className='flex gap-2 sm:gap-3'>
+          {categories.map((category) => (
+            <FilterButton
+              key={category}
+              size='md'
+              icon={category === '전체' ? null : categoryIconMap[category as ActivityCategory]}
+              selected={selectedCategory === category}
+              onClick={() => onCategoryChange(category)}
+              className='shrink-0'>
+              {category}
+            </FilterButton>
+          ))}
+        </div>
       </div>
 
       {/* 체험 카드 그리드 */}
