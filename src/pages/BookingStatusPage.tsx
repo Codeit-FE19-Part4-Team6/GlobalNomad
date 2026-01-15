@@ -255,6 +255,9 @@ export default function BookingStatusPage({ setMobileOpen, mobileOpen }: Props) 
               month_grid: 'lg:w-[640px] lg:h-[779px] md:h-[779px] w-full h-[500px] ',
               months: 'w-full h-full ',
             }}
+            modifiersClassNames={{
+              today: 'bg-primary-50 text-primary-500 font-bold rounded-full',
+            }}
             components={{
               //Chevron 데이트 피커의 svg교체를 위한 컴포넌트 덮어쓴다는 느낌, 버튼까지 바꾸려면 nav
               //orientation => Chevron 의 속성중 하나로 어로우 버튼의 좌,우 판별을 위해

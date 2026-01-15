@@ -4,6 +4,7 @@ import Title from '@/components/common/Title';
 import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 import { TimeSelectButton } from '@/components/common/button/TimeSelectButton';
 import { isDateAvailable } from '@/utils/dateUtils';
+import { ArrowDown } from '@/assets/icons';
 
 interface TimeSlot {
   id: number;
@@ -67,7 +68,7 @@ export default function ActivityReservationPanel({
 
       {/* 날짜 선택 */}
       <div className='mb-8'>
-        <Title as='h4' size='lg' weight='bold' className='mb-4'>
+        <Title as='h4' size='lg' weight='bold'>
           날짜
         </Title>
         <DayPicker
@@ -97,6 +98,12 @@ export default function ActivityReservationPanel({
               color: 'var(--color-primary-500)',
               fontWeight: 700,
               borderRadius: '9999px',
+            },
+          }}
+          components={{
+            Chevron: ({ orientation, className, ...props }) => {
+              const rotate = orientation === 'left' ? 'rotate-90' : '-rotate-90';
+              return <ArrowDown {...props} className={`${className ?? ''} ${rotate} h-5 w-5`} />;
             },
           }}
           disabled={[
