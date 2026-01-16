@@ -1,3 +1,6 @@
+import { ko } from 'date-fns/locale';
+import { format } from 'date-fns';
+
 /**
  * 날짜 관련 유틸리티 함수
  */
@@ -12,4 +15,13 @@ export const isDateAvailable = (date: Date, availableDates: Date[]): boolean => 
   return availableDates.some(
     (availableDate) => availableDate.toDateString() === date.toDateString()
   );
+};
+
+export const formatKoreanCaption = (date: Date) => format(date, 'yyyy년 M월', { locale: ko });
+
+export const dayPickerKoreanProps = {
+  locale: ko,
+  formatters: {
+    formatCaption: formatKoreanCaption,
+  },
 };

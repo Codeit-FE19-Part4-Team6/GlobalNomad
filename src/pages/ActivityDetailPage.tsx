@@ -26,8 +26,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ActivityScheduleResponse } from '@/apis/type';
 import { ArrowDown } from '@/assets/icons';
 import { truncateBySentence } from '@/utils/truncateBySentence';
-import { ko } from 'date-fns/locale';
-import { format } from 'date-fns';
+import { dayPickerKoreanProps } from '@/utils/dateUtils';
 
 const SHORT_DESCRIPTION_MAX_LENGTH = 100;
 
@@ -400,10 +399,7 @@ function ActivityDetailPage() {
               {/* 날짜 선택 */}
               <div className='flex-1'>
                 <DayPicker
-                  locale={ko}
-                  formatters={{
-                    formatCaption: (date) => format(date, 'yyyy년 M월', { locale: ko }),
-                  }}
+                  {...dayPickerKoreanProps}
                   mode='single'
                   selected={selectedDate}
                   onSelect={(date) => {

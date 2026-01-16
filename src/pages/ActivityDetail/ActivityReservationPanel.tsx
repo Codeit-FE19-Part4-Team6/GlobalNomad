@@ -5,8 +5,7 @@ import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 import { TimeSelectButton } from '@/components/common/button/TimeSelectButton';
 import { isDateAvailable } from '@/utils/dateUtils';
 import { ArrowDown } from '@/assets/icons';
-import { ko } from 'date-fns/locale';
-import { format } from 'date-fns';
+import { dayPickerKoreanProps } from '@/utils/dateUtils';
 
 interface TimeSlot {
   id: number;
@@ -74,10 +73,7 @@ export default function ActivityReservationPanel({
           날짜
         </Title>
         <DayPicker
-          locale={ko}
-          formatters={{
-            formatCaption: (date) => format(date, 'yyyy년 M월', { locale: ko }),
-          }}
+          {...dayPickerKoreanProps}
           mode='single'
           selected={selectedDate}
           onSelect={onSelectDate}
