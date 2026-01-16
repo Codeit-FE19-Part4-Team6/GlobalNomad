@@ -2,20 +2,20 @@ import { badgeVariants } from './BaseBadge';
 
 export const eventType = {
   reservation: '예약',
-  approval: '승인',
+  approved: '승인',
   completed: '완료',
 } as const;
 type EventType = (typeof eventType)[keyof typeof eventType];
 const eventColor: Record<EventType, 'blue' | 'orange' | 'gray'> = {
   [eventType.reservation]: 'blue',
-  [eventType.approval]: 'orange',
+  [eventType.approved]: 'orange',
   [eventType.completed]: 'gray',
 };
 
 type EventBadgeProps = {
   type: EventType;
   count?: number;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 /**
  * 캘린더 날짜 칸 내부에서 예약 상태별 건수를 요약해서 보여주는 버튼형 배지 컴포넌트입니다.

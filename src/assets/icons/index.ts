@@ -1,89 +1,43 @@
-import PasswordHidden from '@/assets/icons/auth/ic-password-hidden.svg';
-import PasswordShow from '@/assets/icons/auth/ic-password-show.svg';
-import GoogleLogin from '@/assets/icons/auth/google-login.svg';
-import Bell from '@/assets/icons/header/bell.svg';
-import ProfileLg from '@/assets/icons/header/default-profile-lg.svg';
-import ProfileMd from '@/assets/icons/header/default-profile-md.svg';
-import ProfileSm from '@/assets/icons/header/default-profile-sm.svg';
-import FaceBook from '@/assets/icons/footer/facebook.svg';
-import X from '@/assets/icons/footer/x.svg';
-import Instagram from '@/assets/icons/footer/instagram.svg';
-import Youtube from '@/assets/icons/footer/youtube.svg';
-import ArrowDown from '@/assets/icons/page/arrow_down.svg';
-import ArrowRight from '@/assets/icons/page/arrow_right.svg';
-import ArrowUp from '@/assets/icons/page/arrow_up.svg';
-import Art from '@/assets/icons/page/art.svg';
-import Back from '@/assets/icons/page/back.svg';
-import Bus from '@/assets/icons/page/bus.svg';
-import CalenberArrowLeft from '@/assets/icons/page/calendar_arrow_left.svg';
-import CalenberArrowRight from '@/assets/icons/page/calendar_arrow_right.svg';
-import Calenber from '@/assets/icons/page/calendar.svg';
-import Delete from '@/assets/icons/page/delete.svg';
-import Down from '@/assets/icons/page/down.svg';
-import Earth from '@/assets/icons/page/earth.svg';
-import Edit from '@/assets/icons/page/edit.svg';
-import Food from '@/assets/icons/page/food.svg';
-import List from '@/assets/icons/page/list.svg';
-import Minus from '@/assets/icons/page/minus.svg';
-import More from '@/assets/icons/page/more.svg';
-import Pagenation from '@/assets/icons/page/pagenation.svg';
-import Plus from '@/assets/icons/page/plus.svg';
-import ReviewStar from '@/assets/icons/page/review-star.svg';
-import Search from '@/assets/icons/page/search.svg';
-import Setting from '@/assets/icons/page/setting.svg';
-import Sport from '@/assets/icons/page/sport.svg';
-import Spot from '@/assets/icons/page/spot.svg';
-import StarOff from '@/assets/icons/page/star-off.svg';
-import Star from '@/assets/icons/page/star.svg';
-import Tour from '@/assets/icons/page/tour.svg';
-import User from '@/assets/icons/page/user.svg';
-import WarningLg from '@/assets/icons/page/warning-lg.svg';
-import WarningSm from '@/assets/icons/page/warning-sm.svg';
-import Warning from '@/assets/icons/page/warning.svg';
-import Wellbeing from '@/assets/icons/page/wellbeing.svg';
-
-export default {
-  PasswordHidden,
-  PasswordShow,
-  GoogleLogin,
-  Bell,
-  ProfileLg,
-  ProfileMd,
-  ProfileSm,
-  FaceBook,
-  X,
-  Instagram,
-  Youtube,
-  ArrowDown,
-  ArrowRight,
-  ArrowUp,
-  Art,
-  Back,
-  Bus,
-  CalenberArrowLeft,
-  CalenberArrowRight,
-  Calenber,
-  Delete,
-  Down,
-  Earth,
-  Edit,
-  Food,
-  List,
-  Minus,
-  More,
-  Pagenation,
-  Plus,
-  ReviewStar,
-  Search,
-  Setting,
-  Sport,
-  Spot,
-  StarOff,
-  Star,
-  Tour,
-  User,
-  WarningLg,
-  WarningSm,
-  Warning,
-  Wellbeing,
-};
+// src/assets/icons/index.ts
+export { default as PasswordHidden } from './auth/ic-password-hidden.svg';
+export { default as PasswordShow } from './auth/ic-password-show.svg';
+export { default as GoogleLogin } from './auth/google-login.svg';
+export { default as Bell } from './header/bell.svg';
+export { default as ProfileLg } from './header/default-profile-lg.svg';
+export { default as ProfileMd } from './header/default-profile-md.svg';
+export { default as ProfileSm } from './header/default-profile-sm.svg';
+export { default as FaceBook } from './footer/facebook.svg';
+export { default as X } from './footer/x.svg';
+export { default as Instagram } from './footer/instagram.svg';
+export { default as Youtube } from './footer/youtube.svg';
+export { default as ArrowDown } from './page/arrow_down.svg';
+export { default as ArrowRight } from './page/arrow_right.svg';
+export { default as ArrowUp } from './page/arrow_up.svg';
+export { default as Art } from './page/art.svg';
+export { default as Back } from './page/back.svg';
+export { default as Bus } from './page/bus.svg';
+export { default as CalendarArrowLeft } from './page/calendar_arrow_left.svg';
+export { default as CalendarArrowRight } from './page/calendar_arrow_right.svg';
+export { default as Calendar } from './page/calendar.svg';
+export { default as Delete } from './page/delete.svg';
+export { default as Down } from './page/down.svg';
+export { default as Earth } from './page/earth.svg';
+export { default as Edit } from './page/edit.svg';
+export { default as Food } from './page/food.svg';
+export { default as List } from './page/list.svg';
+export { default as Minus } from './page/minus.svg';
+export { default as More } from './page/more.svg';
+export { default as Pagenation } from './page/pagenation.svg';
+export { default as Plus } from './page/plus.svg';
+export { default as ReviewStar } from './page/review-star.svg';
+export { default as Search } from './page/search.svg';
+export { default as Setting } from './page/setting.svg';
+export { default as Sport } from './page/sport.svg';
+export { default as Spot } from './page/spot.svg';
+export { default as StarOff } from './page/star-off.svg';
+export { default as Star } from './page/star.svg';
+export { default as Tour } from './page/tour.svg';
+export { default as User } from './page/user.svg';
+export { default as Warning } from './page/warning.svg';
+export { default as Wellbeing } from './page/wellbeing.svg';
+export { default as Burger } from './page/burger.svg';
