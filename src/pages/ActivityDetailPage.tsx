@@ -26,6 +26,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ActivityScheduleResponse } from '@/apis/type';
 import { ArrowDown } from '@/assets/icons';
 import { truncateBySentence } from '@/utils/truncateBySentence';
+import { ko } from 'date-fns/locale';
+import { format } from 'date-fns';
 
 const SHORT_DESCRIPTION_MAX_LENGTH = 100;
 
@@ -276,7 +278,7 @@ function ActivityDetailPage() {
               <Title as='h3' size='xl' weight='bold' className='mb-4'>
                 체험 설명
               </Title>
-              <p className='font-md-medium whitespace-pre-wrap text-gray-800'>
+              <p className='font-lg-medium leading-[1.8] whitespace-pre-wrap text-gray-800'>
                 {activity.description}
               </p>
             </section>
@@ -398,6 +400,10 @@ function ActivityDetailPage() {
               {/* 날짜 선택 */}
               <div className='flex-1'>
                 <DayPicker
+                  locale={ko}
+                  formatters={{
+                    formatCaption: (date) => format(date, 'yyyy년 M월', { locale: ko }),
+                  }}
                   mode='single'
                   selected={selectedDate}
                   onSelect={(date) => {
@@ -406,6 +412,12 @@ function ActivityDetailPage() {
                   }}
                   onMonthChange={handleMonthChange}
                   className='font-md-medium w-full rounded-xl bg-white p-4'
+                  classNames={{
+                    // 캡션 전체(컨테이너)
+                    caption: 'relative mb-3 flex items-center justify-center',
+                    caption_label:
+                      'px-[10px] md:px-0 whitespace-nowrap text-base md:text-xl text-gray-900 pointer-events-none absolute top-2.5',
+                  }}
                   modifiers={{
                     available: checkDateAvailable,
                   }}
@@ -449,7 +461,7 @@ function ActivityDetailPage() {
               <div className='flex-1'>
                 {selectedDate ? (
                   <div>
-                    <Title as='h4' size='lg' weight='bold' className='mb-4'>
+                    <Title as='h4' size='lg' weight='bold' className='mt-4 mb-4'>
                       예약 가능한 시간
                     </Title>
                     <div className='space-y-2'>
@@ -483,7 +495,7 @@ function ActivityDetailPage() {
               <Title as='h4' size='lg' weight='bold'>
                 참여 인원 수
               </Title>
-              <div className='flex items-center gap-3 rounded-3xl border border-gray-200 p-0'>
+              <div className='flex items-center gap-3 rounded-3xl border border-gray-100 p-0'>
                 <button
                   onClick={handleDecrement}
                   className='flex h-11 w-11 items-center justify-center text-3xl text-gray-500 transition-colors hover:text-gray-700'>
@@ -501,7 +513,7 @@ function ActivityDetailPage() {
             </div>
 
             {/* 총 금액 및 예약 버튼 */}
-            <div className='space-y-4 border-t border-gray-300 pt-6'>
+            <div className='space-y-4 border-t border-gray-100 pt-6'>
               <div className='flex items-center justify-between'>
                 <span className='font-lg-medium text-gray-900'>총 합계</span>
                 <Title as='h3' size='2xl' weight='bold'>
