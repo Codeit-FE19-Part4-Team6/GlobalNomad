@@ -5,7 +5,8 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 
 import { useDropdown } from '@/hooks/useDropdown';
-import { Calendar } from '@/assets/icons';
+import { ArrowDown, Calendar } from '@/assets/icons';
+import { dayPickerKoreanProps } from '@/utils/dateUtils';
 
 function formatDate(date?: Date | string | null) {
   if (!date) {
@@ -77,14 +78,27 @@ function InnerCalendar({
 
   return (
     <DayPicker
+      {...dayPickerKoreanProps}
       mode='single'
       selected={selectedDate}
       onSelect={handleSelectDate}
       className='font-md-medium h-80 w-full overflow-auto rounded-xl border border-gray-100 bg-white p-2 md:rounded-2xl'
+      classNames={{
+        // 캡션 전체(컨테이너)
+        caption: 'relative mb-3 flex items-center justify-center',
+        caption_label:
+          'px-[10px] md:px-0 whitespace-nowrap text-base font-md-bold text-gray-900 pointer-events-none absolute top-3 lg:left-3 md:left-3 left-1',
+      }}
       modifiersClassNames={{
         selected: 'bg-primary-100 text-primary-500 font-md-bold rounded-full',
         today: 'text-primary-950 font-md-medium',
         disabled: 'text-gray-300 cursor-not-allowed',
+      }}
+      components={{
+        Chevron: ({ orientation, className, ...props }) => {
+          const rotate = orientation === 'left' ? 'rotate-90' : '-rotate-90';
+          return <ArrowDown {...props} className={`${className ?? ''} ${rotate} h-5 w-5`} />;
+        },
       }}
       disabled={[{ before: new Date() }]}
     />

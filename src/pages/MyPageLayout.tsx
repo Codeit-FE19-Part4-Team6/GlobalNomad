@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import CardsideBar from '@/components/common/CardsideBar';
 import BookingStatusPage from '@/pages/BookingStatusPage';
-import MyExperiencesPage from '@/pages/MyExperiencesPage';
+import MyExperiencesPage from '@/pages/MyActivitiesPage';
 import MyProfilePage from '@/pages/MyProfilePage';
 import ReservationPage from '@/pages/ReservationPage';
 import { useProfileImageStore } from '@/stores/profileImageStore';
@@ -106,7 +106,7 @@ export default function MyPageLayout() {
           />
         </div>
       </aside>
-      <main className='min-w-0 flex-1'>
+      <main className='max-w-160 min-w-0 flex-1'>
         <div className='block md:hidden'>{pageMap[activePage]}</div>
         <div className='hidden md:flex md:flex-1'>{pageMap[activePage]}</div>
       </main>

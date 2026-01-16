@@ -176,6 +176,16 @@ export default function BookingStatusPage({ setMobileOpen, mobileOpen }: Props) 
     }, {});
   }, [dashboard]);
 
+  useEffect(() => {
+    if (!selectedActivityId) {
+      return;
+    }
+    const exists = activities.some((a) => a.id === selectedActivityId);
+    if (!exists) {
+      setSelectedActivityId(undefined);
+    }
+  }, [activities, selectedActivityId]);
+
   return (
     <div className='flex min-h-0 flex-col gap-3.5'>
       {!mobileOpen ? (
