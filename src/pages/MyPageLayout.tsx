@@ -34,7 +34,9 @@ export default function MyPageLayout() {
       params.delete('status');
     }
     setSearchParams(params);
-    setMobileOpen(true);
+    if (isMobile) {
+      setMobileOpen(false);
+    }
   };
 
   // AuthStore 초기화
