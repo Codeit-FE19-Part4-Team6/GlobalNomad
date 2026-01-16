@@ -18,7 +18,7 @@ const validCategories: Category[] = [
 ];
 
 // 유효한 정렬 옵션
-const validSorts: (PriceSort | 'price_asc' | 'price_desc')[] = ['price_asc', 'price_desc'];
+const validSorts: ('price_asc' | 'price_desc')[] = ['price_asc', 'price_desc'];
 
 const MainPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,14 +26,10 @@ const MainPage = () => {
 
   // URL에서 상태 읽기
   const categoryParam = searchParams.get('category');
-  const selectedCategory: Category = validCategories.includes(categoryParam as Category)
-    ? (categoryParam as Category)
-    : '전체';
+  const selectedCategory: Category = validCategories.find((c) => c === categoryParam) ?? '전체';
 
   const sortParam = searchParams.get('sort');
-  const priceSort: PriceSort = validSorts.includes(sortParam as PriceSort)
-    ? (sortParam as PriceSort)
-    : null;
+  const priceSort: PriceSort = (validSorts.find((s) => s === sortParam) as PriceSort) ?? null;
 
   const searchKeyword = searchParams.get('keyword') || '';
 
@@ -56,7 +52,7 @@ const MainPage = () => {
     sort: 'latest',
   });
 
-  // 랜덤 배너 체험 선택 (컴포넌트 마운트 시 한 번만 계산)
+  // 랜덤 배너 체험 선택 (배너 데이터가 변경될 때마다 랜덤 체험을 다시 선택)
   const randomBannerActivity = useMemo(() => {
     const activities = bannerActivitiesData?.activities;
     if (!activities || activities.length === 0) {
