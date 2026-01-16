@@ -13,7 +13,7 @@ export default function MainBanner({
   isLoading = false,
 }: MainBannerProps) {
   return (
-    <div className='relative -mt-21 overflow-hidden bg-linear-to-b from-blue-50 via-blue-50/50 to-white pt-21 pb-10 sm:-mt-29 sm:pt-29 sm:pb-16'>
+    <div className='relative -mt-28 overflow-hidden bg-linear-to-b from-blue-50 via-blue-50/50 to-white pt-21 pb-10 sm:-mt-29 sm:pt-29 sm:pb-16'>
       {/* 구름 이미지들 - 불규칙 배치 */}
       <Cloud className='pointer-events-none absolute top-8 -left-10 w-28 opacity-80 sm:top-12 sm:left-0 sm:w-40 lg:top-16 lg:left-10 lg:w-48' />
       <Cloud className='pointer-events-none absolute top-20 right-4 w-20 opacity-60 sm:top-16 sm:right-20 sm:w-28 lg:top-20 lg:right-40 lg:w-36' />
