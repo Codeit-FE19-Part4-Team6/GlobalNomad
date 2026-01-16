@@ -28,7 +28,13 @@ export function CardPrice({
     variant === 'grid' ? 'font-md-bold md:font-xl-bold' : 'font-lg-bold lg:font-xl-bold';
 
   return (
-    <div className={cn('flex items-center', headCount ? 'gap-2' : 'gap-1', className)}>
+    <div
+      className={cn(
+        'flex items-center',
+        headCount ? 'gap-2' : 'gap-1',
+        variant === 'grid' && 'mt-1 sm:mt-2',
+        className
+      )}>
       <span className={cn('text-gray-950', priceStyle)}>₩{price.toLocaleString()}</span>
 
       {headCount ? (

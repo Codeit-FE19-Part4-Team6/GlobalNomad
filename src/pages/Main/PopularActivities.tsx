@@ -68,7 +68,7 @@ export default function PopularActivities({ activities }: PopularActivitiesProps
         {showLeftArrow && (
           <button
             onClick={() => handleSlide('left')}
-            className='absolute top-1/2 left-0 z-10 hidden -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:scale-110 sm:block'
+            className='absolute top-1/2 left-0 z-20 hidden -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:scale-110 sm:block'
             aria-label='이전 카드'>
             <ArrowRight className='h-6 w-6 rotate-180 text-gray-900' />
           </button>
@@ -78,7 +78,7 @@ export default function PopularActivities({ activities }: PopularActivitiesProps
         {showRightArrow && (
           <button
             onClick={() => handleSlide('right')}
-            className='absolute top-1/2 right-0 z-10 hidden -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:scale-110 sm:block'
+            className='absolute top-1/2 right-0 z-20 hidden -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:scale-110 sm:block'
             aria-label='다음 카드'>
             <ArrowRight className='h-6 w-6 text-gray-900' />
           </button>
@@ -92,7 +92,7 @@ export default function PopularActivities({ activities }: PopularActivitiesProps
             <div
               key={activity.id}
               onClick={() => navigate(`/activities/${activity.id}`)}
-              className='w-[calc((100%-32px)/3)] shrink-0 cursor-pointer sm:w-[calc((100%-24px)/2.5)] lg:w-70.5'>
+              className='w-[calc((100%-16px)/2)] shrink-0 cursor-pointer min-[460px]:w-[calc((100%-32px)/3)] sm:w-[calc((100%-24px)/2.5)] lg:w-70.5'>
               <Card variant='grid'>
                 <Card.Image src={activity.bannerImageUrl} alt={activity.title} />
                 <Card.Content>
