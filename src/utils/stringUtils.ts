@@ -1,25 +1,20 @@
-export const truncateByChar = (text: string, limit = 13) => {
+export const truncateByChar = (text: string | undefined, limit = 13) => {
   if (!text) {
     return '';
   }
 
   const chars = Array.from(text);
-  let count = 0;
-  let result = '';
-
-  for (const char of chars) {
-    // 공백은 글자 수에서 제외
+  let nonSpaceCount = 0;
+  const truncateIndex = chars.findIndex((char) => {
     if (char !== ' ') {
-      count += 1;
+      nonSpaceCount++;
     }
+    return nonSpaceCount > limit;
+  });
 
-    // limit 초과 시 말줄임
-    if (count > limit) {
-      return result + '…';
-    }
-
-    result += char;
+  if (truncateIndex === -1) {
+    return text;
   }
 
-  return result;
+  return chars.slice(0, truncateIndex).join('') + '…';
 };
