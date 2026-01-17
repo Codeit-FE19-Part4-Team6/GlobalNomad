@@ -164,7 +164,7 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
   }
 
   return (
-    <div className='flex flex-col gap-3.5'>
+    <div className='flex w-full max-w-160 flex-col gap-3.5'>
       {!mobileOpen ? (
         <Burger
           className='z-80 block cursor-pointer text-gray-900 md:hidden'
@@ -176,7 +176,7 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
           onClick={() => setMobileOpen(false)}
         />
       )}
-      <div className='flex flex-col items-start gap-2.5 py-2.5'>
+      <div className='flex max-w-160 flex-col items-start gap-2.5 py-2.5'>
         <Title as='h3' size='xl' weight='bold'>
           예약내역
         </Title>
@@ -195,7 +195,7 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
         </div>
       )}
       {reservations.length === 0 ? (
-        <div className='mt-8 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
+        <div className='mt-8 flex flex-col items-center justify-center gap-7.5'>
           <div className='flex flex-col items-center justify-center'>
             <Earth className='mb-7.5' />
             <div className='font-xl-medium text-center whitespace-nowrap text-gray-600'>

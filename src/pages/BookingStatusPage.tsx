@@ -16,6 +16,8 @@ import { eventType, EventBadge } from '@/components/common/badge/EventBadge';
 import type { MyActivitySchedulesResponse } from '@/apis/type';
 import ReservationInfoModal from '@/components/common/modal/ReservationCard/ReservationInfoModal';
 import { useReservedSchedule } from '@/hooks/useReservedSchedule';
+import { ko } from 'date-fns/locale';
+import { format } from 'date-fns';
 
 //수정
 type PopoverState = {
@@ -174,8 +176,18 @@ export default function BookingStatusPage({ setMobileOpen, mobileOpen }: Props) 
     }, {});
   }, [dashboard]);
 
+  useEffect(() => {
+    if (!selectedActivityId) {
+      return;
+    }
+    const exists = activities.some((a) => a.id === selectedActivityId);
+    if (!exists) {
+      setSelectedActivityId(undefined);
+    }
+  }, [activities, selectedActivityId]);
+
   return (
-    <div className='flex min-h-0 flex-col'>
+    <div className='flex min-h-0 flex-col gap-3.5'>
       {!mobileOpen ? (
         <Burger
           className='z-80 block cursor-pointer text-gray-900 md:hidden'
@@ -242,17 +254,24 @@ export default function BookingStatusPage({ setMobileOpen, mobileOpen }: Props) 
         {/* ✅ 달력 */}
         <div className='h-screen min-h-0 flex-1'>
           <DayPicker
+            locale={ko}
+            formatters={{
+              formatCaption: (date) => format(date, 'yyyy년 M월', { locale: ko }),
+            }}
             className='relative h-full w-full'
             month={monthDate}
             onMonthChange={setMonthDate}
             classNames={{
-              caption: 'mb-2 md:mb-[30px]',
+              caption:
+                'relative mb-2 md:mb-[30px] flex items-center justify-center rounded-xl bg-gray-50 py-2 md:py-3 gap-2.5',
+              caption_label:
+                'px-[10px] md:px-0 whitespace-nowrap text-base sm:font-2xl-bold lg:font-2xl-bold font-lg-bold pointer-events-none',
               day: 'w-[91.42px] h-[105px]',
-              nav: 'w-[100%] absolute ',
+              nav: 'absolute inset-0', // 캡션 안에서 전체 덮게
               month: 'flex flex-col gap-2 md:gap-[30px] items-center h-full w-full ',
-              button_previous: 'absolute left-[30%] top-[9px]',
-              button_next: 'absolute right-[30%] top-[9px]',
-              month_grid: 'lg:w-[640px] lg:h-[779px] md:h-[779px] w-full h-[500px] ',
+              button_previous: 'absolute left-[30%] lg:-top-0.5 sm:-top-0.5 -top-1',
+              button_next: 'absolute right-[30%] lg:-top-0.5 sm:-top-0.5 -top-1',
+              month_grid: 'lg:w-[640px] lg:h-[779px] md:h-[779px] w-full h-[500px]',
               months: 'w-full h-full ',
             }}
             modifiersClassNames={{

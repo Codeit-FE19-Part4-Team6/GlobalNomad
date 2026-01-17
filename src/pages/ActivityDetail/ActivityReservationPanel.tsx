@@ -5,6 +5,7 @@ import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 import { TimeSelectButton } from '@/components/common/button/TimeSelectButton';
 import { isDateAvailable } from '@/utils/dateUtils';
 import { ArrowDown } from '@/assets/icons';
+import { dayPickerKoreanProps } from '@/utils/dateUtils';
 
 interface TimeSlot {
   id: number;
@@ -72,6 +73,7 @@ export default function ActivityReservationPanel({
           날짜
         </Title>
         <DayPicker
+          {...dayPickerKoreanProps}
           mode='single'
           selected={selectedDate}
           onSelect={onSelectDate}
@@ -163,7 +165,7 @@ export default function ActivityReservationPanel({
       {/* 총 금액 및 예약 버튼 */}
       <div className='flex justify-between border-t border-gray-100 pt-6'>
         <div className='flex items-center justify-between gap-2'>
-          <span className='font-lg-medium text-gray-900'>총 합계</span>
+          <span className='font-lg-medium text-gray-800'>총 합계</span>
           <Title as='h3' size='2xl' weight='bold'>
             ₩ {(price * participantCount).toLocaleString()}
           </Title>

@@ -182,8 +182,9 @@ export const SearchInput = ({
         {showButton && (
           <div className='absolute top-1/2 right-3 -translate-y-1/2'>
             <PrimaryButton
+              ignoreSize={true}
               onClick={handleSearch}
-              className='font-md-bold sm:font-lg-bold h-10.25 px-5 py-3 leading-none sm:h-12.5 sm:px-8 sm:py-4'
+              className='font-md-bold sm:font-lg-bold h-10.25 rounded-[14px] px-5 py-3 leading-none sm:h-12.5 sm:px-8 sm:py-4'
               aria-label='검색 실행'>
               {searchButtonText}
             </PrimaryButton>

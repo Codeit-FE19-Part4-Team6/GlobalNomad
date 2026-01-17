@@ -68,7 +68,7 @@ export default function MyExperiencesPage({ setMobileOpen, mobileOpen }: Props) 
   }
 
   return (
-    <div className='flex flex-col gap-3.5'>
+    <div className='flex w-full max-w-160 flex-col gap-3.5'>
       {!mobileOpen ? (
         <Burger
           className='z-80 block cursor-pointer text-gray-900 md:hidden'
@@ -96,9 +96,11 @@ export default function MyExperiencesPage({ setMobileOpen, mobileOpen }: Props) 
         </PrimaryButton>
       </div>
       {activities.length === 0 ? (
-        <div className='mt-8 flex flex-col items-center justify-center gap-7.5 md:mx-45 lg:mx-70'>
+        <div className='mt-8 flex flex-col items-center justify-center gap-7.5'>
           <Earth />
-          <div className='font-xl-medium text-center text-gray-600'>아직 등록한 체험이 없어요</div>
+          <div className='font-xl-medium text-center whitespace-nowrap text-gray-600'>
+            아직 등록한 체험이 없어요
+          </div>
         </div>
       ) : (
         <div className='mb-3 flex flex-col gap-7.5 lg:gap-6'>

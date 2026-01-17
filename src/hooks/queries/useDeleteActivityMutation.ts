@@ -26,6 +26,8 @@ export const useDeleteActivityMutation = (onClose?: () => void, onResetId?: () =
           };
         }
       );
+      queryClient.invalidateQueries({ queryKey: ['myActivities'] });
+
       onClose?.();
       onResetId?.();
       showSnack('체험이 삭제되었습니다.', 'success');

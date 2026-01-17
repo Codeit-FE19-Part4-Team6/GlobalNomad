@@ -72,7 +72,7 @@ export default function ActivityInfo({
       </div>
 
       {/* 평점 */}
-      <div className={`flex items-center gap-1 ${variant === 'desktop' ? 'mb-3' : 'mb-2'}`}>
+      <div className={`flex items-center gap-1 ${variant === 'desktop' ? 'mb-3' : 'mb-2.5'}`}>
         <Star className='h-4 w-4 text-yellow-500' />
         <span
           className={`font-md-medium ${variant === 'desktop' ? 'text-gray-900' : 'text-gray-800'}`}>
@@ -82,13 +82,15 @@ export default function ActivityInfo({
       </div>
 
       {/* 주소 */}
-      <div className={`flex items-start gap-1 ${variant === 'desktop' ? 'mb-6' : 'mb-2'}`}>
+      <div className={`mb-6 flex items-start gap-1`}>
         <Spot className='mt-0.5 h-4 w-4 shrink-0 text-gray-700' />
         <span className='font-md-medium text-gray-700'>{address}</span>
       </div>
 
-      {/* 간단한 설명 */}
-      <p className='font-md-medium text-gray-700'>{shortDescription}</p>
+      {/* 간단한 설명 (데스크탑에서만 표시) */}
+      <p className='font-lg-medium hidden leading-[1.8] text-gray-700 lg:block'>
+        {shortDescription}
+      </p>
     </div>
   );
 }
