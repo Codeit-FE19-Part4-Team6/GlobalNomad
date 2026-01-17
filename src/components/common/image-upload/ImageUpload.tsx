@@ -1,4 +1,4 @@
-import { Delete, PasswordHidden } from '@/assets/icons';
+import { Delete, FallbackImage, PasswordHidden } from '@/assets/icons';
 import { useEffect, useRef, useState } from 'react';
 import imageCompression from 'browser-image-compression';
 type ImageUploadProps = {
@@ -91,7 +91,7 @@ export default function ImageUpload({
           type='button'
           onClick={handleClick}
           className='flex h-20 w-20 flex-col items-center justify-center gap-0.5 rounded-md border border-gray-100 bg-white px-5 py-1.5 sm:h-32 sm:w-32 sm:gap-2.5 sm:rounded-2xl sm:py-4'>
-          <PasswordHidden className='h-10 w-10 px-[6.67px] pt-2.5 pb-[6.14px] text-gray-400' />
+          <FallbackImage className='h-10 w-10 px-[6.67px] pt-2.5 pb-[6.14px] text-gray-400' />
           <div className='font-sm-medium md:font-md-medium text-gray-600'>
             {fileCount}/{maxFiles}
           </div>

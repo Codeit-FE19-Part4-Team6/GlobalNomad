@@ -183,7 +183,7 @@ export default function ReservationPage({ setMobileOpen, mobileOpen }: Props) {
         <div className='font-md-medium text-gray-500'>예약내역 변경 및 취소할 수 있습니다.</div>
       </div>
       {hasAnyReservation && (
-        <div className='scrollbar-hide mr-6 flex flex-nowrap gap-2 overflow-x-auto pb-[13px] md:pb-7.5'>
+        <div className='scrollbar-hide mr-6 flex flex-nowrap gap-2 pb-[13px] md:pb-7.5'>
           <FilterButton selected={selected === 'all'} onClick={handleAllClick}>
             전체
           </FilterButton>
