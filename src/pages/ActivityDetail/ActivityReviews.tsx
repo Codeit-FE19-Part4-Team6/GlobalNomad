@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Title from '@/components/common/Title';
 import Pagination from '@/components/common/pagination';
+import RatingStar from '@/components/common/RatingStar';
 import { Star } from '@/assets/icons';
 import { useActivityReviews } from '@/hooks/queries/useActivityReviews';
 
@@ -106,14 +107,10 @@ export default function ActivityReviews({ activityId }: ActivityReviewsProps) {
                 <span className='font-md-bold text-gray-900'>{review.user.nickname}</span>
                 <span className='font-md-medium text-gray-500'>{formattedDate}</span>
               </div>
-              <div className='mb-2 flex items-center gap-1'>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 ${i < Math.floor(review.rating) ? 'text-yellow-500' : 'text-gray-300'}`}
-                  />
-                ))}
-              </div>
+              <RatingStar
+                value={review.rating}
+                className='mb-2 gap-1 [&_button]:h-4 [&_svg]:h-4 [&_svg]:w-4'
+              />
               <p className='font-md-medium text-gray-800'>{review.content}</p>
             </div>
           );
