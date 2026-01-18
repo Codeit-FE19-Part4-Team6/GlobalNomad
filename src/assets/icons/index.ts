@@ -41,3 +41,4 @@ export { default as User } from './page/user.svg';
 export { default as Warning } from './page/warning.svg';
 export { default as Wellbeing } from './page/wellbeing.svg';
 export { default as Burger } from './page/burger.svg';
+export { default as FallbackImage } from './page/fallback_image.svg';
