@@ -1,4 +1,4 @@
-import { Delete, FallbackImage, PasswordHidden } from '@/assets/icons';
+import { Delete, FallbackImage } from '@/assets/icons';
 import { useEffect, useRef, useState } from 'react';
 import imageCompression from 'browser-image-compression';
 type ImageUploadProps = {

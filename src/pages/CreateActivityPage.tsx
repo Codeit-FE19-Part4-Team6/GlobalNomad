@@ -87,7 +87,7 @@ export default function CreateActivityPage() {
         const dd = String(d.getDate()).padStart(2, '0');
 
         return {
-          date: `${yyyy}-${mm}-${dd}`, // ✅ 로컬 기준 날짜
+          date: `${yyyy}-${mm}-${dd}`,
           startTime: row.startTime,
           endTime: row.endTime,
         };
