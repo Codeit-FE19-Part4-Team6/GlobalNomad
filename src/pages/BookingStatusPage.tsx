@@ -309,7 +309,7 @@ export default function BookingStatusPage({ setMobileOpen, mobileOpen }: Props) 
                             <div
                               className='fixed z-10000 hidden lg:block'
                               style={{
-                                top: popover.top - 100, // ✅ 여기서 위로 20px 당김
+                                top: popover.top - 100,
                                 left: popover.left,
                               }}
                               onClick={(e) => e.stopPropagation()}>
