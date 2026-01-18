@@ -152,9 +152,6 @@ export default function ReservationInfoModal({
       {/* tabs */}
       <div className='px-5 pt-3'>
         <div className='font-lg-bold flex gap-2'>
-          {/* ⚠️ 네 문구 기준을 유지했어.
-              - "신청"을 confirmed로 쓰는 게 맞는지 헷갈릴 수 있음
-              - 프로젝트 용어가 다르면 여기 label만 바꾸면 됨 */}
           <TabButton
             label={`신청 ${statusCount.pending}`}
             active={tab === 'pending'}
@@ -217,7 +214,7 @@ export default function ReservationInfoModal({
         <section className='flex flex-col gap-3 sm:w-[50%] lg:w-full'>
           <Label className='font-xl-bold text-black-50 mb-2 text-start'>예약 내역</Label>
 
-          <div className='scrollbar-hide max-h-[235px] space-y-3 overflow-y-auto'>
+          <div className='scrollbar-hide max-h-[140px] space-y-3 overflow-y-auto'>
             {isReservationsLoading ? (
               <div className='font-md-medium rounded-xl border border-gray-100 py-8 text-center text-gray-500'>
                 불러오는 중...
