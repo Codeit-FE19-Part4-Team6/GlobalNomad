@@ -79,11 +79,19 @@ export default function CreateActivityPage() {
       //toISOString() 하면 "2026-01-02T00:00:00.000Z" 이런 문자열이 됨
       //split('T')[0] 하면 "2026-01-02"만 뽑음
       // 서버가 원하는 날짜 형식 완성
-      const schedules = values.rows.map((row) => ({
-        date: row.date.toISOString().split('T')[0],
-        startTime: row.startTime,
-        endTime: row.endTime,
-      }));
+      const schedules = values.rows.map((row) => {
+        const d = row.date;
+
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+
+        return {
+          date: `${yyyy}-${mm}-${dd}`, // ✅ 로컬 기준 날짜
+          startTime: row.startTime,
+          endTime: row.endTime,
+        };
+      });
 
       // 3) 최종 payload
       const payload: CreateActivityRequest = {
