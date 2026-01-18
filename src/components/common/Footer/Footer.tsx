@@ -36,7 +36,7 @@ const Footer = () => {
         {/* 모바일 하단 + PC 전체 한 줄 */}
         <div className='flex items-center justify-between md:h-full'>
           {/* 왼쪽: 카피라이트 */}
-          <span className='text-sm text-gray-400'>&copy; codeit - 2023</span>
+          <span className='text-sm text-gray-400'>&copy; codeit - 2026</span>
 
           {/* 가운데: PC 전용 정책 / FAQ */}
           <div className='hidden md:flex'>

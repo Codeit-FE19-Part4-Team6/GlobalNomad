@@ -38,7 +38,7 @@ export default function ActivityReviews({ activityId }: ActivityReviewsProps) {
   if (isLoading) {
     return (
       <section className='mb-10 border-t border-gray-100 pt-10'>
-        <div className='flex h-[200px] items-center justify-center'>
+        <div className='flex h-50 items-center justify-center'>
           <span className='font-md-medium text-gray-500'>후기를 불러오는 중...</span>
         </div>
       </section>
@@ -53,8 +53,8 @@ export default function ActivityReviews({ activityId }: ActivityReviewsProps) {
             체험 후기
           </Title>
         </div>
-        <div className='flex h-[200px] items-center justify-center'>
-          <span className='font-md-medium text-gray-500'>아직 후기가 없습니다.</span>
+        <div className='flex h-50 items-center justify-center'>
+          <span className='font-md-medium text-gray-500'>아직 등록된 후기가 없습니다.</span>
         </div>
       </section>
     );
