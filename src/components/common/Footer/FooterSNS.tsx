@@ -13,21 +13,24 @@
  * - 접근성을 고려하여 모든 링크에 `aria-label`을 제공합니다.
  */
 
-import { FaceBook, Instagram, X, Youtube } from '@/assets/icons';
+import { Youtube, Github, Notion } from '@/assets/icons';
 
 const snsLinks = [
   {
-    Icon: FaceBook,
-    label: '페이스북으로 이동',
-    href: '#',
+    Icon: Youtube,
+    label: '유튜브로 이동',
+    href: 'https://www.youtube.com/?app=desktop&hl=ko&gl=KR',
   },
   {
-    Icon: Instagram,
-    label: '인스타그램으로 이동',
-    href: '#',
+    Icon: Github,
+    label: '깃허브로 이동',
+    href: 'https://github.com/Codeit-FE19-Part4-Team6/GlobalNomad',
   },
-  { Icon: Youtube, label: '유튜브로 이동', href: '#' },
-  { Icon: X, label: 'X로 이동', href: '#' },
+  {
+    Icon: Notion,
+    label: '노션으로 이동',
+    href: 'https://www.notion.so/PART4-6-GlobalNomad-2c356c5be06980c3898df2ff5decf023?source=copy_link',
+  },
 ];
 
 const FooterSNS = () => {

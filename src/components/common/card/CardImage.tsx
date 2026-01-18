@@ -10,17 +10,20 @@ import { cn } from '@/utils/cn';
  *
  * <Card.Image src="..." alt="..." />
  */
+
 export default function CardImage({ src, alt }: { src?: string; alt?: string }) {
   const { variant } = useCardContext();
 
   const imageWrapperStyle = {
-    grid: 'aspect-square h-38.75 w-full overflow-hidden rounded-[18px_18px_0_0] md:h-86.75 md:rounded-[32px_32px_0_0] lg:h-72.5',
-    list: 'h-20.5 w-20.5 shrink-0 lg:h-35.5 lg:w-35.5',
+    grid: 'group aspect-square h-38.75 w-full overflow-hidden rounded-[18px_18px_0_0] md:h-86.75 md:rounded-[32px_32px_0_0] lg:h-72.5',
+    list: 'group h-20.5 w-20.5 shrink-0 overflow-hidden lg:h-35.5 lg:w-35.5',
     reservation:
-      'aspect-square h-34 min-h-38.25 w-34 shrink-0 overflow-hidden rounded-[0_24px_24px_0] bg-gray-100 lg:h-45.25 lg:w-45.25 lg:rounded-[0_32px_32px_0] relative z-0 -ml-6 lg:-ml-10',
+      'group aspect-square h-34 min-h-38.25 w-34 shrink-0 overflow-hidden rounded-[0_24px_24px_0] bg-gray-100 lg:h-45.25 lg:w-45.25 lg:rounded-[0_32px_32px_0] relative z-0 -ml-6 lg:-ml-10',
   }[variant];
 
-  const imgStyle = 'h-full w-full object-cover';
+  const imgStyle =
+    'h-full w-full object-cover transition-all duration-300 ease-out group-hover:scale-[1.03] group-hover:brightness-93';
+
   const listImgStyle = variant === 'list' ? 'rounded-[20px] lg:rounded-4xl' : '';
 
   return (
